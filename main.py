@@ -3,6 +3,7 @@ import requests
 from fastapi import FastAPI, Request
 from dotenv import load_dotenv
 from anthropic import AsyncAnthropic
+from prompts import SALES_AGENT_PROMPT
 
 # Load .env file
 load_dotenv()
@@ -34,13 +35,14 @@ async def telegram_webhook(request: Request):
 async def call_llm(user_message: str) -> str:
     """
     Call Anthropic LLM with user message.
-    Zero system prompt (raw LLM behavior).
+    Uses Valdman sales agent system prompt for personality.
     """
     try:
         print(f"Calling LLM with message: {user_message}")
         response = await anthropic_client.messages.create(
             model="claude-3-haiku-20240307",
             max_tokens=1024,
+            system=SALES_AGENT_PROMPT,
             messages=[
                 {"role": "user", "content": user_message}
             ]
