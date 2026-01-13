@@ -45,7 +45,7 @@ async def telegram_webhook(request: Request):
 async def call_llm(user_message: str, chat_id: int) -> str:
     """
     Call Anthropic LLM with user message and conversation history.
-    Uses Valdman sales agent system prompt for personality.
+    Uses configured sales agent system prompt for personality.
     Maintains last 5 messages for conversation continuity.
     """
     try:
