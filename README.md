@@ -4,7 +4,7 @@ A Telegram bot platform for AI-powered sales agents using Claude (Anthropic).
 
 ## Current Status
 
-**Step 1.1 Complete** - AI sales agent with personality. The bot now acts as a friendly sales representative for Valdman, a meat and sausage factory, with natural conversational tone.
+**Milestone 1 Complete** - Fully functional conversational sales agent. The bot acts as a friendly Valdman sales representative with conversation memory and proper message structure.
 
 ## Features
 
@@ -16,6 +16,8 @@ A Telegram bot platform for AI-powered sales agents using Claude (Anthropic).
 - ✅ Basic error handling
 - ✅ Multilingual support (auto-detects language)
 - ✅ Sales agent persona (Valdman meat/sausage brand)
+- ✅ Conversation memory (last 5 messages)
+- ✅ Proper message role structure (user/assistant)
 
 ## Setup
 
@@ -57,12 +59,12 @@ Following the atomic milestone approach:
 - [x] Step 0.1: Echo bot (message relay)
 - [x] Step 0.2: LLM integration (raw responses)
 
-### 🚧 Milestone 1 - One Talking Agent
+### ✅ Milestone 1 - One Talking Agent
 - [x] Step 1.1: Add system prompt (sales persona)
-- [ ] Step 1.2: Basic conversation continuity
-- [ ] Step 1.3: Proper message role structure
+- [x] Step 1.2: Basic conversation continuity
+- [x] Step 1.3: Proper message role structure
 
-### 📋 Milestone 2 - Sales Realism
+### 🚧 Milestone 2 - Sales Realism
 - [ ] Step 2.1: Hardcode product catalog
 - [ ] Step 2.2: Take fake orders
 - [ ] Step 2.3: Explicit confirmation flow
@@ -90,4 +92,4 @@ Following the atomic milestone approach:
 
 ## Next Immediate Steps
 
-**Step 1.2** - Add basic conversation continuity so the bot remembers recent messages in the conversation.
+**Step 2.1** - Add hardcoded product catalog so the bot can discuss specific Valdman products with pricing and details.
