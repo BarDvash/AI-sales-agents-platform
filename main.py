@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from anthropic import AsyncAnthropic
 from prompts import generate_sales_agent_prompt
 from config import valdman
+from tools import TOOL_DEFINITIONS, execute_tool
 
 # Load .env file
 load_dotenv()
@@ -24,6 +25,12 @@ SALES_AGENT_PROMPT = generate_sales_agent_prompt(CLIENT_CONFIG)
 # In-memory conversation history storage (per chat_id)
 # Will be replaced with database in Step 3.2
 conversation_history = {}
+
+# In-memory order storage
+# Will be replaced with database in Step 3.2
+orders = {}
+# Use dict for order_counter to enable reference passing to tools
+order_counter = {'value': 0}
 
 app = FastAPI()
 
@@ -68,8 +75,50 @@ async def call_llm(user_message: str, chat_id: int) -> str:
             model="claude-3-haiku-20240307",
             max_tokens=1024,
             system=SALES_AGENT_PROMPT,
-            messages=history
+            messages=history,
+            tools=TOOL_DEFINITIONS
         )
+
+        # Handle tool use
+        if response.stop_reason == "tool_use":
+            # Extract tool use block
+            tool_use = next(block for block in response.content if block.type == "tool_use")
+            tool_name = tool_use.name
+
+            print(f"Tool called: {tool_name}")
+
+            # Execute the tool using tools module
+            tool_input = tool_use.input if hasattr(tool_use, 'input') else {}
+            tool_result = execute_tool(tool_name, tool_input, chat_id, orders, order_counter, CLIENT_CONFIG)
+
+            if isinstance(tool_result, list):
+                print(f"Tool result: {len(tool_result)} orders found")
+            else:
+                print(f"Tool result: {tool_result}")
+
+            # Add assistant's tool use to history
+            history.append({"role": "assistant", "content": response.content})
+
+            # Add tool result to history
+            history.append({
+                "role": "user",
+                "content": [
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": tool_use.id,
+                        "content": str(tool_result)
+                    }
+                ]
+            })
+
+            # Call LLM again with tool result
+            response = await anthropic_client.messages.create(
+                model="claude-3-haiku-20240307",
+                max_tokens=1024,
+                system=SALES_AGENT_PROMPT,
+                messages=history,
+                tools=TOOL_DEFINITIONS
+            )
 
         assistant_message = response.content[0].text
         print(f"LLM Response: {assistant_message}")

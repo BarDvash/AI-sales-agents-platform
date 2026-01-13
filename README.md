@@ -18,6 +18,9 @@ A Telegram bot platform for AI-powered sales agents using Claude (Anthropic).
 - ✅ Sales agent persona (Valdman meat/sausage brand)
 - ✅ Conversation memory (last 5 messages)
 - ✅ Proper message role structure (user/assistant)
+- ✅ Product catalog with pricing
+- ✅ Order tracking and storage
+- ✅ Tool calling framework (agent function calling)
 
 ## Setup
 
@@ -66,7 +69,7 @@ Following the atomic milestone approach:
 
 ### 🚧 Milestone 2 - Sales Realism
 - [x] Step 2.1: Hardcode product catalog
-- [ ] Step 2.2: Take fake orders
+- [x] Step 2.2: Take fake orders
 - [ ] Step 2.3: Explicit confirmation flow
 
 ### 📋 Milestone 3 - Memory
@@ -74,8 +77,8 @@ Following the atomic milestone approach:
 - [ ] Step 3.2: Client profile memory
 - [ ] Step 3.3: Automatic memory extraction
 
-### 📋 Milestone 4 - Actions & Tools
-- [ ] Step 4.1: Tool calling framework
+### 🚧 Milestone 4 - Actions & Tools
+- [x] Step 4.1: Tool calling framework
 - [ ] Step 4.2: Tool constraints and validation
 
 ### 📋 Milestone 5 - Manager Control
@@ -97,4 +100,4 @@ Following the atomic milestone approach:
 
 ## Next Immediate Steps
 
-**Step 2.2** - Implement order-taking flow so the bot can accept and record customer orders.
+**Step 2.3** - Add explicit order confirmation flow to ensure customers approve orders before they're finalized.

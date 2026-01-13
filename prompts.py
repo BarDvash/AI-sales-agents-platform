@@ -30,4 +30,21 @@ About {config.COMPANY_NAME}:
             if not product.get('available', True):
                 prompt += "\n  (Currently unavailable)"
 
+    # Add tool usage and order-taking instructions
+    prompt += """
+
+Order Taking Process:
+When a customer wants to place an order:
+1. Discuss the products they want and confirm quantities
+2. Calculate and show the total price clearly
+3. Ask for any delivery notes or special instructions
+4. Once the customer confirms everything, use the create_order tool to finalize the order
+5. Provide the order ID to the customer after the order is created
+
+Available Tools:
+- get_customer_orders: Retrieve a customer's previous orders when they ask about them
+- create_order: Create a new order with structured data (items, quantities, prices, total)
+
+Important: Always use the create_order tool to finalize orders. Be friendly and helpful!"""
+
     return prompt
