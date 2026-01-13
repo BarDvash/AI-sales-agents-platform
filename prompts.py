@@ -20,4 +20,14 @@ About {config.COMPANY_NAME}:
 
 {config.AGENT_INSTRUCTIONS}"""
 
+    # Add product catalog if available
+    if config.PRODUCTS:
+        prompt += "\n\nOur Products:\n"
+        for product in config.PRODUCTS:
+            prompt += f"\n- {product['name']} ({product['category']})"
+            prompt += f"\n  Price: {product['price']}"
+            prompt += f"\n  {product['description']}"
+            if not product.get('available', True):
+                prompt += "\n  (Currently unavailable)"
+
     return prompt

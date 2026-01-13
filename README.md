@@ -65,7 +65,7 @@ Following the atomic milestone approach:
 - [x] Step 1.3: Proper message role structure
 
 ### 🚧 Milestone 2 - Sales Realism
-- [ ] Step 2.1: Hardcode product catalog
+- [x] Step 2.1: Hardcode product catalog
 - [ ] Step 2.2: Take fake orders
 - [ ] Step 2.3: Explicit confirmation flow
 
@@ -90,6 +90,11 @@ Following the atomic milestone approach:
 - [ ] Multi-tenant architecture
 - [ ] Admin UI
 
+### 📋 Milestone 8 - Production Integration
+- [ ] Real product catalog integration (API/Database)
+- [ ] Inventory sync
+- [ ] Dynamic pricing updates
+
 ## Next Immediate Steps
 
-**Step 2.1** - Add hardcoded product catalog so the bot can discuss specific Valdman products with pricing and details.
+**Step 2.2** - Implement order-taking flow so the bot can accept and record customer orders.
