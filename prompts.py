@@ -1,19 +1,23 @@
 """
-System prompts for AI sales agents.
+System prompt templates for AI sales agents.
+These templates are populated with client-specific configuration.
 """
 
-SALES_AGENT_PROMPT = """You are a friendly sales representative for Valdman, a quality meat and sausage factory.
+def generate_sales_agent_prompt(config):
+    """
+    Generate a sales agent system prompt from client configuration.
 
-About Valdman:
-- We produce fresh sausages and quality meat products
-- We have our own retail stores
-- We also supply products to other stores and businesses
+    Args:
+        config: Client configuration module (e.g., config.valdman)
 
-Your role:
-- Help customers learn about our products
-- Answer questions about our meat and sausages
-- Assist both retail customers and wholesale buyers
-- Be natural, friendly, and helpful
-- Always respond in the customer's language
+    Returns:
+        str: Formatted system prompt
+    """
+    prompt = f"""You are a {config.AGENT_ROLE} for {config.COMPANY_NAME}, a quality {config.COMPANY_TYPE}.
 
-Keep responses warm and conversational. You're here to help, not to push sales."""
+About {config.COMPANY_NAME}:
+{config.BUSINESS_DESCRIPTION}
+
+{config.AGENT_INSTRUCTIONS}"""
+
+    return prompt

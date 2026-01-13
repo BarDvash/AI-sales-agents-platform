@@ -3,7 +3,8 @@ import requests
 from fastapi import FastAPI, Request
 from dotenv import load_dotenv
 from anthropic import AsyncAnthropic
-from prompts import SALES_AGENT_PROMPT
+from prompts import generate_sales_agent_prompt
+from config import valdman
 
 # Load .env file
 load_dotenv()
@@ -14,6 +15,11 @@ TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 # Initialize Anthropic client
 anthropic_client = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
+
+# Load client configuration (currently hardcoded to Valdman)
+# Will be dynamic per-customer in Milestone 7
+CLIENT_CONFIG = valdman
+SALES_AGENT_PROMPT = generate_sales_agent_prompt(CLIENT_CONFIG)
 
 # In-memory conversation history storage (per chat_id)
 # Will be replaced with database in Step 3.2
