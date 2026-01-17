@@ -1,29 +1,29 @@
 """
-System prompt templates for AI sales agents.
-These templates are populated with client-specific configuration.
+System prompt builder - constructs dynamic prompts from tenant configuration.
 """
 
-def generate_sales_agent_prompt(config):
+
+def build_system_prompt(tenant_config):
     """
-    Generate a sales agent system prompt from client configuration.
+    Build a system prompt from tenant configuration.
 
     Args:
-        config: Client configuration module (e.g., config.valdman)
+        tenant_config: Tenant configuration with COMPANY_NAME, PRODUCTS, AGENT_ROLE, etc.
 
     Returns:
-        str: Formatted system prompt
+        str: Formatted system prompt for the LLM
     """
-    prompt = f"""You are a {config.AGENT_ROLE} for {config.COMPANY_NAME}, a quality {config.COMPANY_TYPE}.
+    prompt = f"""You are a {tenant_config.AGENT_ROLE} for {tenant_config.COMPANY_NAME}, a quality {tenant_config.COMPANY_TYPE}.
 
-About {config.COMPANY_NAME}:
-{config.BUSINESS_DESCRIPTION}
+About {tenant_config.COMPANY_NAME}:
+{tenant_config.BUSINESS_DESCRIPTION}
 
-{config.AGENT_INSTRUCTIONS}"""
+{tenant_config.AGENT_INSTRUCTIONS}"""
 
     # Add product catalog if available
-    if config.PRODUCTS:
+    if tenant_config.PRODUCTS:
         prompt += "\n\nOur Products:\n"
-        for product in config.PRODUCTS:
+        for product in tenant_config.PRODUCTS:
             prompt += f"\n- {product['name']} ({product['category']})"
             prompt += f"\n  Price: {product['price']}"
             prompt += f"\n  {product['description']}"
