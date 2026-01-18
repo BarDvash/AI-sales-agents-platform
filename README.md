@@ -14,7 +14,7 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 
 ## Current Status
 
-**Phase:** Early MVP - Single tenant, working tool framework, refactored to scalable architecture.
+**Phase:** Building production foundation - Adding database persistence and multi-tenant support.
 
 **What works:**
 - ✅ Conversational AI sales agent (Valdman persona)
@@ -22,7 +22,13 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 - ✅ Modular codebase ready for multi-tenant scaling
 - ✅ Telegram integration
 
-**What's next:** Choose path - Multi-tenant foundation, Better intelligence, or Multi-channel.
+**Current Work:** Path A - Multi-Tenant Foundation (Week 1: Database Layer)
+- 🔄 Setting up PostgreSQL + SQLAlchemy + Alembic
+- 🔄 Creating database models (Tenant, Order, Customer, Conversation, Product)
+- 🔄 Building repository layer for data access
+- 🔄 Migrating from in-memory storage to database
+
+**Next:** Multi-tenant routing → Tenant management → WhatsApp integration → Cloud deployment
 
 ---
 
@@ -271,26 +277,61 @@ curl -X POST "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=<NGROK_URL>
 
 **Current State:** Single-tenant MVP with working tool framework and clean architecture.
 
-### Path A: Multi-Tenant Foundation 🏗️
-*Priority if goal is to onboard multiple businesses*
+### Path A: Multi-Tenant Foundation 🏗️ ⬅️ **CURRENT PRIORITY**
+*Building production-ready multi-tenant capability*
 
-1. **Database Layer** (1-2 days)
-   - PostgreSQL setup with SQLAlchemy
-   - Models: Tenant, Conversation, Order, Customer, Product
-   - Repositories for data access
-   - Migrate from in-memory to DB
+**Status:** In Progress - Starting with database layer
 
-2. **Dynamic Tenant Loading** (1 day)
-   - Store Valdman + Joanna's configs in DB
-   - Update `tenants/loader.py` to query DB
-   - Redis caching layer
+#### Step 1: Database Layer (2-3 days) - IN PROGRESS
+**Goal:** Replace in-memory storage with PostgreSQL
 
-3. **Multi-Tenant Routing** (1 day)
-   - Change webhook to `/webhooks/{channel}/{tenant_id}`
-   - Each tenant gets unique bot token
-   - Test with 2 real tenants
+**Tasks:**
+- [ ] Set up PostgreSQL locally (Docker)
+- [ ] Install SQLAlchemy + Alembic
+- [ ] Create database models:
+  - `Tenant` - Business configurations (company_name, products, agent_role, etc.)
+  - `Order` - Order records with items
+  - `Customer` - Customer profiles
+  - `Conversation` - Message history
+  - `Product` - Product catalogs per tenant
+- [ ] Create repository layer (data access)
+- [ ] Migrate `storage/state.py` → database queries
+- [ ] Database migrations with Alembic
+- [ ] Test: Create order → restart server → order still exists
 
-**Outcome:** Platform can serve 10+ businesses independently.
+**Why first:** Can't run pilots without data persistence
+
+---
+
+#### Step 2: Multi-Tenant Routing (1-2 days)
+**Goal:** Support multiple businesses simultaneously
+
+**Tasks:**
+- [ ] Change webhook route: `/webhooks/telegram` → `/webhooks/telegram/{tenant_id}`
+- [ ] Extract tenant_id from URL
+- [ ] Load tenant config from database (not hardcoded)
+- [ ] Tenant isolation (each tenant sees only their data)
+- [ ] Test with 2 tenants (Valdman + Joanna's Bakery)
+
+**Why second:** Foundation for serving 10+ businesses
+
+---
+
+#### Step 3: Tenant Management (1 day)
+**Goal:** Easy way to add/configure new businesses
+
+**Tasks:**
+- [ ] CLI script to add new tenant
+- [ ] Configure products, agent persona, bot token
+- [ ] Webhook registration automation
+- [ ] Simple admin endpoint (list tenants, view orders)
+
+**Why third:** Can onboard pilots without writing code
+
+---
+
+**Total Timeline:** ~1 week
+**Outcome:** Platform ready for 10+ businesses, data persists, can onboard pilots
 
 ---
 
@@ -358,12 +399,39 @@ This is currently a solo project. Following atomic milestone approach - each PR 
 
 ## Tech Stack
 
+### Current Stack
 - **Backend:** FastAPI (async Python web framework)
 - **LLM:** Claude 3 Haiku via Anthropic SDK
 - **Messaging:** Telegram Bot API (WhatsApp planned)
-- **Storage:** In-memory (PostgreSQL + Redis planned)
+- **Storage:** In-memory (temporary - migration in progress)
 - **Config:** python-dotenv
 - **Tools:** Claude function calling (tool use API)
+
+### Production Stack (In Progress)
+
+**Database Layer:**
+- **PostgreSQL** - Primary database for all persistent data
+  - Tenants (business configurations)
+  - Orders (order data, items, status)
+  - Customers (profiles, preferences)
+  - Products (catalogs)
+  - Conversations (message history)
+  - **Why:** Industry standard, ACID transactions, relational data, scales to millions of records
+  - **Tooling:** SQLAlchemy ORM + Alembic migrations
+  - **Hosting:** Railway/Render (development) → AWS RDS (scale)
+
+- **Redis** - Cache layer (optional, add when needed)
+  - Tenant config cache (fast lookups)
+  - Rate limiting
+  - Session data
+  - **Why:** Microsecond reads, reduces DB load
+  - **Hosting:** Railway/Render or Upstash
+
+**Migration Strategy:**
+- Phase 1: PostgreSQL locally via Docker (development)
+- Phase 2: PostgreSQL on Railway/Render (production-ready)
+- Phase 3: Add Redis when traffic demands it
+- **No database migration needed** - PostgreSQL is final destination
 
 ---
 
