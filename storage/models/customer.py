@@ -1,7 +1,7 @@
 """
 Customer model - represents end users (people buying from tenants).
 """
-from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Text
+from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from storage.database import Base
@@ -13,12 +13,15 @@ class Customer(Base):
     Identified by chat_id from messaging platform.
     """
     __tablename__ = "customers"
+    __table_args__ = (
+        UniqueConstraint('tenant_id', 'chat_id', name='uq_tenant_chat'),
+    )
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     tenant_id = Column(String, ForeignKey("tenants.id"), nullable=False)
 
     # Messaging platform identifier
-    chat_id = Column(String, nullable=False, unique=True)  # e.g., Telegram chat_id
+    chat_id = Column(String, nullable=False)  # e.g., Telegram chat_id
 
     # Optional customer info (collected over time)
     name = Column(String, nullable=True)

@@ -16,16 +16,19 @@ class CustomerRepository:
         """Get customer by ID."""
         return self.db.query(Customer).filter(Customer.id == customer_id).first()
 
-    def get_by_chat_id(self, chat_id: str) -> Optional[Customer]:
-        """Get customer by chat_id (Telegram/WhatsApp ID)."""
-        return self.db.query(Customer).filter(Customer.chat_id == chat_id).first()
+    def get_by_chat_id(self, tenant_id: str, chat_id: str) -> Optional[Customer]:
+        """Get customer by chat_id (Telegram/WhatsApp ID) for a specific tenant."""
+        return self.db.query(Customer).filter(
+            Customer.tenant_id == tenant_id,
+            Customer.chat_id == chat_id
+        ).first()
 
     def get_or_create_by_chat_id(self, tenant_id: str, chat_id: str) -> Customer:
         """
         Get existing customer or create new one.
         Used when new user messages the bot.
         """
-        customer = self.get_by_chat_id(chat_id)
+        customer = self.get_by_chat_id(tenant_id, chat_id)
         if not customer:
             customer = Customer(
                 tenant_id=tenant_id,

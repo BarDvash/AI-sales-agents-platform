@@ -82,8 +82,10 @@ class OrderRepository:
     def generate_order_id(self, tenant_id: str) -> str:
         """
         Generate next order ID for tenant.
-        Format: ORD-0001, ORD-0002, etc.
+        Format: VALDMAN-ORD-0001, JOANNAS_BAKERY-ORD-0001, etc.
         """
         # Get count of orders for this tenant
         count = self.db.query(Order).filter(Order.tenant_id == tenant_id).count()
-        return f"ORD-{count + 1:04d}"
+        # Include tenant prefix to ensure uniqueness across tenants
+        tenant_prefix = tenant_id.upper().replace('_', '-')
+        return f"{tenant_prefix}-ORD-{count + 1:04d}"

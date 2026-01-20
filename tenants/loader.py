@@ -28,12 +28,13 @@ class TenantConfig:
         self.AGENT_ROLE = tenant.agent_role
         self.AGENT_INSTRUCTIONS = tenant.agent_instructions
 
-        # Convert products to old format for compatibility
+        # Convert products to format expected by agent
         self.PRODUCTS = [
             {
                 "name": p.name,
                 "category": p.category,
                 "price": p.price,
+                "unit": p.unit,
                 "description": p.description,
             }
             for p in products

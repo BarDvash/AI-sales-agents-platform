@@ -34,7 +34,7 @@ def get_customer_orders(tenant_id: str, chat_id: str, db: Session) -> list:
     """
     # Get customer
     customer_repo = CustomerRepository(db)
-    customer = customer_repo.get_by_chat_id(chat_id)
+    customer = customer_repo.get_by_chat_id(tenant_id, chat_id)
 
     if not customer:
         return []

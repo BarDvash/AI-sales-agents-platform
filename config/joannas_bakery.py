@@ -25,75 +25,88 @@ AGENT_INSTRUCTIONS = """Your role:
 
 Keep responses friendly and enthusiastic. Share the love of fresh-baked goods, not just sales."""
 
+# Business settings
+CURRENCY = "NIS"
+
 # Product catalog
 PRODUCTS = [
     {
         "name": "Sourdough Bread",
         "category": "Breads",
-        "price": "28 NIS/loaf",
+        "price": 28.0,
+        "unit": "loaf",
         "description": "Classic artisan sourdough with crispy crust and tangy flavor",
         "available": True
     },
     {
         "name": "Whole Wheat Challah",
         "category": "Breads",
-        "price": "32 NIS/loaf",
+        "price": 32.0,
+        "unit": "loaf",
         "description": "Traditional braided challah made with whole wheat flour",
         "available": True
     },
     {
         "name": "Baguette",
         "category": "Breads",
-        "price": "18 NIS/each",
+        "price": 18.0,
+        "unit": "each",
         "description": "French-style baguette, baked fresh twice daily",
         "available": True
     },
     {
         "name": "Chocolate Croissant",
         "category": "Pastries",
-        "price": "15 NIS/each",
+        "price": 15.0,
+        "unit": "each",
         "description": "Buttery croissant filled with premium dark chocolate",
         "available": True
     },
     {
         "name": "Almond Croissant",
         "category": "Pastries",
-        "price": "16 NIS/each",
+        "price": 16.0,
+        "unit": "each",
         "description": "Flaky croissant with almond cream and sliced almonds",
         "available": True
     },
     {
         "name": "Cinnamon Roll",
         "category": "Pastries",
-        "price": "14 NIS/each",
+        "price": 14.0,
+        "unit": "each",
         "description": "Soft, gooey cinnamon roll with cream cheese frosting",
         "available": True
     },
     {
         "name": "Chocolate Cake",
         "category": "Cakes",
-        "price": "180 NIS/whole cake",
+        "price": 180.0,
+        "unit": "whole cake",
         "description": "Rich triple-layer chocolate cake with ganache frosting",
         "available": True
     },
     {
         "name": "Lemon Tart",
         "category": "Cakes",
-        "price": "120 NIS/tart",
+        "price": 120.0,
+        "unit": "tart",
         "description": "Tangy lemon curd in buttery shortcrust pastry",
         "available": True
     },
     {
         "name": "Cheesecake",
         "category": "Cakes",
-        "price": "160 NIS/whole cake",
+        "price": 160.0,
+        "unit": "whole cake",
         "description": "New York style cheesecake with graham cracker crust",
         "available": True
     },
     {
         "name": "Apple Strudel",
         "category": "Pastries",
-        "price": "22 NIS/slice",
+        "price": 22.0,
+        "unit": "slice",
         "description": "Traditional apple strudel with cinnamon and raisins",
         "available": True
     }
