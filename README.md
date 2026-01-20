@@ -62,9 +62,9 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
            ▼                               ▼
 ┌──────────────────────┐        ┌─────────────────────────┐
 │  Tools (tools/)      │        │  Storage (storage/)     │
-│  • orders/           │        │  • In-memory (now)      │
-│  • products/         │        │  • PostgreSQL (future)  │
-│  • customers/        │        │  • Redis cache          │
+│  • orders/           │        │  • PostgreSQL (now)     │
+│  • products/         │        │  • Database models      │
+│  • customers/        │        │  • Repository layer     │
 └──────────────────────┘        └─────────────────────────┘
            │                               │
            └───────────────┬───────────────┘
@@ -93,12 +93,13 @@ tools/                  # Agent capabilities (function calling)
     ├── create_order.py         # Create structured orders
     └── get_customer_orders.py  # Retrieve customer orders
 
-storage/                # State management
-└── state.py           # In-memory storage (conversation, orders, counter)
-                       # TODO: Replace with PostgreSQL + Redis
+storage/                # Data persistence
+├── database.py        # Database connection and session management
+├── models/            # SQLAlchemy models (Tenant, Order, Customer, etc.)
+└── repositories/      # Data access layer (TenantRepo, OrderRepo, etc.)
 
 tenants/                # Multi-tenant configuration
-└── loader.py          # Load tenant config (currently from files, will be DB)
+└── loader.py          # Load tenant config from database
 
 config/                 # Business configurations
 ├── valdman.py         # Valdman meat/sausage business
@@ -300,7 +301,7 @@ curl -X POST "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=<NGROK_URL>
 ### Immediate Priorities
 
 **Foundation Layer**
-- [ ] Database persistence (PostgreSQL + Redis)
+- [x] Database persistence (PostgreSQL) ✅ COMPLETE
 - [ ] Multi-tenant webhook routing
 - [ ] Tenant management (CRUD, provisioning)
 
@@ -329,26 +330,26 @@ curl -X POST "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=<NGROK_URL>
 ### Path A: Multi-Tenant Foundation 🏗️ ⬅️ **CURRENT PRIORITY**
 *Building production-ready multi-tenant capability*
 
-**Status:** In Progress - Starting with database layer
+**Status:** Step 1 Complete ✅ - Ready for Step 2 (Multi-Tenant Routing)
 
-#### Step 1: Database Layer (2-3 days) - IN PROGRESS
+#### Step 1: Database Layer ✅ COMPLETE
 **Goal:** Replace in-memory storage with PostgreSQL
 
 **Tasks:**
-- [ ] Set up PostgreSQL locally (Docker)
-- [ ] Install SQLAlchemy + Alembic
-- [ ] Create database models:
+- [x] Set up PostgreSQL locally (Docker)
+- [x] Install SQLAlchemy + Alembic
+- [x] Create database models:
   - `Tenant` - Business configurations (company_name, products, agent_role, etc.)
   - `Order` - Order records with items
   - `Customer` - Customer profiles
   - `Conversation` - Message history
   - `Product` - Product catalogs per tenant
-- [ ] Create repository layer (data access)
-- [ ] Migrate `storage/state.py` → database queries
-- [ ] Database migrations with Alembic
-- [ ] Test: Create order → restart server → order still exists
+- [x] Create repository layer (data access)
+- [x] Migrate `storage/state.py` → database queries
+- [x] Database migrations with Alembic
+- [x] Test: Create order → restart server → order still exists
 
-**Why first:** Can't run pilots without data persistence
+**Status:** ✅ Complete - Orders persist to PostgreSQL, view with `python scripts/view_orders.py`
 
 ---
 
