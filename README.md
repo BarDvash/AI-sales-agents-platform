@@ -14,19 +14,20 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 
 ## Current Status
 
-**Phase:** Building production foundation - Adding database persistence and multi-tenant support.
+**Phase:** Building production foundation - Database layer complete, ready for multi-tenant routing.
 
 **What works:**
 - ✅ Conversational AI sales agent (Valdman persona)
 - ✅ Tool calling framework (create orders, retrieve orders)
 - ✅ Modular codebase ready for multi-tenant scaling
 - ✅ Telegram integration
+- ✅ PostgreSQL database with full persistence
+- ✅ Database models (Tenant, Order, Customer, Conversation, Product, Message)
+- ✅ Repository layer for data access
+- ✅ Database migrations with Alembic
+- ✅ Product catalog with pricing (unit, currency support)
 
-**Current Work:** Path A - Multi-Tenant Foundation (Week 1: Database Layer)
-- 🔄 Setting up PostgreSQL + SQLAlchemy + Alembic
-- 🔄 Creating database models (Tenant, Order, Customer, Conversation, Product)
-- 🔄 Building repository layer for data access
-- 🔄 Migrating from in-memory storage to database
+**Current Work:** Testing order persistence and preparing for multi-tenant routing
 
 **Next:** Multi-tenant routing → Tenant management → WhatsApp integration → Cloud deployment
 
@@ -166,6 +167,7 @@ config/                 # Business configurations
 
 ### Prerequisites
 - Python 3.9+
+- Docker Desktop (for PostgreSQL)
 - Telegram Bot (create via [@BotFather](https://t.me/botfather))
 - Anthropic API key (from [console.anthropic.com](https://console.anthropic.com))
 
@@ -175,6 +177,8 @@ config/                 # Business configurations
 ```bash
 git clone <repo-url>
 cd AI-sales-agents-platform
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -184,16 +188,61 @@ cp .env.example .env
 # Edit .env and add:
 # BOT_TOKEN=your_telegram_bot_token
 # ANTHROPIC_API_KEY=your_anthropic_api_key
+# DATABASE_URL=postgresql://sales_agent_user:dev_password_change_in_production@localhost:5432/sales_agents_platform
 ```
 
-3. **Run the server:**
+3. **Set up the database:**
+```bash
+# Start PostgreSQL in Docker
+docker-compose up -d postgres
+
+# Run migrations to create tables
+alembic upgrade head
+
+# Seed database with Valdman tenant and products
+python scripts/seed_database.py
+```
+
+4. **Run the server:**
 ```bash
 uvicorn api.main:app --reload
 ```
 
-4. **Set up Telegram webhook (for production):**
+5. **Set up Telegram webhook:**
 ```bash
-curl -X POST "https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook?url=<YOUR_SERVER_URL>/webhooks/telegram"
+# In another terminal, expose your local server with ngrok
+ngrok http 8000
+
+# Set the webhook (replace NGROK_URL with your ngrok HTTPS URL)
+curl -X POST "https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook?url=<NGROK_URL>/webhooks/telegram"
+```
+
+### Database Management
+
+**View all orders in the database:**
+```bash
+python scripts/view_orders.py
+```
+
+**Access PostgreSQL directly:**
+```bash
+# Using psql command line
+docker exec -it ai-sales-agents-platform-postgres-1 psql -U sales_agent_user -d sales_agents_platform
+
+# Or use a GUI tool like:
+# - pgAdmin (https://www.pgadmin.org/)
+# - Postico (Mac)
+# - DBeaver (cross-platform)
+# Connection: localhost:5432, user: sales_agent_user, password: dev_password_change_in_production
+```
+
+**Reset database (careful - deletes all data):**
+```bash
+# Drop and recreate database
+docker-compose down -v
+docker-compose up -d postgres
+alembic upgrade head
+python scripts/seed_database.py
 ```
 
 ---

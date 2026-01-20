@@ -4,7 +4,8 @@ Create Order Tool
 Creates a new order for the customer with structured data.
 """
 
-import datetime
+from sqlalchemy.orm import Session
+from storage.repositories import OrderRepository, CustomerRepository
 
 # Tool definition for Claude API
 TOOL_DEF = {
@@ -53,50 +54,52 @@ TOOL_DEF = {
 }
 
 
-def create_order(chat_id: int, tool_input: dict, orders_db: dict, order_counter: dict) -> dict:
+def create_order(tenant_id: str, chat_id: str, tool_input: dict, db: Session) -> dict:
     """
-    Create and store a new order with structured data.
+    Create and store a new order in the database.
 
     Args:
-        chat_id: Telegram chat ID of the customer
+        tenant_id: Tenant ID (e.g., "valdman")
+        chat_id: Telegram/WhatsApp chat ID of the customer
         tool_input: Order data from the tool call
-        orders_db: The orders dictionary from main.py
-        order_counter: Dictionary with 'value' key for counter (passed by reference)
+        db: Database session
 
     Returns:
         dict: Created order object with order_id
     """
-    # Increment order counter
-    order_counter['value'] += 1
+    # Get or create customer
+    customer_repo = CustomerRepository(db)
+    customer = customer_repo.get_or_create_by_chat_id(tenant_id, chat_id)
 
-    order_id = f"ORD-{order_counter['value']:04d}"
-    order = {
-        "order_id": order_id,
-        "chat_id": chat_id,
-        "items": tool_input.get("items", []),
-        "total": tool_input.get("total", 0),
-        "delivery_notes": tool_input.get("delivery_notes", ""),
-        "timestamp": datetime.datetime.now().isoformat(),
-        "status": "pending"
-    }
+    # Generate order ID and create order
+    order_repo = OrderRepository(db)
+    order_id = order_repo.generate_order_id(tenant_id)
 
-    orders_db[order_id] = order
+    order = order_repo.create(
+        order_id=order_id,
+        tenant_id=tenant_id,
+        customer_id=customer.id,
+        items=tool_input.get("items", []),
+        total=tool_input.get("total", 0),
+        delivery_notes=tool_input.get("delivery_notes"),
+    )
 
     # Log order to console for visibility
     print(f"\n{'='*50}")
-    print(f"NEW ORDER CREATED: {order_id}")
-    print(f"Customer: {chat_id}")
-    print(f"Items: {len(order['items'])} items")
-    for item in order['items']:
+    print(f"NEW ORDER CREATED: {order.id}")
+    print(f"Customer: {customer.chat_id} (ID: {customer.id})")
+    print(f"Tenant: {tenant_id}")
+    print(f"Items: {len(order.items)} items")
+    for item in order.items:
         print(f"  - {item['quantity']} {item['product_name']} @ {item['unit_price']} NIS = {item['subtotal']} NIS")
-    print(f"Total: {order['total']} NIS")
-    if order['delivery_notes']:
-        print(f"Notes: {order['delivery_notes']}")
-    print(f"Time: {order['timestamp']}")
+    print(f"Total: {order.total} NIS")
+    if order.delivery_notes:
+        print(f"Notes: {order.delivery_notes}")
+    print(f"Status: {order.status}")
     print(f"{'='*50}\n")
 
     return {
         "success": True,
-        "order_id": order_id,
-        "message": f"Order {order_id} created successfully"
+        "order_id": order.id,
+        "message": f"Order {order.id} created successfully"
     }

@@ -1,29 +1,60 @@
 """
 Tenant configuration loader.
-Currently loads from config files, will load from database in future.
+Loads tenant configuration from database.
 """
-from config import valdman
+from sqlalchemy.orm import Session
+from storage.repositories import TenantRepository, ProductRepository
 
 
-def load_tenant_config(tenant_id: str = "valdman"):
+class TenantConfig:
+    """Dynamic tenant configuration loaded from database."""
+
+    def __init__(self, tenant_id: str, db: Session):
+        tenant_repo = TenantRepository(db)
+        product_repo = ProductRepository(db)
+
+        # Load tenant from database
+        tenant = tenant_repo.get_by_id(tenant_id)
+        if not tenant:
+            raise ValueError(f"Tenant '{tenant_id}' not found in database")
+
+        # Load products
+        products = product_repo.get_by_tenant(tenant_id, available_only=True)
+
+        # Set attributes (matches old valdman.py structure)
+        self.COMPANY_NAME = tenant.company_name
+        self.COMPANY_TYPE = tenant.company_type
+        self.BUSINESS_DESCRIPTION = tenant.business_description
+        self.AGENT_ROLE = tenant.agent_role
+        self.AGENT_INSTRUCTIONS = tenant.agent_instructions
+
+        # Convert products to old format for compatibility
+        self.PRODUCTS = [
+            {
+                "name": p.name,
+                "category": p.category,
+                "price": p.price,
+                "description": p.description,
+            }
+            for p in products
+        ]
+
+
+def load_tenant_config(tenant_id: str = "valdman", db: Session = None) -> TenantConfig:
     """
-    Load tenant configuration.
+    Load tenant configuration from database.
 
     Args:
-        tenant_id: Identifier for the tenant (currently hardcoded to valdman)
+        tenant_id: Identifier for the tenant (e.g., "valdman")
+        db: Database session
 
     Returns:
-        Tenant configuration module with COMPANY_NAME, PRODUCTS, etc.
+        TenantConfig object with tenant data
 
-    TODO: In Milestone 7, this will:
-    - Accept tenant_id from webhook URL
-    - Query database for tenant config
-    - Cache tenant config in Redis
-    - Return dynamic configuration
+    Raises:
+        ValueError: If tenant not found in database
     """
-    # Currently hardcoded - will be replaced with DB lookup
-    if tenant_id == "valdman":
-        return valdman
-    else:
-        # Default to valdman for now
-        return valdman
+    if db is None:
+        raise ValueError("Database session is required")
+
+    return TenantConfig(tenant_id, db)

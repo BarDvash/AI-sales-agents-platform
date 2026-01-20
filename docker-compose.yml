@@ -1,0 +1,37 @@
+# Docker Compose configuration for local development
+# Run PostgreSQL database in a container
+
+version: '3.8'
+
+services:
+  # PostgreSQL database
+  postgres:
+    image: postgres:15-alpine  # Lightweight PostgreSQL 15 image
+    container_name: ai_sales_agents_db
+    restart: unless-stopped
+
+    # Database credentials (match these in .env)
+    environment:
+      POSTGRES_USER: sales_agent_user
+      POSTGRES_PASSWORD: dev_password_change_in_production
+      POSTGRES_DB: sales_agents_platform
+
+    # Expose PostgreSQL port to your machine
+    ports:
+      - "5432:5432"  # localhost:5432 → container:5432
+
+    # Persist data even when container stops
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    # Health check to know when DB is ready
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sales_agent_user"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+# Named volume for data persistence
+volumes:
+  postgres_data:
+    driver: local

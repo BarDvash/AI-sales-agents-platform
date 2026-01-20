@@ -3,9 +3,11 @@ Agent orchestrator - main agent loop that coordinates message processing.
 """
 import os
 from anthropic import AsyncAnthropic
+from sqlalchemy.orm import Session
 from agent.prompt_builder import build_system_prompt
 from tenants.loader import load_tenant_config
-from storage.state import conversation_history, orders, order_counter
+from storage.database import get_db
+from storage.repositories import ConversationRepository
 from tools import TOOL_DEFINITIONS, execute_tool
 
 # Initialize Anthropic client
@@ -13,35 +15,45 @@ ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 anthropic_client = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
 
 
-async def process_message(user_message: str, chat_id: int) -> str:
+async def process_message(user_message: str, chat_id: str, tenant_id: str = "valdman") -> str:
     """
     Main agent loop: receive → load context → LLM call → tool execution → respond.
 
     Args:
         user_message: User's text message
-        chat_id: Unique identifier for the conversation
+        chat_id: Telegram/WhatsApp chat ID
+        tenant_id: Tenant identifier (e.g., "valdman")
 
     Returns:
         Agent's response message
     """
+    # Get database session
+    db_gen = get_db()
+    db = next(db_gen)
+
     try:
-        # Load tenant configuration (currently hardcoded, will be dynamic)
-        tenant_config = load_tenant_config()
+        # Load tenant configuration
+        tenant_config = load_tenant_config(tenant_id, db)
 
         # Build system prompt from tenant config
         system_prompt = build_system_prompt(tenant_config)
 
-        # Get or initialize conversation history
-        if chat_id not in conversation_history:
-            conversation_history[chat_id] = []
+        # Get or create conversation and customer
+        from storage.repositories import CustomerRepository
+        customer_repo = CustomerRepository(db)
+        customer = customer_repo.get_or_create_by_chat_id(tenant_id, str(chat_id))
 
-        history = conversation_history[chat_id]
+        conv_repo = ConversationRepository(db)
+        conversation = conv_repo.get_or_create_active_conversation(tenant_id, customer.id)
 
-        # Add user message to history
-        history.append({"role": "user", "content": user_message})
+        # Add user message to database
+        conv_repo.add_message(conversation.id, "user", user_message)
 
-        # Keep only last 5 messages
-        history = history[-5:]
+        # Get conversation history
+        history = conv_repo.get_conversation_history(customer.id)
+
+        # Keep only last 10 messages for context
+        history = history[-10:]
 
         print(f"Calling LLM with message: {user_message}")
         print(f"History length: {len(history)} messages")
@@ -67,9 +79,9 @@ async def process_message(user_message: str, chat_id: int) -> str:
             tool_result = execute_tool(
                 tool_name,
                 tool_input,
-                chat_id,
-                orders,
-                order_counter,
+                tenant_id,
+                str(chat_id),
+                db,
                 tenant_config
             )
 
@@ -78,7 +90,7 @@ async def process_message(user_message: str, chat_id: int) -> str:
             else:
                 print(f"Tool result: {tool_result}")
 
-            # Add tool use to history
+            # Add tool use to history (in memory for this request)
             history.append({"role": "assistant", "content": response.content})
 
             # Add tool result to history
@@ -104,11 +116,8 @@ async def process_message(user_message: str, chat_id: int) -> str:
         assistant_message = response.content[0].text
         print(f"LLM Response: {assistant_message}")
 
-        # Add response to history
-        history.append({"role": "assistant", "content": assistant_message})
-
-        # Save updated history (keep last 5 messages)
-        conversation_history[chat_id] = history[-5:]
+        # Save assistant message to database
+        conv_repo.add_message(conversation.id, "assistant", assistant_message)
 
         return assistant_message
 
@@ -117,3 +126,9 @@ async def process_message(user_message: str, chat_id: int) -> str:
         print(f"Agent Error: {e}")
         print(traceback.format_exc())
         return "Sorry, I encountered an error. Please try again."
+    finally:
+        # Close database session
+        try:
+            next(db_gen)
+        except StopIteration:
+            pass

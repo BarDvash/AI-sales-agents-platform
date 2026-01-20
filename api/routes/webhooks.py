@@ -5,7 +5,6 @@ import os
 import requests
 from fastapi import APIRouter, Request
 from agent.orchestrator import process_message
-from storage.state import conversation_history, orders, order_counter
 
 router = APIRouter(prefix="/webhooks", tags=["webhooks"])
 
@@ -27,7 +26,8 @@ async def telegram_webhook(request: Request):
 
     if chat_id and text:
         # Process message through agent orchestrator
-        reply = await process_message(text, chat_id)
+        # Convert chat_id to string for consistency with database
+        reply = await process_message(text, str(chat_id), tenant_id="valdman")
         send_telegram_message(chat_id, reply)
 
     return {"ok": True}
