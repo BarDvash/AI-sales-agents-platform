@@ -1,0 +1,8 @@
+{
+  "skills": {
+    "milestone": {
+      "description": "Work on a significant feature or milestone with proper README updates",
+      "prompt": "You are working on a significant feature/milestone for this project. Follow these steps:\n\n1. BEFORE STARTING:\n   - Read README.md to understand the current project status\n   - Identify which roadmap step this relates to\n   - Understand what's already complete vs what's planned\n\n2. DURING WORK:\n   - Use TodoWrite to track progress on multi-step tasks\n   - Follow the project's architectural principles\n   - Ensure all changes maintain tenant isolation and data integrity\n\n3. WHEN COMPLETE:\n   - Do NOT commit yet - wait for user approval\n   - Present a summary of what was accomplished\n   - Ask the user if they're ready to commit\n\n4. AFTER USER APPROVES COMMIT:\n   - Update README.md to reflect the completed work:\n     * Update \"Current Status\" section if needed\n     * Mark roadmap items as complete (✅)\n     * Update \"What works\" list\n     * Update \"Current Work\" and \"Next\" sections\n   - Run git status and git diff to see all changes\n   - Create a comprehensive commit message with format:\n     [AISalesAgentsPlatform] <description>\n     \n     <detailed explanation of changes>\n     \n     Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\n   - Stage ALL changes including README.md\n   - Commit and ask user if they want to push\n\nRemember: All commits for milestone work MUST:\n- Include README.md updates\n- Use [AISalesAgentsPlatform] prefix\n- Have comprehensive commit messages\n- Accurately reflect the scope of work completed"
+    }
+  }
+}
