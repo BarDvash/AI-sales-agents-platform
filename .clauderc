@@ -1,8 +1,0 @@
-{
-  "skills": {
-    "prepare": {
-      "description": "Prepare for significant work session",
-      "prompt": "You are preparing for a significant work session. Follow these steps:\n\n1. PREPARATION:\n   - Read README.md to understand current project status\n   - Note what's complete and what's next in the roadmap\n   - Be ready to discuss options with the user\n\n2. DURING DISCUSSION:\n   - Discuss what to work on with the user\n   - Ask clarifying questions as needed\n   - Only suggest priorities if the user asks for suggestions\n\n3. DURING IMPLEMENTATION:\n   - Use TodoWrite to track progress\n   - Follow project architectural principles\n   - Maintain tenant isolation and data integrity\n\n4. BEFORE COMMITTING:\n   - Wait for user approval\n   - Present summary of changes\n   - Ask if ready to commit\n\n5. WHEN COMMITTING:\n   - Update README.md to reflect completed work\n   - Use [AISalesAgentsPlatform] prefix\n   - Include comprehensive commit message with format:\n     [AISalesAgentsPlatform] <description>\n     \n     <detailed explanation of changes>\n     \n     Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\n   - Stage ALL changes including README.md\n   - Ask if user wants to push\n\nYou are now in 'prepare mode' - discuss with the user what to work on next."
-    }
-  }
-}
