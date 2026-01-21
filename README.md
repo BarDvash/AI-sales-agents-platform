@@ -33,7 +33,7 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 
 **Current Work:** Step 2 complete - Multi-tenant system operational with 2 tenants
 
-**Next:** Tenant management tools → WhatsApp integration → Cloud deployment
+**Next:** Intelligence Layer → Multi-Channel Expansion → Tenant Management → Production Layer
 
 ---
 
@@ -314,34 +314,41 @@ curl -X POST "https://api.telegram.org/bot<JOANNAS_BOT_TOKEN>/setWebhook?url=<NG
 **Foundation Layer**
 - [x] Database persistence (PostgreSQL) ✅ COMPLETE
 - [x] Multi-tenant webhook routing ✅ COMPLETE
-- [ ] Tenant management (CRUD, provisioning)
 
-**Intelligence Layer**
+**Intelligence Layer** ⬅️ **CURRENT PRIORITY**
 - [ ] Conversation summarization (extended memory)
 - [ ] Customer profile tracking
 - [ ] Additional tools (search, cancel, update orders)
 
-**Scale Layer**
-- [ ] Multi-channel support (WhatsApp, SMS, Web)
-- [ ] Admin dashboard
-- [ ] Manager/customer role separation
+**Multi-Channel Expansion**
+- [ ] Channel abstraction layer
+- [ ] WhatsApp integration
+- [ ] Unified Message model
+
+**Tenant Management**
+- [ ] CLI script to add new tenant
+- [ ] Configure products, agent persona, bot token
+- [ ] Webhook registration automation
+- [ ] Simple admin endpoint (list tenants, view orders)
 
 **Production Layer**
 - [ ] E-commerce integrations (Shopify, WooCommerce)
 - [ ] Payment processing (Stripe, PayPal)
 - [ ] Real-time inventory sync
 - [ ] CRM integrations
+- [ ] Admin dashboard
+- [ ] Manager/customer role separation
 
 ---
 
 ## Next Steps - Choose Your Path
 
-**Current State:** Single-tenant MVP with working tool framework and clean architecture.
+**Current State:** Multi-tenant platform with 2 operational tenants and complete data isolation.
 
-### Path A: Multi-Tenant Foundation 🏗️ ⬅️ **CURRENT PRIORITY**
-*Building production-ready multi-tenant capability*
+### Path A: Intelligence Layer 🧠 ⬅️ **CURRENT PRIORITY**
+*Improving agent memory and capabilities*
 
-**Status:** Steps 1-2 Complete ✅ - Ready for Step 3 (Tenant Management)
+**Status:** Steps 1-2 Complete ✅ - Ready for Step 3 (Intelligence Layer)
 
 #### Step 1: Database Layer ✅ COMPLETE
 **Goal:** Replace in-memory storage with PostgreSQL
@@ -378,7 +385,32 @@ curl -X POST "https://api.telegram.org/bot<JOANNAS_BOT_TOKEN>/setWebhook?url=<NG
 
 ---
 
-#### Step 3: Tenant Management (1 day)
+#### Step 3: Intelligence Layer
+**Goal:** Improve agent memory and add more capabilities
+
+**Tasks:**
+- [ ] Conversation summarization for extended memory
+- [ ] Customer profile tracking across sessions
+- [ ] Additional tools: search_products, cancel_order, update_order
+
+**Why third:** Better user experience and more helpful agents
+
+---
+
+#### Step 4: Multi-Channel Expansion
+**Goal:** Support multiple messaging platforms
+
+**Tasks:**
+- [ ] Create channel abstraction layer
+- [ ] Implement WhatsApp integration
+- [ ] Unified Message model
+- [ ] Test same agent on both channels
+
+**Why fourth:** Reach customers on their preferred platforms
+
+---
+
+#### Step 5: Tenant Management
 **Goal:** Easy way to add/configure new businesses
 
 **Tasks:**
@@ -387,65 +419,27 @@ curl -X POST "https://api.telegram.org/bot<JOANNAS_BOT_TOKEN>/setWebhook?url=<NG
 - [ ] Webhook registration automation
 - [ ] Simple admin endpoint (list tenants, view orders)
 
-**Why third:** Can onboard pilots without writing code
+**Why fifth:** Can onboard pilots without writing code
 
 ---
 
-**Total Timeline:** ~1 week
-**Outcome:** Platform ready for 10+ businesses, data persists, can onboard pilots
+#### Step 6: Production Layer
+**Goal:** Production-ready features for real businesses
+
+**Tasks:**
+- [ ] E-commerce integrations (Shopify, WooCommerce)
+- [ ] Payment processing (Stripe, PayPal)
+- [ ] Real-time inventory sync
+- [ ] CRM integrations
+- [ ] Admin dashboard
+- [ ] Manager/customer role separation
+
+**Why sixth:** Revenue-generating features for real deployments
 
 ---
 
-### Path B: Better Agent Intelligence 🧠
-*Priority if improving conversation quality*
-
-1. **Conversation Summarization** (2 days)
-   - Compress long conversations → summaries
-   - Extend memory beyond 5 messages
-   - Better context retention
-
-2. **Customer Profile Memory** (2 days)
-   - Track preferences across sessions
-   - Remember past orders
-   - Personalized recommendations
-
-3. **Additional Tools** (1-2 days each)
-   - Add `search_products` (tested incrementally)
-   - Add `cancel_order`
-   - Add `update_order`
-
-**Outcome:** Smarter, more helpful agents with better memory.
-
----
-
-### Path C: Multi-Channel Expansion 📱
-*Priority if reaching customers on their preferred platforms*
-
-1. **Channel Abstraction** (2 days)
-   - Create `channels/` directory
-   - Abstract channel interface
-   - Refactor Telegram to adapter pattern
-   - Unified Message model
-
-2. **WhatsApp Integration** (3 days)
-   - WhatsApp Business API setup
-   - Channel adapter implementation
-   - Webhook: `/webhooks/whatsapp/{tenant_id}`
-   - Test same agent on both channels
-
-**Outcome:** Reach customers on Telegram, WhatsApp, and beyond.
-
----
-
-## Recommended Next: Path A (Multi-Tenant)
-
-**Why:**
-- Unlocks business model (multiple paying customers)
-- Architecture already prepared for it
-- Other improvements can happen in parallel per tenant
-- Foundation for scaling to hundreds of tenants
-
-**Timeline:** ~1 week for basic multi-tenant capability
+**Total Timeline:** ~4-6 weeks
+**Outcome:** Production-ready SaaS platform with intelligent agents across multiple channels
 
 ---
 
