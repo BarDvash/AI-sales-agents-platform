@@ -14,7 +14,7 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 
 ## Current Status
 
-**Phase:** Building production foundation - Database layer complete, ready for multi-tenant routing.
+**Phase:** Multi-tenant foundation complete - Ready for tenant management tools.
 
 **What works:**
 - ✅ Conversational AI sales agent (Valdman persona)
@@ -26,10 +26,14 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 - ✅ Repository layer for data access
 - ✅ Database migrations with Alembic
 - ✅ Product catalog with pricing (unit, currency support)
+- ✅ Multi-tenant webhook routing (/webhooks/telegram/{tenant_id})
+- ✅ Two operational tenants (Valdman, Joanna's Bakery)
+- ✅ Tenant-specific bot tokens and configurations
+- ✅ Complete tenant data isolation
 
-**Current Work:** Testing order persistence and preparing for multi-tenant routing
+**Current Work:** Step 2 complete - Multi-tenant system operational with 2 tenants
 
-**Next:** Multi-tenant routing → Tenant management → WhatsApp integration → Cloud deployment
+**Next:** Tenant management tools → WhatsApp integration → Cloud deployment
 
 ---
 
@@ -81,7 +85,7 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 api/                    # HTTP layer
 ├── main.py            # FastAPI app initialization, health check
 └── routes/
-    └── webhooks.py    # Webhook endpoint: POST /webhooks/telegram
+    └── webhooks.py    # Webhook endpoint: POST /webhooks/telegram/{tenant_id}
 
 agent/                  # AI orchestration
 ├── orchestrator.py    # Main agent loop (LLM calls, tool execution)
@@ -151,8 +155,6 @@ config/                 # Business configurations
 - ✅ Error handling and logging
 
 ### Planned Features
-- 🔄 Database persistence (PostgreSQL)
-- 🔄 Multi-tenant webhook routing
 - 🔄 Conversation summarization (extended memory)
 - 🔄 Customer profile tracking
 - 🔄 WhatsApp integration
@@ -187,7 +189,8 @@ pip install -r requirements.txt
 ```bash
 cp .env.example .env
 # Edit .env and add:
-# BOT_TOKEN=your_telegram_bot_token
+# VALDMAN_BOT_TOKEN=your_valdman_bot_token
+# JOANNAS_BOT_TOKEN=your_joannas_bot_token
 # ANTHROPIC_API_KEY=your_anthropic_api_key
 # DATABASE_URL=postgresql://sales_agent_user:dev_password_change_in_production@localhost:5432/sales_agents_platform
 ```
@@ -209,13 +212,17 @@ python scripts/seed_database.py
 uvicorn api.main:app --reload
 ```
 
-5. **Set up Telegram webhook:**
+5. **Set up Telegram webhooks:**
 ```bash
 # In another terminal, expose your local server with ngrok
 ngrok http 8000
 
-# Set the webhook (replace NGROK_URL with your ngrok HTTPS URL)
-curl -X POST "https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook?url=<NGROK_URL>/webhooks/telegram"
+# Set the webhooks (replace NGROK_URL with your ngrok HTTPS URL)
+# For Valdman
+curl -X POST "https://api.telegram.org/bot<VALDMAN_BOT_TOKEN>/setWebhook?url=<NGROK_URL>/webhooks/telegram/valdman"
+
+# For Joanna's Bakery
+curl -X POST "https://api.telegram.org/bot<JOANNAS_BOT_TOKEN>/setWebhook?url=<NGROK_URL>/webhooks/telegram/joannas_bakery"
 ```
 
 ### Database Management
@@ -283,7 +290,11 @@ ngrok http 8000
 
 **Terminal 3: Set webhook**
 ```bash
-curl -X POST "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=<NGROK_URL>/webhooks/telegram"
+# For Valdman tenant
+curl -X POST "https://api.telegram.org/bot<VALDMAN_BOT_TOKEN>/setWebhook?url=<NGROK_URL>/webhooks/telegram/valdman"
+
+# For Joanna's Bakery tenant
+curl -X POST "https://api.telegram.org/bot<JOANNAS_BOT_TOKEN>/setWebhook?url=<NGROK_URL>/webhooks/telegram/joannas_bakery"
 ```
 
 **Test conversation flow:**
@@ -302,7 +313,7 @@ curl -X POST "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=<NGROK_URL>
 
 **Foundation Layer**
 - [x] Database persistence (PostgreSQL) ✅ COMPLETE
-- [ ] Multi-tenant webhook routing
+- [x] Multi-tenant webhook routing ✅ COMPLETE
 - [ ] Tenant management (CRUD, provisioning)
 
 **Intelligence Layer**
@@ -330,7 +341,7 @@ curl -X POST "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=<NGROK_URL>
 ### Path A: Multi-Tenant Foundation 🏗️ ⬅️ **CURRENT PRIORITY**
 *Building production-ready multi-tenant capability*
 
-**Status:** Step 1 Complete ✅ - Ready for Step 2 (Multi-Tenant Routing)
+**Status:** Steps 1-2 Complete ✅ - Ready for Step 3 (Tenant Management)
 
 #### Step 1: Database Layer ✅ COMPLETE
 **Goal:** Replace in-memory storage with PostgreSQL
@@ -353,17 +364,17 @@ curl -X POST "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=<NGROK_URL>
 
 ---
 
-#### Step 2: Multi-Tenant Routing (1-2 days)
+#### Step 2: Multi-Tenant Routing ✅ COMPLETE
 **Goal:** Support multiple businesses simultaneously
 
 **Tasks:**
-- [ ] Change webhook route: `/webhooks/telegram` → `/webhooks/telegram/{tenant_id}`
-- [ ] Extract tenant_id from URL
-- [ ] Load tenant config from database (not hardcoded)
-- [ ] Tenant isolation (each tenant sees only their data)
-- [ ] Test with 2 tenants (Valdman + Joanna's Bakery)
+- [x] Change webhook route: `/webhooks/telegram` → `/webhooks/telegram/{tenant_id}`
+- [x] Extract tenant_id from URL
+- [x] Load tenant config from database (not hardcoded)
+- [x] Tenant isolation (each tenant sees only their data)
+- [x] Test with 2 tenants (Valdman + Joanna's Bakery)
 
-**Why second:** Foundation for serving 10+ businesses
+**Status:** ✅ Complete - Two tenants operational with complete data isolation
 
 ---
 
