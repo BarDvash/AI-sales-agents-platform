@@ -30,8 +30,9 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 - ✅ Two operational tenants (Valdman, Joanna's Bakery)
 - ✅ Tenant-specific bot tokens and configurations
 - ✅ Complete tenant data isolation
+- ✅ Conversation summarization for extended memory (30 msg context + rolling summary)
 
-**Current Work:** Step 2 complete - Multi-tenant system operational with 2 tenants
+**Current Work:** Step 3 in progress - Intelligence Layer (conversation summarization complete)
 
 **Next:** Intelligence Layer → Multi-Channel Expansion → Tenant Management → Production Layer
 
@@ -316,7 +317,7 @@ curl -X POST "https://api.telegram.org/bot<JOANNAS_BOT_TOKEN>/setWebhook?url=<NG
 - [x] Multi-tenant webhook routing ✅ COMPLETE
 
 **Intelligence Layer** ⬅️ **CURRENT PRIORITY**
-- [ ] Conversation summarization (extended memory)
+- [x] Conversation summarization (extended memory) ✅ COMPLETE
 - [ ] Customer profile tracking
 - [ ] Additional tools (search, cancel, update orders)
 
@@ -385,15 +386,17 @@ curl -X POST "https://api.telegram.org/bot<JOANNAS_BOT_TOKEN>/setWebhook?url=<NG
 
 ---
 
-#### Step 3: Intelligence Layer
+#### Step 3: Intelligence Layer (IN PROGRESS)
 **Goal:** Improve agent memory and add more capabilities
 
 **Tasks:**
-- [ ] Conversation summarization for extended memory
+- [x] Conversation summarization for extended memory ✅ COMPLETE
 - [ ] Customer profile tracking across sessions
 - [ ] Additional tools: search_products, cancel_order, update_order
 
 **Why third:** Better user experience and more helpful agents
+
+**Completed:** Conversation summarization - agent now keeps 30 messages in context and summarizes every 15 messages into a rolling summary for extended memory.
 
 ---
 
