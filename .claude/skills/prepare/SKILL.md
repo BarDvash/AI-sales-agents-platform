@@ -28,7 +28,10 @@ description: Prepare for significant work session
    - Ask if ready to commit
 
 5. **WHEN COMMITTING:**
-   - Update README.md to reflect completed work
+   - **CRITICAL: Update README.md FIRST before committing** - this is mandatory
+     - Update "What works" section if new features added
+     - Update roadmap checkboxes for completed tasks
+     - Update "Current Work" status line
    - Use [AISalesAgentsPlatform] prefix
    - Include comprehensive commit message with format:
      ```
@@ -36,9 +39,9 @@ description: Prepare for significant work session
 
      <detailed explanation of changes>
 
-     Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
+     Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
      ```
-   - Stage ALL changes including README.md
+   - Stage ALL changes including README.md in ONE commit (not separate)
    - Ask if user wants to push
 
 ---
