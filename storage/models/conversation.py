@@ -21,6 +21,8 @@ class Conversation(Base):
     # Conversation metadata
     status = Column(String, default="active")  # active, resolved, escalated
     summary = Column(Text, nullable=True)  # AI-generated summary (for long conversations)
+    total_message_count = Column(Integer, default=0)  # Total messages ever in this conversation
+    last_summary_at = Column(Integer, nullable=True)  # Message count when we last summarized
 
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())

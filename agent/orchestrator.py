@@ -5,6 +5,12 @@ import os
 from anthropic import AsyncAnthropic
 from sqlalchemy.orm import Session
 from agent.prompt_builder import build_system_prompt
+from agent.summarizer import (
+    generate_conversation_summary,
+    should_summarize,
+    get_messages_to_summarize,
+    MEMORY_SIZE
+)
 from tenants.loader import load_tenant_config
 from storage.database import get_db
 from storage.repositories import ConversationRepository
@@ -35,9 +41,6 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         # Load tenant configuration
         tenant_config = load_tenant_config(tenant_id, db)
 
-        # Build system prompt from tenant config
-        system_prompt = build_system_prompt(tenant_config)
-
         # Get or create conversation and customer
         from storage.repositories import CustomerRepository
         customer_repo = CustomerRepository(db)
@@ -49,14 +52,37 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         # Add user message to database
         conv_repo.add_message(conversation.id, "user", user_message)
 
-        # Get conversation history
+        # Get conversation state for summarization
+        existing_summary, last_summary_at, total_msgs = conv_repo.get_conversation_state(conversation.id)
+
+        # Check if we need to generate/update summary for extended memory
+        if should_summarize(total_msgs, last_summary_at):
+            print(f"Generating conversation summary (total msgs: {total_msgs}, last summary at: {last_summary_at})")
+            # Get recent messages from memory to summarize
+            history = conv_repo.get_conversation_history(customer.id)
+            history = history[-MEMORY_SIZE:]  # Limit to memory size
+            messages_to_summarize = get_messages_to_summarize(history)
+            if messages_to_summarize:
+                new_summary = await generate_conversation_summary(
+                    messages_to_summarize,
+                    existing_summary
+                )
+                # Record when we summarized
+                conv_repo.update_summary(conversation.id, new_summary, total_msgs)
+                existing_summary = new_summary
+                print(f"Summary updated at message {total_msgs}: {new_summary[:100]}...")
+
+        # Get conversation history for LLM context
         history = conv_repo.get_conversation_history(customer.id)
 
-        # Keep only last 10 messages for context
-        history = history[-10:]
+        # Keep only recent messages for context (older ones are in summary)
+        history = history[-MEMORY_SIZE:]
+
+        # Build system prompt with summary for extended memory
+        system_prompt = build_system_prompt(tenant_config, existing_summary)
 
         print(f"Calling LLM with message: {user_message}")
-        print(f"History length: {len(history)} messages")
+        print(f"History length: {len(history)} messages, has_summary: {existing_summary is not None}")
 
         # Call LLM with system prompt, history, and available tools
         response = await anthropic_client.messages.create(

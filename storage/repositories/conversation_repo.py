@@ -1,7 +1,7 @@
 """
 Conversation Repository - manages conversation and message history.
 """
-from typing import Optional, List
+from typing import Optional, List, Tuple
 from sqlalchemy.orm import Session
 from storage.models.conversation import Conversation, Message
 
@@ -75,9 +75,14 @@ class ConversationRepository:
         self, conversation_id: int, role: str, content: str
     ) -> Message:
         """
-        Add message to conversation.
+        Add message to conversation and increment total_message_count.
         Role: 'user' or 'assistant'
         """
+        # Increment total message count
+        conversation = self.get_conversation_by_id(conversation_id)
+        if conversation:
+            conversation.total_message_count = (conversation.total_message_count or 0) + 1
+
         message = Message(
             conversation_id=conversation_id,
             role=role,
@@ -127,3 +132,29 @@ class ConversationRepository:
 
         messages = self.get_messages(conversation.id)
         return [{"role": msg.role, "content": msg.content} for msg in messages]
+
+    def update_summary(
+        self, conversation_id: int, summary: str, summarized_at: int
+    ) -> Optional[Conversation]:
+        """Update the conversation summary and record when we summarized."""
+        conversation = self.get_conversation_by_id(conversation_id)
+        if conversation:
+            conversation.summary = summary
+            conversation.last_summary_at = summarized_at
+            self.db.commit()
+            self.db.refresh(conversation)
+        return conversation
+
+    def get_conversation_state(self, conversation_id: int) -> Tuple[Optional[str], Optional[int], int]:
+        """
+        Get conversation state for summarization logic.
+        Returns: (summary, last_summary_at, total_message_count)
+        """
+        conversation = self.get_conversation_by_id(conversation_id)
+        if conversation:
+            return (
+                conversation.summary,
+                conversation.last_summary_at,
+                conversation.total_message_count or 0
+            )
+        return None, None, 0

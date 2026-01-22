@@ -1,14 +1,16 @@
 """
 System prompt builder - constructs dynamic prompts from tenant configuration.
 """
+from typing import Optional
 
 
-def build_system_prompt(tenant_config):
+def build_system_prompt(tenant_config, conversation_summary: Optional[str] = None):
     """
     Build a system prompt from tenant configuration.
 
     Args:
         tenant_config: Tenant configuration with COMPANY_NAME, PRODUCTS, AGENT_ROLE, etc.
+        conversation_summary: Optional summary of earlier conversation for extended memory.
 
     Returns:
         str: Formatted system prompt for the LLM
@@ -46,5 +48,14 @@ Available Tools:
 - create_order: Create a new order with structured data (items, quantities, prices, total)
 
 Important: Always use the create_order tool to finalize orders. Be friendly and helpful!"""
+
+    # Add conversation summary if available (for extended memory)
+    if conversation_summary:
+        prompt += f"""
+
+Conversation Context (summary of earlier messages):
+{conversation_summary}
+
+Use this context to maintain continuity. The customer may reference things discussed earlier."""
 
     return prompt
