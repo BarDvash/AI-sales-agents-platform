@@ -45,17 +45,29 @@ class CustomerRepository:
         name: Optional[str] = None,
         phone: Optional[str] = None,
         email: Optional[str] = None,
+        address: Optional[str] = None,
+        language: Optional[str] = None,
         preferences: Optional[str] = None,
+        notes: Optional[str] = None,
     ) -> Customer:
-        """Update customer profile information."""
+        """
+        Update customer profile information.
+        Only updates fields that are provided (not None).
+        """
         if name is not None:
             customer.name = name
         if phone is not None:
             customer.phone = phone
         if email is not None:
             customer.email = email
+        if address is not None:
+            customer.address = address
+        if language is not None:
+            customer.language = language
         if preferences is not None:
             customer.preferences = preferences
+        if notes is not None:
+            customer.notes = notes
 
         self.db.commit()
         self.db.refresh(customer)

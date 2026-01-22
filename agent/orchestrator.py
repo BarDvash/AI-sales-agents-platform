@@ -11,9 +11,11 @@ from agent.summarizer import (
     get_messages_to_summarize,
     MEMORY_SIZE
 )
+from agent.profile_extractor import extract_profile_from_message, merge_profile_notes
+from agent.profile_context import build_customer_context, get_customer_profile_dict
 from tenants.loader import load_tenant_config
 from storage.database import get_db
-from storage.repositories import ConversationRepository
+from storage.repositories import ConversationRepository, OrderRepository, CustomerRepository
 from tools import TOOL_DEFINITIONS, execute_tool
 
 # Initialize Anthropic client
@@ -42,7 +44,6 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         tenant_config = load_tenant_config(tenant_id, db)
 
         # Get or create conversation and customer
-        from storage.repositories import CustomerRepository
         customer_repo = CustomerRepository(db)
         customer = customer_repo.get_or_create_by_chat_id(tenant_id, str(chat_id))
 
@@ -78,8 +79,13 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         # Keep only recent messages for context (older ones are in summary)
         history = history[-MEMORY_SIZE:]
 
-        # Build system prompt with summary for extended memory
-        system_prompt = build_system_prompt(tenant_config, existing_summary)
+        # Build customer context (profile + order history)
+        order_repo = OrderRepository(db)
+        customer_orders = order_repo.get_by_customer(customer.id)
+        customer_context = build_customer_context(customer, customer_orders)
+
+        # Build system prompt with customer context and summary for extended memory
+        system_prompt = build_system_prompt(tenant_config, existing_summary, customer_context)
 
         print(f"Calling LLM with message: {user_message}")
         print(f"History length: {len(history)} messages, has_summary: {existing_summary is not None}")
@@ -145,6 +151,15 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         # Save assistant message to database
         conv_repo.add_message(conversation.id, "assistant", assistant_message)
 
+        # Extract and save customer profile information (runs in background conceptually)
+        await _extract_and_save_profile(
+            user_message,
+            assistant_message,
+            customer,
+            customer_repo,
+            db
+        )
+
         return assistant_message
 
     except Exception as e:
@@ -158,3 +173,45 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
             next(db_gen)
         except StopIteration:
             pass
+
+
+async def _extract_and_save_profile(
+    user_message: str,
+    assistant_message: str,
+    customer,
+    customer_repo,
+    db
+) -> None:
+    """
+    Extract profile information from conversation and save to database.
+    Runs after each message exchange to capture customer details.
+    """
+    try:
+        existing_profile = get_customer_profile_dict(customer)
+        extracted = await extract_profile_from_message(
+            user_message,
+            assistant_message,
+            existing_profile
+        )
+
+        if extracted:
+            print(f"Profile extracted: {extracted.to_dict()}")
+
+            # Merge notes if both exist
+            merged_notes = merge_profile_notes(customer.notes, extracted.notes)
+
+            # Update profile with new information
+            customer_repo.update_profile(
+                customer,
+                name=extracted.name or customer.name,
+                phone=extracted.phone or customer.phone,
+                email=extracted.email or customer.email,
+                address=extracted.address or customer.address,
+                language=extracted.language or customer.language,
+                notes=merged_notes if merged_notes != customer.notes else None,
+            )
+            print(f"Customer profile updated for {customer.chat_id}")
+
+    except Exception as e:
+        # Profile extraction is non-critical, don't fail the message
+        print(f"Profile extraction warning: {e}")

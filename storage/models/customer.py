@@ -27,7 +27,10 @@ class Customer(Base):
     name = Column(String, nullable=True)
     phone = Column(String, nullable=True)
     email = Column(String, nullable=True)
+    address = Column(String, nullable=True)  # Delivery address
+    language = Column(String, nullable=True)  # Preferred language (auto-detected)
     preferences = Column(Text, nullable=True)  # JSON string of preferences
+    notes = Column(Text, nullable=True)  # General notes (allergies, special requests, etc.)
 
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())

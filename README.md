@@ -31,10 +31,11 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 - ✅ Tenant-specific bot tokens and configurations
 - ✅ Complete tenant data isolation
 - ✅ Conversation summarization for extended memory (30 msg context + rolling summary)
+- ✅ Customer profile tracking (auto-extracts name, address, language, notes from conversations)
 
-**Current Work:** Step 3 in progress - Intelligence Layer (conversation summarization complete)
+**Current Work:** Step 3 in progress - Intelligence Layer (customer profile tracking complete)
 
-**Next:** Intelligence Layer → Multi-Channel Expansion → Tenant Management → Production Layer
+**Next:** Additional tools (search, cancel, update) → Multi-Channel Expansion → Tenant Management → Production Layer
 
 ---
 
@@ -90,7 +91,10 @@ api/                    # HTTP layer
 
 agent/                  # AI orchestration
 ├── orchestrator.py    # Main agent loop (LLM calls, tool execution)
-└── prompt_builder.py  # Dynamic prompt construction from tenant config
+├── prompt_builder.py  # Dynamic prompt construction from tenant config
+├── summarizer.py      # Conversation summarization for extended memory
+├── profile_extractor.py  # Auto-extract customer info from conversations
+└── profile_context.py    # Build customer profile context for prompts
 
 tools/                  # Agent capabilities (function calling)
 ├── __init__.py        # Tool registry and dispatcher
@@ -156,8 +160,6 @@ config/                 # Business configurations
 - ✅ Error handling and logging
 
 ### Planned Features
-- 🔄 Conversation summarization (extended memory)
-- 🔄 Customer profile tracking
 - 🔄 WhatsApp integration
 - 🔄 Admin dashboard
 - 🔄 Payment processing
@@ -318,7 +320,7 @@ curl -X POST "https://api.telegram.org/bot<JOANNAS_BOT_TOKEN>/setWebhook?url=<NG
 
 **Intelligence Layer** ⬅️ **CURRENT PRIORITY**
 - [x] Conversation summarization (extended memory) ✅ COMPLETE
-- [ ] Customer profile tracking
+- [x] Customer profile tracking ✅ COMPLETE
 - [ ] Additional tools (search, cancel, update orders)
 
 **Multi-Channel Expansion**
@@ -391,12 +393,14 @@ curl -X POST "https://api.telegram.org/bot<JOANNAS_BOT_TOKEN>/setWebhook?url=<NG
 
 **Tasks:**
 - [x] Conversation summarization for extended memory ✅ COMPLETE
-- [ ] Customer profile tracking across sessions
+- [x] Customer profile tracking across sessions ✅ COMPLETE
 - [ ] Additional tools: search_products, cancel_order, update_order
 
 **Why third:** Better user experience and more helpful agents
 
-**Completed:** Conversation summarization - agent now keeps 30 messages in context and summarizes every 15 messages into a rolling summary for extended memory.
+**Completed:**
+- Conversation summarization - agent now keeps 30 messages in context and summarizes every 15 messages into a rolling summary for extended memory.
+- Customer profile tracking - agent auto-extracts customer info (name, address, language, notes) from conversations and persists across sessions. Profile + order history injected into system prompt.
 
 ---
 
