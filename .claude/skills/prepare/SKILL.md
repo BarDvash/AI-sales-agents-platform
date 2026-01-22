@@ -29,9 +29,6 @@ description: Prepare for significant work session
 
 5. **WHEN COMMITTING:**
    - **CRITICAL: Update README.md FIRST before committing** - this is mandatory
-     - Update "What works" section if new features added
-     - Update roadmap checkboxes for completed tasks
-     - Update "Current Work" status line
    - Use [AISalesAgentsPlatform] prefix
    - Include comprehensive commit message with format:
      ```
