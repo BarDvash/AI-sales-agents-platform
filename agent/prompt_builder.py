@@ -1,13 +1,14 @@
 """
 System prompt builder - constructs dynamic prompts from tenant configuration.
 """
-from typing import Optional
+from typing import Optional, List
 
 
 def build_system_prompt(
     tenant_config,
     conversation_summary: Optional[str] = None,
-    customer_context: Optional[str] = None
+    customer_context: Optional[str] = None,
+    tool_definitions: Optional[List[dict]] = None
 ):
     """
     Build a system prompt from tenant configuration.
@@ -37,7 +38,7 @@ About {tenant_config.COMPANY_NAME}:
             if not product.get('available', True):
                 prompt += "\n  (Currently unavailable)"
 
-    # Add tool usage and order-taking instructions
+    # Add tool usage and order workflow instructions
     prompt += """
 
 Order Taking Process:
@@ -48,11 +49,21 @@ When a customer wants to place an order:
 4. Once the customer confirms everything, use the create_order tool to finalize the order
 5. Provide the order ID to the customer after the order is created
 
-Available Tools:
-- get_customer_orders: Retrieve a customer's previous orders when they ask about them
-- create_order: Create a new order with structured data (items, quantities, prices, total)
+Order Cancellation:
+When a customer wants to cancel an order:
+1. If they don't specify which order, use get_customer_orders to find their pending orders and ask which one
+2. Once you know the order_id, call the cancel_order tool IMMEDIATELY - the tool handles validation
+3. Only pending orders can be cancelled - the tool will return an error if the order can't be cancelled"""
 
-Important: Always use the create_order tool to finalize orders. Be friendly and helpful!"""
+    # Auto-generate Available Tools from TOOL_DEFINITIONS
+    if tool_definitions:
+        prompt += "\n\nAvailable Tools:"
+        for tool_def in tool_definitions:
+            prompt += f"\n- {tool_def['name']}: {tool_def['description']}"
+
+    prompt += """
+
+CRITICAL RULE: You MUST call the appropriate tool to perform any action. You are FORBIDDEN from telling the customer that an order was created, cancelled, or modified unless you have actually called the corresponding tool and received a success response. If you do not call the tool, the action did NOT happen. Be friendly and helpful!"""
 
     # Add customer profile context if available
     if customer_context:

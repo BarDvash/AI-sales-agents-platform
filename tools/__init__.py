@@ -8,12 +8,15 @@ from .orders import (
     CREATE_ORDER_DEF,
     get_customer_orders,
     GET_CUSTOMER_ORDERS_DEF,
+    cancel_order,
+    CANCEL_ORDER_DEF,
 )
 
 # Collect all tool definitions for Claude API
 TOOL_DEFINITIONS = [
     GET_CUSTOMER_ORDERS_DEF,
     CREATE_ORDER_DEF,
+    CANCEL_ORDER_DEF,
 ]
 
 
@@ -37,6 +40,9 @@ def execute_tool(tool_name: str, tool_input: dict, tenant_id: str, chat_id: str,
 
     elif tool_name == "create_order":
         return create_order(tenant_id, chat_id, tool_input, db)
+
+    elif tool_name == "cancel_order":
+        return cancel_order(tenant_id, chat_id, tool_input, db)
 
     else:
         return {"error": f"Unknown tool: {tool_name}"}

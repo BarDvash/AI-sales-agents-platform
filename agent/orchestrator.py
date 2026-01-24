@@ -69,13 +69,13 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         customer_context = build_customer_context(customer, customer_orders)
 
         # Build system prompt with customer context and summary for extended memory
-        system_prompt = build_system_prompt(tenant_config, existing_summary, customer_context)
+        system_prompt = build_system_prompt(tenant_config, existing_summary, customer_context, TOOL_DEFINITIONS)
 
         print(f"[Live][Request] tenant={tenant_id} chat={chat_id} | msg: {user_message[:80]} | total_msgs={total_msgs} | history={len(history)} msgs | summary={'yes' if existing_summary else 'no'}")
 
         # Call LLM with system prompt, history, and available tools
         response = await anthropic_client.messages.create(
-            model="claude-3-haiku-20240307",
+            model="claude-sonnet-4-20250514",
             max_tokens=1024,
             system=system_prompt,
             messages=history,
@@ -126,7 +126,7 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
 
             # Call LLM again with tool result
             response = await anthropic_client.messages.create(
-                model="claude-3-haiku-20240307",
+                model="claude-sonnet-4-20250514",
                 max_tokens=1024,
                 system=system_prompt,
                 messages=history,

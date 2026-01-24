@@ -18,7 +18,7 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 
 **What works:**
 - ✅ Conversational AI sales agent (Valdman persona)
-- ✅ Tool calling framework (create orders, retrieve orders)
+- ✅ Tool calling framework (create orders, retrieve orders, cancel orders)
 - ✅ Modular codebase ready for multi-tenant scaling
 - ✅ Telegram integration
 - ✅ PostgreSQL database with full persistence
@@ -33,9 +33,9 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 - ✅ Conversation summarization for extended memory (30 msg context + rolling summary)
 - ✅ Customer profile tracking (auto-extracts name, address, language, notes from conversations)
 
-**Current Work:** Step 3 in progress - Intelligence Layer (customer profile tracking complete)
+**Current Work:** Step 3 in progress - Intelligence Layer (cancel_order tool complete)
 
-**Next:** Additional tools (search, cancel, update) → Multi-Channel Expansion → Tenant Management → Production Layer
+**Next:** Additional tools (search, update) → Multi-Channel Expansion → Tenant Management → Production Layer
 
 ---
 
@@ -100,7 +100,8 @@ tools/                  # Agent capabilities (function calling)
 ├── __init__.py        # Tool registry and dispatcher
 └── orders/
     ├── create_order.py         # Create structured orders
-    └── get_customer_orders.py  # Retrieve customer orders
+    ├── get_customer_orders.py  # Retrieve customer orders
+    └── cancel_order.py         # Cancel pending orders
 
 storage/                # Data persistence
 ├── database.py        # Database connection and session management
@@ -146,7 +147,7 @@ config/                 # Business configurations
 ### Current Features
 - ✅ Telegram Bot webhook integration
 - ✅ FastAPI-based async web server
-- ✅ Claude 3 Haiku LLM integration
+- ✅ Claude Sonnet 4 LLM integration
 - ✅ Async message handling
 - ✅ Environment-based configuration
 - ✅ Multilingual support (auto-detects language)
@@ -299,7 +300,8 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 **Intelligence Layer** ⬅️ **CURRENT PRIORITY**
 - [x] Conversation summarization (extended memory) ✅ COMPLETE
 - [x] Customer profile tracking ✅ COMPLETE
-- [ ] Additional tools (search, cancel, update orders)
+- [x] cancel_order tool ✅ COMPLETE
+- [ ] Additional tools (search, update orders)
 
 **Multi-Channel Expansion**
 - [ ] Channel abstraction layer
@@ -372,13 +374,15 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 **Tasks:**
 - [x] Conversation summarization for extended memory ✅ COMPLETE
 - [x] Customer profile tracking across sessions ✅ COMPLETE
-- [ ] Additional tools: search_products, cancel_order, update_order
+- [x] cancel_order tool ✅ COMPLETE
+- [ ] Additional tools: search_products, update_order
 
 **Why third:** Better user experience and more helpful agents
 
 **Completed:**
 - Conversation summarization - agent now keeps 30 messages in context and summarizes every 15 messages into a rolling summary for extended memory.
 - Customer profile tracking - agent auto-extracts customer info (name, address, language, notes) from conversations and persists across sessions. Profile + order history injected into system prompt.
+- cancel_order tool - customers can cancel pending orders. Tool validates ownership and status. Prompt auto-generates Available Tools from registry.
 
 ---
 
@@ -441,7 +445,7 @@ This is currently a solo project. Following atomic milestone approach - each PR 
 
 ### Current Stack
 - **Backend:** FastAPI (async Python web framework)
-- **LLM:** Claude 3 Haiku via Anthropic SDK
+- **LLM:** Claude Sonnet 4 via Anthropic SDK
 - **Messaging:** Telegram Bot API (WhatsApp planned)
 - **Storage:** In-memory (temporary - migration in progress)
 - **Config:** python-dotenv
