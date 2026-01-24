@@ -35,7 +35,7 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 
 **Current Work:** Step 3 in progress - Intelligence Layer (cancel_order tool complete)
 
-**Next:** Additional tools (search, update) → Multi-Channel Expansion → Tenant Management → Production Layer
+**Next:** update_order tool → Multi-Channel Expansion → Tenant Management → Production Layer
 
 ---
 
@@ -301,7 +301,8 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 - [x] Conversation summarization (extended memory) ✅ COMPLETE
 - [x] Customer profile tracking ✅ COMPLETE
 - [x] cancel_order tool ✅ COMPLETE
-- [ ] Additional tools (search, update orders)
+- [ ] update_order tool
+- [ ] search_products tool (deferred until real-time inventory/larger catalogs)
 
 **Multi-Channel Expansion**
 - [ ] Channel abstraction layer
@@ -375,7 +376,8 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 - [x] Conversation summarization for extended memory ✅ COMPLETE
 - [x] Customer profile tracking across sessions ✅ COMPLETE
 - [x] cancel_order tool ✅ COMPLETE
-- [ ] Additional tools: search_products, update_order
+- [ ] update_order tool
+- [ ] search_products tool (deferred until real-time inventory/larger catalogs)
 
 **Why third:** Better user experience and more helpful agents
 
