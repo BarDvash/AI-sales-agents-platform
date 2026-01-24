@@ -71,7 +71,7 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         # Build system prompt with customer context and summary for extended memory
         system_prompt = build_system_prompt(tenant_config, existing_summary, customer_context)
 
-        print(f"[Live][Request] tenant={tenant_id} chat={chat_id} | msg: {user_message[:80]} | history={len(history)} msgs | summary={'yes' if existing_summary else 'no'}")
+        print(f"[Live][Request] tenant={tenant_id} chat={chat_id} | msg: {user_message[:80]} | total_msgs={total_msgs} | history={len(history)} msgs | summary={'yes' if existing_summary else 'no'}")
 
         # Call LLM with system prompt, history, and available tools
         response = await anthropic_client.messages.create(
