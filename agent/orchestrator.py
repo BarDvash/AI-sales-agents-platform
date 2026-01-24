@@ -2,6 +2,7 @@
 Agent orchestrator - main agent loop that coordinates message processing.
 """
 import os
+import asyncio
 from anthropic import AsyncAnthropic
 from sqlalchemy.orm import Session
 from agent.prompt_builder import build_system_prompt
@@ -55,23 +56,6 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
 
         # Get conversation state for summarization
         existing_summary, last_summary_at, total_msgs = conv_repo.get_conversation_state(conversation.id)
-
-        # Check if we need to generate/update summary for extended memory
-        if should_summarize(total_msgs, last_summary_at):
-            print(f"Generating conversation summary (total msgs: {total_msgs}, last summary at: {last_summary_at})")
-            # Get recent messages from memory to summarize
-            history = conv_repo.get_conversation_history(customer.id)
-            history = history[-MEMORY_SIZE:]  # Limit to memory size
-            messages_to_summarize = get_messages_to_summarize(history)
-            if messages_to_summarize:
-                new_summary = await generate_conversation_summary(
-                    messages_to_summarize,
-                    existing_summary
-                )
-                # Record when we summarized
-                conv_repo.update_summary(conversation.id, new_summary, total_msgs)
-                existing_summary = new_summary
-                print(f"Summary updated at message {total_msgs}: {new_summary[:100]}...")
 
         # Get conversation history for LLM context
         history = conv_repo.get_conversation_history(customer.id)
@@ -151,14 +135,23 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         # Save assistant message to database
         conv_repo.add_message(conversation.id, "assistant", assistant_message)
 
-        # Extract and save customer profile information (runs in background conceptually)
-        await _extract_and_save_profile(
+        # Fire-and-forget background tasks (non-blocking)
+        # Profile extraction
+        asyncio.create_task(_extract_and_save_profile(
             user_message,
             assistant_message,
-            customer,
-            customer_repo,
-            db
-        )
+            tenant_id,
+            str(chat_id)
+        ))
+
+        # Summarization (if needed)
+        if should_summarize(total_msgs, last_summary_at):
+            asyncio.create_task(_summarize_conversation(
+                conversation.id,
+                customer.id,
+                existing_summary,
+                total_msgs
+            ))
 
         return assistant_message
 
@@ -178,15 +171,21 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
 async def _extract_and_save_profile(
     user_message: str,
     assistant_message: str,
-    customer,
-    customer_repo,
-    db
+    tenant_id: str,
+    chat_id: str
 ) -> None:
     """
     Extract profile information from conversation and save to database.
-    Runs after each message exchange to capture customer details.
+    Runs as a background task after the response is sent.
     """
+    db_gen = get_db()
+    db = next(db_gen)
     try:
+        customer_repo = CustomerRepository(db)
+        customer = customer_repo.get_by_chat_id(tenant_id, chat_id)
+        if not customer:
+            return
+
         existing_profile = get_customer_profile_dict(customer)
         extracted = await extract_profile_from_message(
             user_message,
@@ -197,10 +196,8 @@ async def _extract_and_save_profile(
         if extracted:
             print(f"Profile extracted: {extracted.to_dict()}")
 
-            # Merge notes if both exist
             merged_notes = merge_profile_notes(customer.notes, extracted.notes)
 
-            # Update profile with new information
             customer_repo.update_profile(
                 customer,
                 name=extracted.name or customer.name,
@@ -210,8 +207,49 @@ async def _extract_and_save_profile(
                 language=extracted.language or customer.language,
                 notes=merged_notes if merged_notes != customer.notes else None,
             )
-            print(f"Customer profile updated for {customer.chat_id}")
+            print(f"Customer profile updated for {chat_id}")
 
     except Exception as e:
-        # Profile extraction is non-critical, don't fail the message
         print(f"Profile extraction warning: {e}")
+    finally:
+        try:
+            next(db_gen)
+        except StopIteration:
+            pass
+
+
+async def _summarize_conversation(
+    conversation_id: int,
+    customer_id: int,
+    existing_summary: str,
+    total_msgs: int
+) -> None:
+    """
+    Generate conversation summary in the background.
+    Runs as a background task, doesn't block the response.
+    """
+    db_gen = get_db()
+    db = next(db_gen)
+    try:
+        print(f"[Background] Generating conversation summary (total msgs: {total_msgs})")
+        conv_repo = ConversationRepository(db)
+
+        history = conv_repo.get_conversation_history(customer_id)
+        history = history[-MEMORY_SIZE:]
+        messages_to_summarize = get_messages_to_summarize(history)
+
+        if messages_to_summarize:
+            new_summary = await generate_conversation_summary(
+                messages_to_summarize,
+                existing_summary
+            )
+            conv_repo.update_summary(conversation_id, new_summary, total_msgs)
+            print(f"[Background] Summary updated at message {total_msgs}: {new_summary[:100]}...")
+
+    except Exception as e:
+        print(f"Summarization warning: {e}")
+    finally:
+        try:
+            next(db_gen)
+        except StopIteration:
+            pass
