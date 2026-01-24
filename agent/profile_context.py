@@ -77,18 +77,3 @@ def build_customer_context(
         return None
 
     return "\n\n".join(sections)
-
-
-def get_customer_profile_dict(customer: Customer) -> dict:
-    """
-    Get customer profile as a dictionary (for profile extraction comparison).
-    """
-    return {
-        'name': customer.name,
-        'phone': customer.phone,
-        'email': customer.email,
-        'address': customer.address,
-        'language': customer.language,
-        'preferences': customer.preferences,
-        'notes': customer.notes,
-    }

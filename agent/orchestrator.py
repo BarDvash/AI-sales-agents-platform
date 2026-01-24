@@ -12,8 +12,8 @@ from agent.summarizer import (
     get_messages_to_summarize,
     MEMORY_SIZE
 )
-from agent.profile_extractor import extract_profile_from_message, merge_profile_notes
-from agent.profile_context import build_customer_context, get_customer_profile_dict
+from agent.profile_extractor import should_extract as should_extract_profile, extract_and_save as extract_and_save_profile
+from agent.profile_context import build_customer_context
 from tenants.loader import load_tenant_config
 from storage.database import get_db
 from storage.repositories import ConversationRepository, OrderRepository, CustomerRepository
@@ -136,13 +136,12 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         conv_repo.add_message(conversation.id, "assistant", assistant_message)
 
         # Fire-and-forget background tasks (non-blocking)
-        # Profile extraction
-        asyncio.create_task(_extract_and_save_profile(
-            user_message,
-            assistant_message,
-            tenant_id,
-            str(chat_id)
-        ))
+        if should_extract_profile(total_msgs):
+            asyncio.create_task(extract_and_save_profile(
+                tenant_id,
+                str(chat_id),
+                history
+            ))
 
         # Summarization (if needed)
         if should_summarize(total_msgs, last_summary_at):
@@ -162,56 +161,6 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         return "Sorry, I encountered an error. Please try again."
     finally:
         # Close database session
-        try:
-            next(db_gen)
-        except StopIteration:
-            pass
-
-
-async def _extract_and_save_profile(
-    user_message: str,
-    assistant_message: str,
-    tenant_id: str,
-    chat_id: str
-) -> None:
-    """
-    Extract profile information from conversation and save to database.
-    Runs as a background task after the response is sent.
-    """
-    db_gen = get_db()
-    db = next(db_gen)
-    try:
-        customer_repo = CustomerRepository(db)
-        customer = customer_repo.get_by_chat_id(tenant_id, chat_id)
-        if not customer:
-            return
-
-        existing_profile = get_customer_profile_dict(customer)
-        extracted = await extract_profile_from_message(
-            user_message,
-            assistant_message,
-            existing_profile
-        )
-
-        if extracted:
-            print(f"Profile extracted: {extracted.to_dict()}")
-
-            merged_notes = merge_profile_notes(customer.notes, extracted.notes)
-
-            customer_repo.update_profile(
-                customer,
-                name=extracted.name or customer.name,
-                phone=extracted.phone or customer.phone,
-                email=extracted.email or customer.email,
-                address=extracted.address or customer.address,
-                language=extracted.language or customer.language,
-                notes=merged_notes if merged_notes != customer.notes else None,
-            )
-            print(f"Customer profile updated for {chat_id}")
-
-    except Exception as e:
-        print(f"Profile extraction warning: {e}")
-    finally:
         try:
             next(db_gen)
         except StopIteration:
