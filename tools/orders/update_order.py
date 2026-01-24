@@ -101,10 +101,10 @@ def update_order(tenant_id: str, chat_id: str, tool_input: dict, db: Session) ->
             "error": f"Order {order_id} cannot be updated (status: {order.status})"
         }
 
-    # Update the order
+    # Update the order (preserve existing delivery notes if not provided)
     items = tool_input.get("items", [])
     total = tool_input.get("total", 0)
-    delivery_notes = tool_input.get("delivery_notes")
+    delivery_notes = tool_input.get("delivery_notes") or order.delivery_notes
 
     order_repo.update_order(order_id, items, total, delivery_notes)
 
