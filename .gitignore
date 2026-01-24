@@ -44,6 +44,9 @@ htmlcov/
 # Logs
 *.log
 
+# Dev script PID files
+.pids/
+
 # OS
 .DS_Store
 Thumbs.db
