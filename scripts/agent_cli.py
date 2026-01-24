@@ -70,6 +70,10 @@ async def send_message(tenant_id: str, chat_id: str, message: str):
     sys.stdout = io.StringIO()
     try:
         result = await process_message(message, chat_id, tenant_id=tenant_id)
+        # Wait for background tasks (profile extraction, summarization) to complete
+        pending = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
+        if pending:
+            await asyncio.gather(*pending, return_exceptions=True)
         server_logs = sys.stdout.getvalue()
     finally:
         sys.stdout = old_stdout
