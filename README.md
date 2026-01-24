@@ -299,14 +299,51 @@ The `scripts/agent_cli.py` script provides a direct CLI interface to the agent o
 
 **Requirements:** PostgreSQL running + `.env` file in project root (DATABASE_URL, ANTHROPIC_API_KEY). The script auto-loads `.env` — no need to source it manually. No FastAPI server needed.
 
-**Development workflow (Claude Code):** After implementing new tools or modifying agent behavior, you are EXPECTED to use this script to validate changes E2E before considering the task done. This is part of the standard development process:
-1. Make code changes (new tool, prompt update, etc.)
-2. Run `scripts/agent_cli.py` with a fresh `--chat-id` to test the change
-3. Read the output (tool calls, agent response) and send follow-up messages to verify the full flow
-4. Adapt messages based on what the agent actually says (don't pre-script)
-5. Confirm the feature works correctly before committing
+### E2E Regression Scenario
 
-This gives near-production confidence without needing Telegram.
+This is the acceptance test suite for the agent. It covers all core features in a single multi-turn conversation. **This scenario must pass after every significant change.**
+
+**How to run:**
+- Use `scripts/agent_cli.py` with a fresh `--chat-id` (e.g., `e2e-YYYYMMDD-001`)
+- Each step is one CLI call. Read the output before sending the next message.
+- Adapt follow-up messages based on what the agent actually says (order IDs, etc.)
+
+**Steps:**
+
+| # | Message | Tests | Expected |
+|---|---------|-------|----------|
+| 1 | "היי, מה יש לכם?" | Greeting, product catalog | Full product list displayed |
+| 2 | "אני רוצה להזמין 2 קילו נקניק בקר ו-1 קילו מרגז חריף. המשלוח לרחוב הרצל 15 תל אביב, הערה: לצלצל בדלת" | Order creation, delivery notes | `create_order` tool called, notes captured |
+| 3 | "רגע, תוסיף לי גם 1 קילו בשר טחון להזמנה" | Order update, notes preservation | `update_order` tool called, delivery notes preserved |
+| 4 | "אתה יודע מה, תבטל לי את ההזמנה" | Order cancellation | `cancel_order` tool called |
+| 5 | "תבטל לי את ההזמנה שוב" | Double-cancel, action validator | Should NOT claim cancellation. Should call `get_customer_orders` and report already cancelled |
+| 6 | "מה ההזמנות שלי? אני חושב שהזמנתי פעם פסטרמה" | Anti-hallucination | Must call `get_customer_orders` first. Must NOT confirm fake pastrami order |
+| 7 | "אה כן, הפסטרמה שלכם טובה? ספר לי עליה" | Product knowledge | Describes pastrami from catalog |
+| 8 | "כן, אני רוצה חצי קילו פסטרמה בבקשה. שם שלי בר אגב" | 2nd order, profile extraction, summarization | `create_order` called, profile extracts name, summary generated at msg 15 |
+| 9 | "תודה! אגב, יש לכם משהו נקניקיות לילדים? משהו לא חריף?" | Summary in use, personalization | Request log shows `summary=yes`, agent may use customer name |
+
+**Background task verification (check Server Logs):**
+- Profile extraction: triggers at message 5 and 15 (every 5 messages)
+- Summarization: triggers at message 15 (every 15 messages)
+- After step 8: logs should show `[Background][Profile]` and `[Background][Summary]`
+- After step 9: request log should show `summary=yes`
+
+**Pass criteria:**
+- All tool calls happen (no hallucinated actions)
+- Action validator catches any violation attempts (look for `[Live][Retry]` in logs)
+- Delivery notes preserved across update
+- No fabricated order history
+- Background tasks complete (profile + summary)
+- Agent uses customer name after it's mentioned
+
+**Claude Code workflow:** After implementing a significant new feature (new tool, new agent capability, new background task, etc.):
+1. Run the full E2E regression scenario above with a fresh `--chat-id`
+2. Verify all existing steps still pass
+3. Add new steps to the scenario table that exercise the new feature
+4. Update the "Background task verification" and "Pass criteria" sections if the new feature adds observable behaviors
+5. Commit the README update together with the feature code
+
+This keeps the test suite growing with the product — every feature adds to the scenario, making regressions immediately visible.
 
 ### Quick Import Test
 Verify all modules load correctly:
