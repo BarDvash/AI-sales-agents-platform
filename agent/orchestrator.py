@@ -3,6 +3,8 @@ Agent orchestrator - main agent loop that coordinates message processing.
 """
 import os
 import asyncio
+from dataclasses import dataclass, field
+from typing import List
 from anthropic import AsyncAnthropic
 from sqlalchemy.orm import Session
 from agent.prompt_builder import build_system_prompt
@@ -19,12 +21,19 @@ from storage.database import get_db
 from storage.repositories import ConversationRepository, OrderRepository, CustomerRepository
 from tools import TOOL_DEFINITIONS, execute_tool
 
+
+@dataclass
+class AgentResult:
+    """Structured result from agent processing."""
+    response_text: str
+    tool_calls: List[dict] = field(default_factory=list)
+
 # Initialize Anthropic client
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 anthropic_client = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
 
 
-async def process_message(user_message: str, chat_id: str, tenant_id: str = "valdman") -> str:
+async def process_message(user_message: str, chat_id: str, tenant_id: str = "valdman") -> AgentResult:
     """
     Main agent loop: receive → load context → LLM call → tool execution → respond.
 
@@ -34,7 +43,7 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         tenant_id: Tenant identifier (e.g., "valdman")
 
     Returns:
-        Agent's response message
+        AgentResult with response_text and tool_calls trace
     """
     # Get database session
     db_gen = get_db()
@@ -83,6 +92,7 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         )
 
         # Handle tool use if LLM decides to call a tool
+        tool_calls = []
         tool_name = None
         tool_result_summary = ""
         if response.stop_reason == "tool_use":
@@ -99,6 +109,13 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
                 db,
                 tenant_config
             )
+
+            # Collect tool call for trace
+            tool_calls.append({
+                "name": tool_name,
+                "input": tool_input,
+                "result": tool_result
+            })
 
             if isinstance(tool_result, list):
                 tool_result_summary = f"{len(tool_result)} items"
@@ -157,13 +174,13 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
                 total_msgs
             ))
 
-        return assistant_message
+        return AgentResult(response_text=assistant_message, tool_calls=tool_calls)
 
     except Exception as e:
         import traceback
         print(f"Agent Error: {e}")
         print(traceback.format_exc())
-        return "Sorry, I encountered an error. Please try again."
+        return AgentResult(response_text="Sorry, I encountered an error. Please try again.")
     finally:
         # Close database session
         try:

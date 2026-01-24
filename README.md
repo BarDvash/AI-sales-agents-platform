@@ -32,6 +32,7 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 - ✅ Complete tenant data isolation
 - ✅ Conversation summarization for extended memory (30 msg context + rolling summary)
 - ✅ Customer profile tracking (auto-extracts name, address, language, notes from conversations)
+- ✅ Agent CLI for E2E testing (scripts/agent_cli.py)
 
 **Current Work:** Step 3 complete - Intelligence Layer done
 
@@ -115,6 +116,12 @@ tenants/                # Multi-tenant configuration
 config/                 # Business configurations
 ├── valdman.py         # Valdman meat/sausage business
 └── joannas_bakery.py  # Joanna's Bakery business
+
+scripts/                # Development and testing tools
+├── agent_cli.py       # E2E agent testing CLI (send messages, see tool calls)
+├── dev.sh             # Start/stop development environment
+├── seed_database.py   # Seed DB with tenant data and products
+└── view_orders.py     # View all orders in database
 ```
 
 ### Key Architectural Principles
@@ -255,6 +262,51 @@ python scripts/seed_database.py
 ---
 
 ## Testing
+
+### Agent CLI (E2E Testing Tool)
+
+The `scripts/agent_cli.py` script provides a direct CLI interface to the agent orchestrator — no server or Telegram needed. It calls the same `process_message` function that production uses, giving full E2E testing capabilities.
+
+**Usage:**
+```bash
+source .env && ./venv/bin/python3 scripts/agent_cli.py --chat-id <ID> -m "<message>"
+```
+
+**Parameters:**
+- `--chat-id` (required) — conversation identifier. Use the same ID across calls for multi-turn conversations.
+- `-m` (required) — the message to send to the agent.
+- `--tenant` (optional, default: `valdman`) — which tenant's agent to test.
+
+**Example multi-turn conversation:**
+```bash
+# Start a conversation
+./venv/bin/python3 scripts/agent_cli.py --chat-id test-001 -m "מה יש לכם?"
+
+# Continue the same conversation (same chat-id)
+./venv/bin/python3 scripts/agent_cli.py --chat-id test-001 -m "אני רוצה 2 קילו בשר טחון"
+
+# Confirm the order
+./venv/bin/python3 scripts/agent_cli.py --chat-id test-001 -m "כן, אשר"
+
+# Cancel it
+./venv/bin/python3 scripts/agent_cli.py --chat-id test-001 -m "תבטל את ההזמנה"
+```
+
+**Output sections:**
+- **Server Logs** — orchestrator internal logs (request metadata, tool execution summaries)
+- **Agent Trace** — full tool call details (name, input JSON, result)
+- **Agent:** — the final response text
+
+**Requirements:** PostgreSQL running + `.env` sourced (DATABASE_URL, ANTHROPIC_API_KEY). No FastAPI server needed.
+
+**Development workflow (Claude Code):** After implementing new tools or modifying agent behavior, you are EXPECTED to use this script to validate changes E2E before considering the task done. This is part of the standard development process:
+1. Make code changes (new tool, prompt update, etc.)
+2. Run `scripts/agent_cli.py` with a fresh `--chat-id` to test the change
+3. Read the output (tool calls, agent response) and send follow-up messages to verify the full flow
+4. Adapt messages based on what the agent actually says (don't pre-script)
+5. Confirm the feature works correctly before committing
+
+This gives near-production confidence without needing Telegram.
 
 ### Quick Import Test
 Verify all modules load correctly:

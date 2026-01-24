@@ -44,8 +44,8 @@ async def telegram_webhook(request: Request, tenant_id: str):
         if chat_id and text:
             # Process message through agent orchestrator
             # Convert chat_id to string for consistency with database
-            reply = await process_message(text, str(chat_id), tenant_id=tenant_id)
-            send_telegram_message(chat_id, reply, tenant.bot_token)
+            result = await process_message(text, str(chat_id), tenant_id=tenant_id)
+            send_telegram_message(chat_id, result.response_text, tenant.bot_token)
 
         return {"ok": True}
 
