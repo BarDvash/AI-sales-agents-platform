@@ -210,22 +210,16 @@ alembic upgrade head
 python scripts/seed_database.py
 ```
 
-4. **Run the server:**
+4. **Start the development environment:**
 ```bash
-uvicorn api.main:app --reload
-```
+# Starts PostgreSQL, runs migrations, launches server + ngrok, sets webhooks
+./scripts/dev.sh start
 
-5. **Set up Telegram webhooks:**
-```bash
-# In another terminal, expose your local server with ngrok
-ngrok http 8000
-
-# Set the webhooks (replace NGROK_URL with your ngrok HTTPS URL)
-# For Valdman
-curl -X POST "https://api.telegram.org/bot<VALDMAN_BOT_TOKEN>/setWebhook?url=<NGROK_URL>/webhooks/telegram/valdman"
-
-# For Joanna's Bakery
-curl -X POST "https://api.telegram.org/bot<JOANNAS_BOT_TOKEN>/setWebhook?url=<NGROK_URL>/webhooks/telegram/joannas_bakery"
+# Other commands:
+./scripts/dev.sh start valdman      # Start specific tenant only
+./scripts/dev.sh stop               # Stop server + ngrok (DB stays running)
+./scripts/dev.sh restart            # Restart everything
+./scripts/dev.sh status             # Show running services status
 ```
 
 ### Database Management
@@ -278,27 +272,11 @@ print(f'✅ Tenant: {load_tenant_config().COMPANY_NAME}')
 
 ### Local Testing with Telegram
 
-**Terminal 1: Start server**
 ```bash
-cd /Users/bardvash/Projects/AI-sales-agents-platform
-source venv/bin/activate
-uvicorn api.main:app --reload
+./scripts/dev.sh start
 ```
 
-**Terminal 2: Expose with ngrok**
-```bash
-ngrok http 8000
-# Copy the https URL (e.g., https://abc123.ngrok-free.app)
-```
-
-**Terminal 3: Set webhook**
-```bash
-# For Valdman tenant
-curl -X POST "https://api.telegram.org/bot<VALDMAN_BOT_TOKEN>/setWebhook?url=<NGROK_URL>/webhooks/telegram/valdman"
-
-# For Joanna's Bakery tenant
-curl -X POST "https://api.telegram.org/bot<JOANNAS_BOT_TOKEN>/setWebhook?url=<NGROK_URL>/webhooks/telegram/joannas_bakery"
-```
+This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to stop.
 
 **Test conversation flow:**
 - Basic greeting and product inquiry
