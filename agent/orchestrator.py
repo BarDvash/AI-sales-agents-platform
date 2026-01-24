@@ -2,6 +2,7 @@
 Agent orchestrator - main agent loop that coordinates message processing.
 """
 import os
+import re
 import asyncio
 from dataclasses import dataclass, field
 from typing import List
@@ -28,9 +29,31 @@ class AgentResult:
     response_text: str
     tool_calls: List[dict] = field(default_factory=list)
 
+# Constants
+MAX_TOOL_CALLS = 5
+
+# Action patterns for detecting hallucinated actions (tool not called but response claims it happened)
+ACTION_PATTERNS = {
+    "create_order": [r"הזמנה.*נוצרה", r"הזמנה.*אושרה", r"order.*created", r"order.*confirmed"],
+    "cancel_order": [r"הזמנה.*בוטלה", r"ביטלנו", r"בוטל בהצלחה", r"order.*cancel"],
+    "update_order": [r"הזמנה.*עודכנה", r"עודכנה בהצלחה", r"order.*updated"],
+}
+
 # Initialize Anthropic client
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 anthropic_client = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
+
+
+def _detect_action_violation(response_text: str, tool_calls: List[dict]) -> bool:
+    """Check if the response claims an action was performed without a matching tool call."""
+    tools_called = {tc["name"] for tc in tool_calls}
+    for tool_name, patterns in ACTION_PATTERNS.items():
+        if tool_name in tools_called:
+            continue
+        for pattern in patterns:
+            if re.search(pattern, response_text, re.IGNORECASE):
+                return True
+    return False
 
 
 async def process_message(user_message: str, chat_id: str, tenant_id: str = "valdman") -> AgentResult:
@@ -91,16 +114,14 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
             tools=TOOL_DEFINITIONS
         )
 
-        # Handle tool use if LLM decides to call a tool
+        # Tool-call loop: handle multiple sequential tool calls
         tool_calls = []
-        tool_name = None
-        tool_result_summary = ""
-        if response.stop_reason == "tool_use":
+        while response.stop_reason == "tool_use" and len(tool_calls) < MAX_TOOL_CALLS:
             tool_use = next(block for block in response.content if block.type == "tool_use")
             tool_name = tool_use.name
+            tool_input = tool_use.input if hasattr(tool_use, 'input') else {}
 
             # Execute the tool
-            tool_input = tool_use.input if hasattr(tool_use, 'input') else {}
             tool_result = execute_tool(
                 tool_name,
                 tool_input,
@@ -117,21 +138,18 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
                 "result": tool_result
             })
 
+            # Log tool execution
             if isinstance(tool_result, list):
                 tool_result_summary = f"{len(tool_result)} items"
             elif isinstance(tool_result, dict):
                 tool_result_summary = tool_result.get('message', tool_result.get('order_id', str(tool_result)[:50]))
             else:
                 tool_result_summary = str(tool_result)[:80]
-
-            # Log tool execution (for tools that don't log themselves)
             if tool_name != "create_order":
                 print(f"[Live][Tool] {tool_name} → {tool_result_summary}")
 
-            # Add tool use to history (in memory for this request)
+            # Add tool use and result to history
             history.append({"role": "assistant", "content": response.content})
-
-            # Add tool result to history
             history.append({
                 "role": "user",
                 "content": [{
@@ -141,7 +159,7 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
                 }]
             })
 
-            # Call LLM again with tool result
+            # Next LLM call
             response = await anthropic_client.messages.create(
                 model="claude-sonnet-4-20250514",
                 max_tokens=1024,
@@ -150,8 +168,49 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
                 tools=TOOL_DEFINITIONS
             )
 
+        if len(tool_calls) >= MAX_TOOL_CALLS and response.stop_reason == "tool_use":
+            print(f"[Live][Warning] Max tool calls ({MAX_TOOL_CALLS}) reached, stopping loop")
+
         # Extract final response
         assistant_message = response.content[0].text
+
+        # Action validator: retry if response claims action without tool call
+        if _detect_action_violation(assistant_message, tool_calls):
+            print(f"[Live][Retry] Action claim detected without tool call, retrying")
+            history.append({"role": "assistant", "content": response.content})
+            history.append({
+                "role": "user",
+                "content": [{"type": "text", "text": "SYSTEM: Your previous response claimed an order action was performed, but you did not call the required tool. You MUST call the tool to perform the action. Try again."}]
+            })
+            response = await anthropic_client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=1024,
+                system=system_prompt,
+                messages=history,
+                tools=TOOL_DEFINITIONS
+            )
+            # Run tool loop on retry if needed
+            while response.stop_reason == "tool_use" and len(tool_calls) < MAX_TOOL_CALLS:
+                tool_use = next(block for block in response.content if block.type == "tool_use")
+                tool_name = tool_use.name
+                tool_input = tool_use.input if hasattr(tool_use, 'input') else {}
+                tool_result = execute_tool(tool_name, tool_input, tenant_id, str(chat_id), db, tenant_config)
+                tool_calls.append({"name": tool_name, "input": tool_input, "result": tool_result})
+                if isinstance(tool_result, list):
+                    tool_result_summary = f"{len(tool_result)} items"
+                elif isinstance(tool_result, dict):
+                    tool_result_summary = tool_result.get('message', tool_result.get('order_id', str(tool_result)[:50]))
+                else:
+                    tool_result_summary = str(tool_result)[:80]
+                if tool_name != "create_order":
+                    print(f"[Live][Tool] {tool_name} → {tool_result_summary}")
+                history.append({"role": "assistant", "content": response.content})
+                history.append({"role": "user", "content": [{"type": "tool_result", "tool_use_id": tool_use.id, "content": str(tool_result)}]})
+                response = await anthropic_client.messages.create(
+                    model="claude-sonnet-4-20250514", max_tokens=1024, system=system_prompt, messages=history, tools=TOOL_DEFINITIONS
+                )
+            assistant_message = response.content[0].text
+
         print(f"[Live][Response] chat={chat_id} | response: {assistant_message[:100]}")
 
         # Save assistant message to database
