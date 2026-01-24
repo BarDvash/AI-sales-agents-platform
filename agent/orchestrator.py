@@ -71,8 +71,7 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         # Build system prompt with customer context and summary for extended memory
         system_prompt = build_system_prompt(tenant_config, existing_summary, customer_context)
 
-        print(f"Calling LLM with message: {user_message}")
-        print(f"History length: {len(history)} messages, has_summary: {existing_summary is not None}")
+        print(f"[Live][Request] tenant={tenant_id} chat={chat_id} | msg: {user_message[:80]} | history={len(history)} msgs | summary={'yes' if existing_summary else 'no'}")
 
         # Call LLM with system prompt, history, and available tools
         response = await anthropic_client.messages.create(
@@ -84,11 +83,11 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         )
 
         # Handle tool use if LLM decides to call a tool
+        tool_name = None
+        tool_result_summary = ""
         if response.stop_reason == "tool_use":
             tool_use = next(block for block in response.content if block.type == "tool_use")
             tool_name = tool_use.name
-
-            print(f"Tool called: {tool_name}")
 
             # Execute the tool
             tool_input = tool_use.input if hasattr(tool_use, 'input') else {}
@@ -102,9 +101,15 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
             )
 
             if isinstance(tool_result, list):
-                print(f"Tool result: {len(tool_result)} orders found")
+                tool_result_summary = f"{len(tool_result)} items"
+            elif isinstance(tool_result, dict):
+                tool_result_summary = tool_result.get('message', tool_result.get('order_id', str(tool_result)[:50]))
             else:
-                print(f"Tool result: {tool_result}")
+                tool_result_summary = str(tool_result)[:80]
+
+            # Log tool execution (for tools that don't log themselves)
+            if tool_name != "create_order":
+                print(f"[Live][Tool] {tool_name} → {tool_result_summary}")
 
             # Add tool use to history (in memory for this request)
             history.append({"role": "assistant", "content": response.content})
@@ -130,7 +135,7 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
 
         # Extract final response
         assistant_message = response.content[0].text
-        print(f"LLM Response: {assistant_message}")
+        print(f"[Live][Response] chat={chat_id} | response: {assistant_message[:100]}")
 
         # Save assistant message to database
         conv_repo.add_message(conversation.id, "assistant", assistant_message)
@@ -180,7 +185,6 @@ async def _summarize_conversation(
     db_gen = get_db()
     db = next(db_gen)
     try:
-        print(f"[Background] Generating conversation summary (total msgs: {total_msgs})")
         conv_repo = ConversationRepository(db)
 
         history = conv_repo.get_conversation_history(customer_id)
@@ -193,10 +197,11 @@ async def _summarize_conversation(
                 existing_summary
             )
             conv_repo.update_summary(conversation_id, new_summary, total_msgs)
-            print(f"[Background] Summary updated at message {total_msgs}: {new_summary[:100]}...")
+            before_str = f'"{existing_summary[:80]}..."' if existing_summary else 'null'
+            print(f"[Background][Summary] conv={conversation_id} | at_msg={total_msgs} | input={len(messages_to_summarize)} msgs | before: {before_str} | after: \"{new_summary[:100]}...\"")
 
     except Exception as e:
-        print(f"Summarization warning: {e}")
+        print(f"[Background][Summary] conv={conversation_id} | ERROR: {e}")
     finally:
         try:
             next(db_gen)

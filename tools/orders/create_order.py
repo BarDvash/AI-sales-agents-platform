@@ -84,19 +84,10 @@ def create_order(tenant_id: str, chat_id: str, tool_input: dict, db: Session) ->
         delivery_notes=tool_input.get("delivery_notes"),
     )
 
-    # Log order to console for visibility
-    print(f"\n{'='*50}")
-    print(f"NEW ORDER CREATED: {order.id}")
-    print(f"Customer: {customer.chat_id} (ID: {customer.id})")
-    print(f"Tenant: {tenant_id}")
-    print(f"Items: {len(order.items)} items")
-    for item in order.items:
-        print(f"  - {item['quantity']} {item['product_name']} @ {item['unit_price']} NIS = {item['subtotal']} NIS")
-    print(f"Total: {order.total} NIS")
-    if order.delivery_notes:
-        print(f"Notes: {order.delivery_notes}")
-    print(f"Status: {order.status}")
-    print(f"{'='*50}\n")
+    # Log tool execution
+    items_str = ", ".join([f"{i['quantity']} {i['product_name']}" for i in order.items])
+    notes_str = f" | notes={order.delivery_notes}" if order.delivery_notes else ""
+    print(f"[Live][Tool] create_order → {order.id} | {items_str} | total={order.total} NIS{notes_str}")
 
     return {
         "success": True,

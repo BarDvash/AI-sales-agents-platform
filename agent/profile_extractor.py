@@ -164,10 +164,10 @@ async def _extract_from_messages(messages: List[dict], existing_profile: dict) -
         return None
 
     except (json.JSONDecodeError, KeyError) as e:
-        print(f"Profile extraction JSON error: {e}")
+        print(f"[Background][Profile] JSON parse error: {e}")
         return None
     except Exception as e:
-        print(f"Profile extraction error: {e}")
+        print(f"[Background][Profile] LLM call error: {e}")
         return None
 
 
@@ -209,7 +209,14 @@ async def extract_and_save(
         extracted = await _extract_from_messages(messages, existing_profile)
 
         if extracted:
-            print(f"Profile extracted: {extracted.to_dict()}")
+            # Build changes diff (before → after)
+            changes = []
+            for field in ['name', 'phone', 'email', 'address', 'language', 'notes']:
+                new_val = getattr(extracted, field)
+                if new_val is not None:
+                    old_val = existing_profile.get(field)
+                    old_str = f'"{old_val}"' if old_val else 'null'
+                    changes.append(f'{field}({old_str} → "{new_val}")')
 
             # Update profile - null fields are skipped (keep existing)
             customer_repo.update_profile(
@@ -221,10 +228,12 @@ async def extract_and_save(
                 language=extracted.language,
                 notes=extracted.notes,
             )
-            print(f"Customer profile updated for {chat_id}")
+            print(f"[Background][Profile] chat={chat_id} | window={len(messages)} msgs | changes: {', '.join(changes)} | saved")
+        else:
+            print(f"[Background][Profile] chat={chat_id} | window={len(messages)} msgs | no new info")
 
     except Exception as e:
-        print(f"Profile extraction warning: {e}")
+        print(f"[Background][Profile] chat={chat_id} | ERROR: {e}")
     finally:
         try:
             next(db_gen)
