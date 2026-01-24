@@ -232,6 +232,14 @@ cmd_start() {
     if is_running "uvicorn"; then
         log_warn "Server already running (PID: $(get_pid uvicorn))"
     else
+        # Kill any stale processes on port 8000
+        local stale_pids=$(lsof -ti :8000 2>/dev/null)
+        if [ -n "$stale_pids" ]; then
+            log_warn "Port 8000 in use. Killing stale processes..."
+            echo "$stale_pids" | xargs kill -9 2>/dev/null
+            sleep 1
+        fi
+
         log_info "Starting server..."
         uvicorn api.main:app --reload --log-level info > "$PID_DIR/server.log" 2>&1 &
         save_pid "uvicorn" $!
@@ -248,6 +256,14 @@ cmd_start() {
     if is_running "ngrok"; then
         log_warn "ngrok already running (PID: $(get_pid ngrok))"
     else
+        # Kill any stale ngrok processes
+        local stale_ngrok=$(lsof -ti :4040 2>/dev/null)
+        if [ -n "$stale_ngrok" ]; then
+            log_warn "ngrok port 4040 in use. Killing stale processes..."
+            echo "$stale_ngrok" | xargs kill -9 2>/dev/null
+            sleep 1
+        fi
+
         log_info "Starting ngrok..."
         ngrok http 8000 --log=stdout > "$PID_DIR/ngrok.log" 2>&1 &
         save_pid "ngrok" $!
