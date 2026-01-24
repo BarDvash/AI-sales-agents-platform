@@ -269,7 +269,7 @@ The `scripts/agent_cli.py` script provides a direct CLI interface to the agent o
 
 **Usage:**
 ```bash
-source .env && ./venv/bin/python3 scripts/agent_cli.py --chat-id <ID> -m "<message>"
+./venv/bin/python3 scripts/agent_cli.py --chat-id <ID> -m "<message>"
 ```
 
 **Parameters:**
@@ -297,7 +297,7 @@ source .env && ./venv/bin/python3 scripts/agent_cli.py --chat-id <ID> -m "<messa
 - **Agent Trace** — full tool call details (name, input JSON, result)
 - **Agent:** — the final response text
 
-**Requirements:** PostgreSQL running + `.env` sourced (DATABASE_URL, ANTHROPIC_API_KEY). No FastAPI server needed.
+**Requirements:** PostgreSQL running + `.env` file in project root (DATABASE_URL, ANTHROPIC_API_KEY). The script auto-loads `.env` — no need to source it manually. No FastAPI server needed.
 
 **Development workflow (Claude Code):** After implementing new tools or modifying agent behavior, you are EXPECTED to use this script to validate changes E2E before considering the task done. This is part of the standard development process:
 1. Make code changes (new tool, prompt update, etc.)

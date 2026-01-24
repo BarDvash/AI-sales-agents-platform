@@ -2,7 +2,7 @@
 """
 Agent CLI - E2E testing tool for the sales agent.
 Calls the orchestrator directly - no server or Telegram needed.
-Requires: PostgreSQL running + .env sourced (DATABASE_URL, ANTHROPIC_API_KEY).
+Requires: PostgreSQL running + .env file in project root (DATABASE_URL, ANTHROPIC_API_KEY).
 
 Usage:
     python scripts/agent_cli.py --chat-id test-001 -m "היי מה יש לכם?"
@@ -17,7 +17,12 @@ import argparse
 import json
 
 # Add project root to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, PROJECT_ROOT)
+
+# Auto-load .env file (so users don't need `set -a && source .env`)
+from dotenv import load_dotenv
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 
 from agent.orchestrator import process_message
 
