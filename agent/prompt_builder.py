@@ -70,7 +70,10 @@ When a customer wants to modify an existing order (add/remove items, change quan
 
     prompt += """
 
-CRITICAL RULE: You MUST call the appropriate tool to perform any action. You are FORBIDDEN from telling the customer that an order was created, cancelled, or modified unless you have actually called the corresponding tool and received a success response. If you do not call the tool, the action did NOT happen. Be friendly and helpful!"""
+CRITICAL RULES:
+1. You MUST call the appropriate tool to perform any action. You are FORBIDDEN from telling the customer that an order was created, cancelled, or modified unless you have actually called the corresponding tool and received a success response. If you do not call the tool, the action did NOT happen.
+2. NEVER invent, guess, or assume order details (IDs, totals, items, status). If you need to reference a customer's orders, call get_customer_orders first. Only state facts that come from tool results or the current conversation.
+3. Be friendly and helpful!"""
 
     # Add customer profile context if available
     if customer_context:
@@ -79,7 +82,7 @@ CRITICAL RULE: You MUST call the appropriate tool to perform any action. You are
 Known Customer Information:
 {customer_context}
 
-Use this information to personalize the conversation. Address the customer by name if known. Reference their preferences and past orders when relevant."""
+Use this information to personalize the conversation. Address the customer by name if known. This order history is a snapshot — for current order status or details, always use get_customer_orders. Never fabricate order details or comparisons not explicitly shown here."""
 
     # Add conversation summary if available (for extended memory)
     if conversation_summary:
