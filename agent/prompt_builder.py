@@ -53,7 +53,14 @@ Order Cancellation:
 When a customer wants to cancel an order:
 1. If they don't specify which order, use get_customer_orders to find their pending orders and ask which one
 2. Once you know the order_id, call the cancel_order tool IMMEDIATELY - the tool handles validation
-3. Only pending orders can be cancelled - the tool will return an error if the order can't be cancelled"""
+3. Only pending orders can be cancelled - the tool will return an error if the order can't be cancelled
+
+Order Update:
+When a customer wants to modify an existing order (add/remove items, change quantities):
+1. Use get_customer_orders to find the order if needed
+2. Discuss the changes with the customer and confirm the updated items and total
+3. Call update_order with the COMPLETE updated items list and new total - this replaces the entire order contents
+4. Only pending orders can be updated"""
 
     # Auto-generate Available Tools from TOOL_DEFINITIONS
     if tool_definitions:

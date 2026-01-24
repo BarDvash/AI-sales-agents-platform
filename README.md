@@ -18,7 +18,7 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 
 **What works:**
 - ✅ Conversational AI sales agent (Valdman persona)
-- ✅ Tool calling framework (create orders, retrieve orders, cancel orders)
+- ✅ Tool calling framework (create, retrieve, cancel, update orders)
 - ✅ Modular codebase ready for multi-tenant scaling
 - ✅ Telegram integration
 - ✅ PostgreSQL database with full persistence
@@ -33,9 +33,9 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 - ✅ Conversation summarization for extended memory (30 msg context + rolling summary)
 - ✅ Customer profile tracking (auto-extracts name, address, language, notes from conversations)
 
-**Current Work:** Step 3 in progress - Intelligence Layer (cancel_order tool complete)
+**Current Work:** Step 3 complete - Intelligence Layer done
 
-**Next:** update_order tool → Multi-Channel Expansion → Tenant Management → Production Layer
+**Next:** Multi-Channel Expansion → Tenant Management → Production Layer
 
 ---
 
@@ -101,7 +101,8 @@ tools/                  # Agent capabilities (function calling)
 └── orders/
     ├── create_order.py         # Create structured orders
     ├── get_customer_orders.py  # Retrieve customer orders
-    └── cancel_order.py         # Cancel pending orders
+    ├── cancel_order.py         # Cancel pending orders
+    └── update_order.py         # Update pending orders
 
 storage/                # Data persistence
 ├── database.py        # Database connection and session management
@@ -301,10 +302,10 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 - [x] Conversation summarization (extended memory) ✅ COMPLETE
 - [x] Customer profile tracking ✅ COMPLETE
 - [x] cancel_order tool ✅ COMPLETE
-- [ ] update_order tool
+- [x] update_order tool ✅ COMPLETE
 - [ ] search_products tool (deferred until real-time inventory/larger catalogs)
 
-**Multi-Channel Expansion**
+**Multi-Channel Expansion** ⬅️ **NEXT**
 - [ ] Channel abstraction layer
 - [ ] WhatsApp integration
 - [ ] Unified Message model
@@ -369,14 +370,14 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 
 ---
 
-#### Step 3: Intelligence Layer (IN PROGRESS)
+#### Step 3: Intelligence Layer ✅ COMPLETE
 **Goal:** Improve agent memory and add more capabilities
 
 **Tasks:**
 - [x] Conversation summarization for extended memory ✅ COMPLETE
 - [x] Customer profile tracking across sessions ✅ COMPLETE
 - [x] cancel_order tool ✅ COMPLETE
-- [ ] update_order tool
+- [x] update_order tool ✅ COMPLETE
 - [ ] search_products tool (deferred until real-time inventory/larger catalogs)
 
 **Why third:** Better user experience and more helpful agents
@@ -385,6 +386,7 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 - Conversation summarization - agent now keeps 30 messages in context and summarizes every 15 messages into a rolling summary for extended memory.
 - Customer profile tracking - agent auto-extracts customer info (name, address, language, notes) from conversations and persists across sessions. Profile + order history injected into system prompt.
 - cancel_order tool - customers can cancel pending orders. Tool validates ownership and status. Prompt auto-generates Available Tools from registry.
+- update_order tool - customers can modify pending orders (add/remove items, change quantities). Replaces full order contents with validated ownership checks.
 
 ---
 

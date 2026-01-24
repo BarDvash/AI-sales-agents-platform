@@ -70,6 +70,17 @@ class OrderRepository:
             self.db.refresh(order)
         return order
 
+    def update_order(self, order_id: str, items: list, total: float, delivery_notes: Optional[str] = None) -> Optional[Order]:
+        """Update order items, total, and delivery notes."""
+        order = self.get_by_id(order_id)
+        if order:
+            order.items = items
+            order.total = total
+            order.delivery_notes = delivery_notes
+            self.db.commit()
+            self.db.refresh(order)
+        return order
+
     def get_pending_orders(self, tenant_id: str) -> List[Order]:
         """Get all pending orders for a tenant."""
         return (
