@@ -396,6 +396,7 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 
 **Tenant Management & Admin** ⬅️ **CURRENT PRIORITY**
 - [ ] Admin API endpoints (view conversations, orders per tenant)
+- [ ] Admin Dashboard Web UI (React + Vite + Tailwind)
 - [ ] CLI script to add new tenant
 - [ ] Configure products, agent persona, bot token
 - [ ] Webhook registration automation
@@ -484,11 +485,152 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 
 **Tasks:**
 - [ ] Admin API endpoints (view conversations, orders per tenant)
+- [ ] Admin Dashboard Web UI (React + Vite + Tailwind)
 - [ ] CLI script to add new tenant
 - [ ] Configure products, agent persona, bot token
 - [ ] Webhook registration automation
 
 **Why fourth:** Business owners need visibility into what the AI is doing. Builds trust and enables faster pilot onboarding.
+
+##### Admin Dashboard - Detailed Plan
+
+**Product Goal:** Web UI that gives a non-technical business owner visibility into their AI agent's performance.
+
+**Information Architecture:**
+```
+┌─────────────────────────────────────────────────────────┐
+│  [Conversations]  [Orders]                    tenant: X │
+└─────────────────────────────────────────────────────────┘
+
+Tab 1: CONVERSATIONS (default)
+┌──────────────────────┬──────────────────────────────────┐
+│ Conversation List    │  Conversation Detail             │
+│ (sorted by latest)   │                                  │
+│                      │  ┌─────────────────────────────┐ │
+│ > David - 2m ago     │  │ Message thread              │ │
+│   Moshe - 1h ago     │  │ (like WhatsApp)             │ │
+│   Sarah - 3h ago     │  │                             │ │
+│                      │  └─────────────────────────────┘ │
+│                      │                                  │
+│                      │  ┌──────────┐ ┌───────────────┐ │
+│                      │  │ Profile  │ │ Orders        │ │
+│                      │  │ Name     │ │ #123 pending  │ │
+│                      │  │ Address  │ │ #121 done     │ │
+│                      │  │ Notes    │ │               │ │
+│                      │  └──────────┘ └───────────────┘ │
+└──────────────────────┴──────────────────────────────────┘
+
+Tab 2: ORDERS
+┌─────────────────────────────────────────────────────────┐
+│ Filters: [Status ▼] [Customer ▼] [Product ▼]           │
+├─────────────────────────────────────────────────────────┤
+│ #124 │ David   │ 2kg ground beef │ pending  │ Jan 25   │
+│ #123 │ Moshe   │ 1kg pastrami    │ confirmed│ Jan 25   │
+│ #122 │ Sarah   │ 3kg sausage     │ cancelled│ Jan 24   │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Tech Stack:**
+| Layer | Tech | Why |
+|-------|------|-----|
+| API | FastAPI (existing) | Already have it |
+| Frontend | React + Vite | Fast, modern, well-supported |
+| Styling | Tailwind CSS | Rapid UI development |
+| HTTP Client | fetch | Simple, no extra deps |
+| Dev Server | Vite proxy to FastAPI | Seamless local dev |
+
+**File Structure:**
+```
+api/
+├── routes/
+│   ├── webhooks.py        # existing
+│   └── admin.py           # NEW - admin API endpoints
+
+admin-ui/                  # NEW - React app
+├── src/
+│   ├── components/
+│   │   ├── ConversationList.jsx
+│   │   ├── ConversationDetail.jsx
+│   │   ├── CustomerProfile.jsx
+│   │   ├── CustomerOrders.jsx
+│   │   ├── OrdersTable.jsx
+│   │   └── OrderFilters.jsx
+│   ├── pages/
+│   │   ├── ConversationsPage.jsx
+│   │   └── OrdersPage.jsx
+│   ├── api/
+│   │   └── client.js      # API calls
+│   ├── App.jsx
+│   └── main.jsx
+├── index.html
+├── package.json
+├── vite.config.js
+└── tailwind.config.js
+```
+
+**API Endpoints:**
+```
+GET /admin/{tenant_id}/conversations
+    → List all conversations, sorted by latest message
+    → Returns: [{id, chat_id, customer_name, last_message, last_message_at, message_count}]
+
+GET /admin/{tenant_id}/conversations/{conversation_id}
+    → Single conversation with all messages
+    → Returns: {id, chat_id, messages: [{role, content, created_at}], customer, orders}
+
+GET /admin/{tenant_id}/orders
+    → List all orders with filters
+    → Query params: ?status=pending&customer_id=X&product=Y
+    → Returns: [{id, customer_name, items, status, total, created_at}]
+
+GET /admin/{tenant_id}/orders/{order_id}
+    → Single order detail
+    → Returns: {id, customer, items, status, delivery_notes, created_at, updated_at}
+
+GET /admin/{tenant_id}/customers/{customer_id}
+    → Customer profile
+    → Returns: {id, name, address, language, notes, created_at}
+```
+
+**Running the Dashboard:**
+```bash
+# Development - Local
+# Terminal 1: Start the API server (existing)
+./scripts/dev.sh start
+
+# Terminal 2: Start the React dev server
+cd admin-ui
+npm install
+npm run dev
+# → Opens at http://localhost:5173
+
+# Access locally:
+http://localhost:5173/valdman
+http://localhost:5173/joannas-bakery
+```
+
+**Remote Access (Development/Demo):**
+```bash
+# Use ngrok to expose the React dev server
+ngrok http 5173
+# → Gives you a public URL like https://xyz789.ngrok.io
+
+# Share with business owner:
+https://xyz789.ngrok.io/valdman
+```
+
+**Production Deployment (later):**
+- Deploy React app to Vercel (free, instant deploys)
+- Or serve static build from FastAPI
+
+**Authentication:** None for MVP (dev only). Added to Production Layer.
+
+**Implementation Order:**
+1. API endpoints (`api/routes/admin.py`)
+2. React scaffold (Vite + Tailwind setup)
+3. Conversations tab (list + detail + profile + orders sidebar)
+4. Orders tab (table + filters)
+5. Polish (loading states, empty states, error handling)
 
 ---
 
@@ -509,11 +651,11 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 **Goal:** Production-ready features for real businesses
 
 **Tasks:**
+- [ ] Authentication for Admin Dashboard (API key per tenant, tenant-scoped views)
 - [ ] E-commerce integrations (Shopify, WooCommerce)
 - [ ] Payment processing (Stripe, PayPal)
 - [ ] Real-time inventory sync
 - [ ] CRM integrations
-- [ ] Admin dashboard
 - [ ] Manager/customer role separation
 
 **Why sixth:** Revenue-generating features for real deployments
