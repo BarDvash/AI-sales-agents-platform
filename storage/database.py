@@ -26,12 +26,23 @@ Base = declarative_base()
 def get_db():
     """
     Dependency to get database session.
-    Use with FastAPI Depends() or in standalone scripts.
+    Use with FastAPI Depends() or as a generator in standalone scripts.
 
-    Usage:
-        with get_db() as db:
-            # do database operations
+    Usage (FastAPI):
+        @app.get("/")
+        def endpoint(db: Session = Depends(get_db)):
             db.query(...)
+
+    Usage (standalone scripts):
+        db_gen = get_db()
+        db = next(db_gen)
+        try:
+            db.query(...)
+        finally:
+            try:
+                next(db_gen)
+            except StopIteration:
+                pass
     """
     db = SessionLocal()
     try:

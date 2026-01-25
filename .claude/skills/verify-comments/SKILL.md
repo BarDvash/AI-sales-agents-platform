@@ -57,6 +57,17 @@ After all modules are scanned, print a markdown table:
 **Total:** X comments fixed across Y files
 ```
 
+If bugs are discovered during the scan, add a separate section:
+
+```
+## Bugs Found (not fixed - report only)
+
+| File | Location | Issue |
+|------|----------|-------|
+| agent/profile_context.py:50 | `build_customer_context` | Uses `item.get('name')` but order items use `product_name` field |
+| ... | ... | ... |
+```
+
 ## Important Rules
 
 1. **Read before edit** - Always read the full function/class before changing its comments
@@ -64,6 +75,8 @@ After all modules are scanned, print a markdown table:
 3. **No new comments** - This tool fixes existing comments, not adds documentation
 4. **Preserve voice** - Keep the same tone/style as the original comment
 5. **Context matters** - Consider the full file context before deciding a comment is wrong
+6. **NEVER change code** - Only update comments/docstrings. If you find a bug where code doesn't match intent, report it in the summary table but do NOT fix the code itself. This skill is strictly for comment maintenance.
+7. **Report bugs separately** - If code appears buggy (e.g., wrong field names, incorrect logic), add a "Bugs Found" section to the summary instead of changing the code
 
 ## Module Scan Order
 
