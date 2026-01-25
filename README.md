@@ -34,9 +34,9 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 - ✅ Customer profile tracking (auto-extracts name, address, language, notes from conversations)
 - ✅ Agent CLI for E2E testing (scripts/agent_cli.py)
 
-**Current Work:** Step 3 complete - Intelligence Layer done
+**Current Work:** Step 4 - Tenant Management & Admin
 
-**Next:** Multi-Channel Expansion → Tenant Management → Production Layer
+**Next:** Tenant Management & Admin → Multi-Channel Expansion → Production Layer
 
 ---
 
@@ -387,23 +387,23 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 - [x] Database persistence (PostgreSQL) ✅ COMPLETE
 - [x] Multi-tenant webhook routing ✅ COMPLETE
 
-**Intelligence Layer** ⬅️ **CURRENT PRIORITY**
+**Intelligence Layer** ✅ COMPLETE
 - [x] Conversation summarization (extended memory) ✅ COMPLETE
 - [x] Customer profile tracking ✅ COMPLETE
 - [x] cancel_order tool ✅ COMPLETE
 - [x] update_order tool ✅ COMPLETE
 - [ ] search_products tool (deferred until real-time inventory/larger catalogs)
 
-**Multi-Channel Expansion** ⬅️ **NEXT**
-- [ ] Channel abstraction layer
-- [ ] WhatsApp integration
-- [ ] Unified Message model
-
-**Tenant Management**
+**Tenant Management & Admin** ⬅️ **CURRENT PRIORITY**
+- [ ] Admin API endpoints (view conversations, orders per tenant)
 - [ ] CLI script to add new tenant
 - [ ] Configure products, agent persona, bot token
 - [ ] Webhook registration automation
-- [ ] Simple admin endpoint (list tenants, view orders)
+
+**Multi-Channel Expansion**
+- [ ] Channel abstraction layer
+- [ ] WhatsApp integration
+- [ ] Unified Message model
 
 **Production Layer**
 - [ ] E-commerce integrations (Shopify, WooCommerce)
@@ -419,10 +419,10 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 
 **Current State:** Multi-tenant platform with 2 operational tenants and complete data isolation.
 
-### Path A: Intelligence Layer 🧠 ⬅️ **CURRENT PRIORITY**
-*Improving agent memory and capabilities*
+### Path A: Platform Development
+*Building the complete platform step by step*
 
-**Status:** Steps 1-2 Complete ✅ - Ready for Step 3 (Intelligence Layer)
+**Status:** Steps 1-3 Complete ✅ - Working on Step 4 (Tenant Management & Admin)
 
 #### Step 1: Database Layer ✅ COMPLETE
 **Goal:** Replace in-memory storage with PostgreSQL
@@ -479,7 +479,20 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 
 ---
 
-#### Step 4: Multi-Channel Expansion
+#### Step 4: Tenant Management & Admin ⬅️ **CURRENT**
+**Goal:** Admin visibility and easy tenant onboarding
+
+**Tasks:**
+- [ ] Admin API endpoints (view conversations, orders per tenant)
+- [ ] CLI script to add new tenant
+- [ ] Configure products, agent persona, bot token
+- [ ] Webhook registration automation
+
+**Why fourth:** Business owners need visibility into what the AI is doing. Builds trust and enables faster pilot onboarding.
+
+---
+
+#### Step 5: Multi-Channel Expansion
 **Goal:** Support multiple messaging platforms
 
 **Tasks:**
@@ -488,20 +501,7 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 - [ ] Unified Message model
 - [ ] Test same agent on both channels
 
-**Why fourth:** Reach customers on their preferred platforms
-
----
-
-#### Step 5: Tenant Management
-**Goal:** Easy way to add/configure new businesses
-
-**Tasks:**
-- [ ] CLI script to add new tenant
-- [ ] Configure products, agent persona, bot token
-- [ ] Webhook registration automation
-- [ ] Simple admin endpoint (list tenants, view orders)
-
-**Why fifth:** Can onboard pilots without writing code
+**Why fifth:** Reach customers on their preferred platforms after admin tools are in place
 
 ---
 
