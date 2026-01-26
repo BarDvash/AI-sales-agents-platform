@@ -21,7 +21,8 @@ async def health_check():
     return {"status": "healthy"}
 
 # Import routes
-from api.routes import webhooks
+from api.routes import webhooks, admin
 
 # Register route modules
 app.include_router(webhooks.router)
+app.include_router(admin.router)

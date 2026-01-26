@@ -69,6 +69,15 @@ class ConversationRepository:
             .all()
         )
 
+    def get_by_tenant(self, tenant_id: str) -> List[Conversation]:
+        """Get all conversations for a tenant, sorted by most recent message."""
+        return (
+            self.db.query(Conversation)
+            .filter(Conversation.tenant_id == tenant_id)
+            .order_by(Conversation.updated_at.desc().nullsfirst(), Conversation.created_at.desc())
+            .all()
+        )
+
     # === Message Operations ===
 
     def add_message(
