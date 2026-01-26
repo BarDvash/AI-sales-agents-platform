@@ -31,7 +31,7 @@ export default function ConversationDetail({
 }: ConversationDetailProps) {
   if (messages.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-gray-500">
+      <div className="flex items-center justify-center h-full text-slate-500">
         No messages
       </div>
     );
@@ -53,7 +53,7 @@ export default function ConversationDetail({
         <div key={date}>
           {/* Date separator */}
           <div className="flex items-center justify-center my-4">
-            <span className="px-3 py-1 bg-gray-100 rounded-full text-xs text-gray-500">
+            <span className="px-3 py-1 bg-slate-100 rounded-full text-xs text-slate-500 font-medium">
               {date}
             </span>
           </div>
@@ -68,10 +68,10 @@ export default function ConversationDetail({
                 }`}
               >
                 <div
-                  className={`max-w-[70%] rounded-lg px-4 py-2 ${
+                  className={`max-w-[70%] rounded-2xl px-4 py-2.5 ${
                     message.role === "user"
-                      ? "bg-gray-100 text-gray-900"
-                      : "bg-blue-500 text-white"
+                      ? "bg-slate-100 text-slate-900"
+                      : "bg-indigo-600 text-white"
                   }`}
                 >
                   {/* Message content */}
@@ -86,8 +86,8 @@ export default function ConversationDetail({
                   <p
                     className={`text-xs mt-1 ${
                       message.role === "user"
-                        ? "text-gray-400"
-                        : "text-blue-200"
+                        ? "text-slate-400"
+                        : "text-indigo-200"
                     }`}
                   >
                     {formatTime(message.created_at)}

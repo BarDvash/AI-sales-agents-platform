@@ -52,7 +52,7 @@ export default function ConversationList({
   }
 
   return (
-    <div className="divide-y divide-gray-200">
+    <div className="divide-y divide-slate-100">
       {conversations.map((conv) => {
         const isSelected = selectedId === conv.id.toString();
 
@@ -60,29 +60,31 @@ export default function ConversationList({
           <Link
             key={conv.id}
             href={`/${tenant}/conversations?selected=${conv.id}`}
-            className={`block p-4 hover:bg-gray-50 transition-colors ${
-              isSelected ? "bg-blue-50 border-l-4 border-blue-500" : ""
+            className={`block p-4 transition-all duration-150 ${
+              isSelected
+                ? "bg-indigo-50/50 border-l-2 border-indigo-500"
+                : "hover:bg-slate-50"
             }`}
           >
             <div className="flex justify-between items-start">
               <div className="min-w-0 flex-1">
                 {/* Customer name or chat_id */}
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className="text-sm font-medium text-slate-900 truncate">
                   {conv.customer_name || conv.chat_id}
                 </p>
 
                 {/* Last message preview */}
-                <p className="mt-1 text-sm text-gray-500 truncate" dir="auto">
+                <p className="mt-1 text-sm text-slate-500 truncate" dir="auto">
                   {truncateText(conv.last_message, 50)}
                 </p>
               </div>
 
               {/* Timestamp and message count */}
               <div className="ml-4 flex-shrink-0 text-right">
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-slate-400">
                   {formatRelativeTime(conv.last_message_at)}
                 </p>
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-xs text-slate-400">
                   {conv.message_count} msgs
                 </p>
               </div>

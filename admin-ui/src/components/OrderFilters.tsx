@@ -34,13 +34,13 @@ export default function OrderFilters({ currentStatus }: OrderFiltersProps) {
   );
 
   return (
-    <div className="flex items-center gap-4 p-4 bg-white border-b border-gray-200">
-      <label className="text-sm text-gray-600">Filter by:</label>
+    <div className="flex items-center gap-4 px-4 py-3 bg-slate-50/50 border-b border-slate-100">
+      <label className="text-sm font-medium text-slate-600">Filter by:</label>
 
       <select
         value={currentStatus || ""}
         onChange={(e) => handleStatusChange(e.target.value)}
-        className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
       >
         {STATUS_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>

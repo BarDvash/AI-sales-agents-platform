@@ -25,15 +25,15 @@ function formatDate(dateString: string): string {
 function getStatusColor(status: string): string {
   switch (status) {
     case "pending":
-      return "bg-yellow-100 text-yellow-800";
+      return "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20";
     case "confirmed":
-      return "bg-green-100 text-green-800";
+      return "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20";
     case "completed":
-      return "bg-blue-100 text-blue-800";
+      return "bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-600/20";
     case "cancelled":
-      return "bg-red-100 text-red-800";
+      return "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20";
     default:
-      return "bg-gray-100 text-gray-800";
+      return "bg-slate-50 text-slate-700 ring-1 ring-inset ring-slate-600/20";
   }
 }
 
@@ -65,50 +65,50 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
+      <table className="min-w-full divide-y divide-slate-200">
+        <thead className="bg-slate-50/70">
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
               Order ID
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
               Customer
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
               Items
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
               Status
             </th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
               Total
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
               Date
             </th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="bg-white divide-y divide-slate-100">
           {orders.map((order) => (
             <tr
               key={order.id}
-              className="hover:bg-gray-50 cursor-pointer transition-colors"
+              className="hover:bg-slate-50/70 cursor-pointer transition-colors"
             >
               <td className="px-6 py-4 whitespace-nowrap">
                 <Link
                   href={`/${tenant}/orders/${order.id}`}
-                  className="text-sm font-mono text-blue-600 hover:text-blue-800"
+                  className="text-sm font-mono text-indigo-600 hover:text-indigo-700"
                 >
                   {order.id}
                 </Link>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <span className="text-sm text-gray-900">
+                <span className="text-sm text-slate-900">
                   {order.customer_name || `Customer #${order.customer_id}`}
                 </span>
               </td>
               <td className="px-6 py-4">
-                <span className="text-sm text-gray-600 truncate max-w-xs block" dir="auto">
+                <span className="text-sm text-slate-600 truncate max-w-xs block" dir="auto">
                   {formatItems(order.items)}
                 </span>
               </td>
@@ -122,12 +122,12 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right">
-                <span className="text-sm font-medium text-gray-900">
+                <span className="text-sm font-medium text-slate-900">
                   {formatCurrency(order.total)}
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-slate-500">
                   {formatDate(order.created_at)}
                 </span>
               </td>
