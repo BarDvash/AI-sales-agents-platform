@@ -257,6 +257,17 @@ cmd_start() {
     if is_running "admin-ui"; then
         log_warn "Admin Dashboard already running (PID: $(get_pid admin-ui))"
     else
+        # Kill any stale processes on port 3000
+        local stale_admin=$(lsof -ti :3000 2>/dev/null)
+        if [ -n "$stale_admin" ]; then
+            log_warn "Port 3000 in use. Killing stale processes..."
+            echo "$stale_admin" | xargs kill -9 2>/dev/null
+            sleep 1
+        fi
+
+        # Remove stale Next.js lock file if present
+        rm -rf "$ADMIN_UI_DIR/.next/dev/lock" 2>/dev/null
+
         log_info "Starting Admin Dashboard..."
         cd "$ADMIN_UI_DIR"
 
