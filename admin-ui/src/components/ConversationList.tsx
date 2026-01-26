@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { ConversationListItem } from "@/lib/api";
+import EmptyState from "./EmptyState";
 
 interface ConversationListProps {
   conversations: ConversationListItem[];
@@ -42,9 +43,11 @@ export default function ConversationList({
 
   if (conversations.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        No conversations yet
-      </div>
+      <EmptyState
+        icon="conversations"
+        title="No conversations yet"
+        description="Conversations will appear here when customers start chatting with the AI agent."
+      />
     );
   }
 

@@ -1,11 +1,14 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { ConversationDetail as ConversationDetailType, getConversation } from "@/lib/api";
 import ConversationDetail from "./ConversationDetail";
 import CustomerProfile from "./CustomerProfile";
 import CustomerOrders from "./CustomerOrders";
+import LoadingSpinner from "./LoadingSpinner";
+import EmptyState from "./EmptyState";
+import ErrorState from "./ErrorState";
 
 interface ConversationViewProps {
   tenant: string;
@@ -19,37 +22,39 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const loadConversation = useCallback(async () => {
+    if (!selectedId) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getConversation(tenant, parseInt(selectedId));
+      setConversation(data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load conversation");
+      setConversation(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedId, tenant]);
+
   useEffect(() => {
     if (!selectedId) {
       setConversation(null);
       return;
     }
-
-    async function loadConversation() {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await getConversation(tenant, parseInt(selectedId!));
-        setConversation(data);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "Failed to load conversation");
-        setConversation(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-
     loadConversation();
-  }, [selectedId, tenant]);
+  }, [selectedId, loadConversation]);
 
   // No conversation selected
   if (!selectedId) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-center text-gray-500">
-          <p className="text-lg">Select a conversation</p>
-          <p className="text-sm mt-1">to view details</p>
-        </div>
+        <EmptyState
+          icon="messages"
+          title="Select a conversation"
+          description="Choose a conversation from the list to view the message history and customer details."
+        />
       </div>
     );
   }
@@ -58,7 +63,7 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-gray-500">Loading...</div>
+        <LoadingSpinner size="lg" text="Loading conversation..." />
       </div>
     );
   }
@@ -67,7 +72,11 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
   if (error) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-red-500">{error}</div>
+        <ErrorState
+          title="Failed to load conversation"
+          message={error}
+          onRetry={loadConversation}
+        />
       </div>
     );
   }
@@ -76,7 +85,11 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
   if (!conversation) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-gray-500">Conversation not found</div>
+        <EmptyState
+          icon="conversations"
+          title="Conversation not found"
+          description="This conversation may have been deleted or doesn't exist."
+        />
       </div>
     );
   }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { OrderListItem } from "@/lib/api";
+import EmptyState from "./EmptyState";
 
 interface OrdersTableProps {
   orders: OrderListItem[];
@@ -54,9 +55,11 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
 
   if (orders.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-500">
-        No orders found
-      </div>
+      <EmptyState
+        icon="orders"
+        title="No orders found"
+        description="Orders will appear here when customers place orders through the AI agent."
+      />
     );
   }
 
