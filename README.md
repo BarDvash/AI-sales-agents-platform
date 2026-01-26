@@ -490,7 +490,9 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 
 **Why fourth:** Business owners need visibility into what the AI is doing. Builds trust and enables faster pilot onboarding.
 
-##### Admin Dashboard - Detailed Plan
+**📋 Detailed Implementation Plan:** See [docs/admin-dashboard-plan.md](docs/admin-dashboard-plan.md) for incremental milestones with acceptance criteria.
+
+##### Admin Dashboard - Overview
 
 **Product Goal:** Web UI that gives a non-technical business owner visibility into their AI agent's performance.
 
