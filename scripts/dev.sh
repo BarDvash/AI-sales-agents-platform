@@ -18,6 +18,7 @@ PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PID_DIR="$PROJECT_DIR/.pids"
 VENV_DIR="$PROJECT_DIR/venv"
 ENV_FILE="$PROJECT_DIR/.env"
+ADMIN_UI_DIR="$PROJECT_DIR/admin-ui"
 
 # Tenant configuration
 ALL_TENANTS="valdman joannas_bakery"
@@ -252,7 +253,33 @@ cmd_start() {
         fi
     fi
 
-    # 5. Start ngrok (if not already running)
+    # 5. Start Admin Dashboard (Next.js)
+    if is_running "admin-ui"; then
+        log_warn "Admin Dashboard already running (PID: $(get_pid admin-ui))"
+    else
+        log_info "Starting Admin Dashboard..."
+        cd "$ADMIN_UI_DIR"
+
+        # Install dependencies if node_modules doesn't exist
+        if [ ! -d "node_modules" ]; then
+            log_info "Installing Admin Dashboard dependencies..."
+            npm install > /dev/null 2>&1
+        fi
+
+        # Start Next.js dev server
+        npm run dev > "$PID_DIR/admin-ui.log" 2>&1 &
+        save_pid "admin-ui" $!
+        cd "$PROJECT_DIR"
+        sleep 3
+        if is_running "admin-ui"; then
+            log_ok "Admin Dashboard started (PID: $(get_pid admin-ui))"
+        else
+            log_error "Admin Dashboard failed to start. Check .pids/admin-ui.log"
+            exit 1
+        fi
+    fi
+
+    # 6. Start ngrok (if not already running)
     if is_running "ngrok"; then
         log_warn "ngrok already running (PID: $(get_pid ngrok))"
     else
@@ -274,7 +301,7 @@ cmd_start() {
         fi
     fi
 
-    # 6. Get ngrok URL
+    # 7. Get ngrok URL
     log_info "Waiting for ngrok URL..."
     local ngrok_url=$(get_ngrok_url)
     if [ -z "$ngrok_url" ]; then
@@ -283,7 +310,7 @@ cmd_start() {
     fi
     log_ok "ngrok URL: $ngrok_url"
 
-    # 7. Set webhooks
+    # 8. Set webhooks
     echo ""
     log_info "Setting Telegram webhooks..."
 
@@ -302,21 +329,28 @@ cmd_start() {
         done
     fi
 
-    # 8. Print status
+    # 9. Print status
     echo ""
     echo -e "${GREEN}========================================${NC}"
     echo -e "${GREEN}  All services running!${NC}"
     echo -e "${GREEN}========================================${NC}"
     echo ""
-    echo -e "  Server:  http://localhost:8000"
-    echo -e "  Public:  $ngrok_url"
-    echo -e "  Health:  $ngrok_url/health"
-    echo -e "  ngrok:   http://127.0.0.1:4040"
+    echo -e "  ${BLUE}API Server:${NC}"
+    echo -e "    Local:   http://localhost:8000"
+    echo -e "    Public:  $ngrok_url"
+    echo -e "    Health:  $ngrok_url/health"
+    echo ""
+    echo -e "  ${BLUE}Admin Dashboard:${NC}"
+    echo -e "    http://localhost:3000/valdman"
+    echo -e "    http://localhost:3000/joannas_bakery"
+    echo ""
+    echo -e "  ${BLUE}Tools:${NC}"
+    echo -e "    ngrok:   http://127.0.0.1:4040"
     echo ""
     echo -e "  ${YELLOW}Press Ctrl+C to stop all services${NC}"
     echo ""
 
-    # 9. Tail server logs (foreground) with cleanup on exit
+    # 10. Tail server logs (foreground) with cleanup on exit
     trap 'echo ""; log_info "Shutting down..."; cmd_stop; exit 0' INT TERM
     tail -f "$PID_DIR/server.log"
 }
@@ -344,6 +378,10 @@ cmd_stop() {
     # Kill ngrok
     kill_process "ngrok"
     log_ok "ngrok stopped"
+
+    # Kill admin-ui
+    kill_process "admin-ui"
+    log_ok "Admin Dashboard stopped"
 
     # Kill uvicorn
     kill_process "uvicorn"
@@ -383,6 +421,13 @@ cmd_status() {
         log_ok "Server: running (PID: $(get_pid uvicorn))"
     else
         log_error "Server: not running"
+    fi
+
+    # Admin Dashboard
+    if is_running "admin-ui"; then
+        log_ok "Admin Dashboard: running (PID: $(get_pid admin-ui)) - http://localhost:3000"
+    else
+        log_error "Admin Dashboard: not running"
     fi
 
     # ngrok
