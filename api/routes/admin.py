@@ -65,6 +65,56 @@ class OrderSummary(BaseModel):
         from_attributes = True
 
 
+class OrderItem(BaseModel):
+    product_name: str
+    quantity: str  # Can be "2kg", "1.5", etc.
+    unit_price: float
+    subtotal: float
+
+
+class OrderListItem(BaseModel):
+    id: str
+    customer_id: int
+    customer_name: Optional[str]
+    items: list[OrderItem]
+    status: str
+    total: float
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class OrderDetail(BaseModel):
+    id: str
+    customer_id: int
+    customer_name: Optional[str]
+    items: list[OrderItem]
+    status: str
+    total: float
+    delivery_notes: Optional[str]
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+class CustomerDetail(BaseModel):
+    id: int
+    chat_id: str
+    name: Optional[str]
+    phone: Optional[str]
+    email: Optional[str]
+    address: Optional[str]
+    language: Optional[str]
+    notes: Optional[str]
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class ConversationDetail(BaseModel):
     id: int
     chat_id: str
@@ -188,4 +238,108 @@ def get_conversation(tenant_id: str, conversation_id: int, db: Session = Depends
         ],
         customer=customer_info,
         orders=orders,
+    )
+
+
+@router.get("/{tenant_id}/orders")
+def list_orders(
+    tenant_id: str,
+    status: Optional[str] = None,
+    customer_id: Optional[int] = None,
+    db: Session = Depends(get_db),
+):
+    """
+    List all orders for a tenant with optional filters.
+    Query params: ?status=pending&customer_id=1
+    """
+    verify_tenant(tenant_id, db)
+
+    order_repo = OrderRepository(db)
+    customer_repo = CustomerRepository(db)
+
+    # Get orders for tenant
+    orders = order_repo.get_by_tenant(tenant_id)
+
+    # Apply filters
+    if status:
+        orders = [o for o in orders if o.status == status]
+    if customer_id:
+        orders = [o for o in orders if o.customer_id == customer_id]
+
+    result = []
+    for order in orders:
+        customer = customer_repo.get_by_id(order.customer_id)
+        result.append(OrderListItem(
+            id=order.id,
+            customer_id=order.customer_id,
+            customer_name=customer.name if customer else None,
+            items=[OrderItem(**item) for item in order.items],
+            status=order.status,
+            total=order.total,
+            created_at=order.created_at,
+        ))
+
+    return result
+
+
+@router.get("/{tenant_id}/orders/{order_id}")
+def get_order(tenant_id: str, order_id: str, db: Session = Depends(get_db)):
+    """
+    Get a single order with full details.
+    """
+    verify_tenant(tenant_id, db)
+
+    order_repo = OrderRepository(db)
+    customer_repo = CustomerRepository(db)
+
+    order = order_repo.get_by_id(order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail=f"Order '{order_id}' not found")
+
+    # Verify order belongs to tenant
+    if order.tenant_id != tenant_id:
+        raise HTTPException(status_code=404, detail=f"Order '{order_id}' not found")
+
+    customer = customer_repo.get_by_id(order.customer_id)
+
+    return OrderDetail(
+        id=order.id,
+        customer_id=order.customer_id,
+        customer_name=customer.name if customer else None,
+        items=[OrderItem(**item) for item in order.items],
+        status=order.status,
+        total=order.total,
+        delivery_notes=order.delivery_notes,
+        created_at=order.created_at,
+        updated_at=order.updated_at,
+    )
+
+
+@router.get("/{tenant_id}/customers/{customer_id}")
+def get_customer(tenant_id: str, customer_id: int, db: Session = Depends(get_db)):
+    """
+    Get a customer profile.
+    """
+    verify_tenant(tenant_id, db)
+
+    customer_repo = CustomerRepository(db)
+
+    customer = customer_repo.get_by_id(customer_id)
+    if not customer:
+        raise HTTPException(status_code=404, detail=f"Customer {customer_id} not found")
+
+    # Verify customer belongs to tenant
+    if customer.tenant_id != tenant_id:
+        raise HTTPException(status_code=404, detail=f"Customer {customer_id} not found")
+
+    return CustomerDetail(
+        id=customer.id,
+        chat_id=customer.chat_id,
+        name=customer.name,
+        phone=customer.phone,
+        email=customer.email,
+        address=customer.address,
+        language=customer.language,
+        notes=customer.notes,
+        created_at=customer.created_at,
     )
