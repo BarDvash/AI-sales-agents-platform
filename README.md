@@ -397,7 +397,6 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 **Tenant Management & Admin** ⬅️ **CURRENT PRIORITY**
 - [ ] Admin API endpoints (view conversations, orders per tenant)
 - [ ] Admin Dashboard Web UI (React + Vite + Tailwind)
-- [ ] CLI script to add new tenant
 - [ ] Configure products, agent persona, bot token
 - [ ] Webhook registration automation
 
@@ -486,7 +485,6 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 **Tasks:**
 - [ ] Admin API endpoints (view conversations, orders per tenant)
 - [ ] Admin Dashboard Web UI (React + Vite + Tailwind)
-- [ ] CLI script to add new tenant
 - [ ] Configure products, agent persona, bot token
 - [ ] Webhook registration automation
 
@@ -652,6 +650,7 @@ https://xyz789.ngrok.io/valdman
 
 **Tasks:**
 - [ ] Authentication for Admin Dashboard (API key per tenant, tenant-scoped views)
+- [ ] CLI script to add new tenant
 - [ ] E-commerce integrations (Shopify, WooCommerce)
 - [ ] Payment processing (Stripe, PayPal)
 - [ ] Real-time inventory sync
