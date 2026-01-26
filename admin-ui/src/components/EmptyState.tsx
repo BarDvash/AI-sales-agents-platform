@@ -9,7 +9,7 @@ interface EmptyStateProps {
 const icons = {
   conversations: (
     <svg
-      className="w-12 h-12 text-gray-300"
+      className="w-12 h-12 text-slate-300"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -24,7 +24,7 @@ const icons = {
   ),
   orders: (
     <svg
-      className="w-12 h-12 text-gray-300"
+      className="w-12 h-12 text-slate-300"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -39,7 +39,7 @@ const icons = {
   ),
   messages: (
     <svg
-      className="w-12 h-12 text-gray-300"
+      className="w-12 h-12 text-slate-300"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -62,9 +62,9 @@ export default function EmptyState({
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
       {icons[icon]}
-      <h3 className="mt-4 text-lg font-medium text-gray-900">{title}</h3>
+      <h3 className="mt-4 text-base font-semibold text-slate-800">{title}</h3>
       {description && (
-        <p className="mt-2 text-sm text-gray-500 max-w-sm">{description}</p>
+        <p className="mt-2 text-sm text-slate-500 max-w-sm">{description}</p>
       )}
     </div>
   );
