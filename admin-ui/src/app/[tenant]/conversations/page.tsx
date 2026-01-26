@@ -23,16 +23,16 @@ export default async function ConversationsPage({
   return (
     <div className="flex gap-6 h-[calc(100vh-12rem)]">
       {/* Left sidebar - Conversation list */}
-      <div className="w-80 flex-shrink-0 bg-white rounded-lg shadow overflow-hidden">
-        <div className="p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Conversations</h2>
+      <div className="w-80 flex-shrink-0 bg-white rounded-xl border border-slate-200/60 shadow-[0_0_0_1px_rgb(0_0_0/0.03),0_2px_4px_rgb(0_0_0/0.05)] overflow-hidden">
+        <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
+          <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">Conversations</h2>
         </div>
 
-        <div className="overflow-y-auto h-[calc(100%-4rem)]">
+        <div className="overflow-y-auto h-[calc(100%-3rem)]">
           {error ? (
             <div className="p-4 text-red-500 text-sm">{error}</div>
           ) : (
-            <Suspense fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+            <Suspense fallback={<div className="p-4 text-slate-500">Loading...</div>}>
               <ConversationList conversations={conversations} />
             </Suspense>
           )}
@@ -40,8 +40,8 @@ export default async function ConversationsPage({
       </div>
 
       {/* Right panel - Conversation detail */}
-      <div className="flex-1 bg-white rounded-lg shadow overflow-hidden">
-        <Suspense fallback={<div className="flex items-center justify-center h-full text-gray-500">Loading...</div>}>
+      <div className="flex-1 bg-white rounded-xl border border-slate-200/60 shadow-[0_0_0_1px_rgb(0_0_0/0.03),0_2px_4px_rgb(0_0_0/0.05)] overflow-hidden">
+        <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-500">Loading...</div>}>
           <ConversationView tenant={tenant} />
         </Suspense>
       </div>

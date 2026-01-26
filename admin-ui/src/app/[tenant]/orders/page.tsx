@@ -24,11 +24,11 @@ export default async function OrdersPage({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
+    <div className="bg-white rounded-xl border border-slate-200/60 shadow-[0_0_0_1px_rgb(0_0_0/0.03),0_2px_4px_rgb(0_0_0/0.05)] overflow-hidden">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900">Orders</h2>
-        <p className="text-sm text-gray-500 mt-1">
+      <div className="px-6 py-4 border-b border-slate-100">
+        <h2 className="text-lg font-semibold text-slate-900 tracking-tight">Orders</h2>
+        <p className="text-sm text-slate-500 mt-1">
           {orders.length} order{orders.length !== 1 ? "s" : ""}
           {status ? ` (${status})` : ""}
         </p>

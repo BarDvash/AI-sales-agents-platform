@@ -99,11 +99,11 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
       {/* Message thread */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-4 border-b border-gray-200 bg-gray-50">
-          <h3 className="font-medium text-gray-900">
+        <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
+          <h3 className="font-medium text-slate-900">
             {conversation.customer?.name || conversation.chat_id}
           </h3>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-slate-500">
             {conversation.messages.length} messages
           </p>
         </div>
@@ -115,9 +115,9 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
       </div>
 
       {/* Sidebar - Profile & Orders */}
-      <div className="w-64 border-l border-gray-200 overflow-y-auto">
+      <div className="w-64 border-l border-slate-200/60 bg-slate-50/30 overflow-y-auto">
         <CustomerProfile customer={conversation.customer} />
-        <div className="border-t border-gray-200">
+        <div className="border-t border-slate-100">
           <CustomerOrders orders={conversation.orders} />
         </div>
       </div>
