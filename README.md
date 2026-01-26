@@ -396,7 +396,7 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 
 **Tenant Management & Admin** ⬅️ **CURRENT PRIORITY**
 - [ ] Admin API endpoints (view conversations, orders per tenant)
-- [ ] Admin Dashboard Web UI (React + Vite + Tailwind)
+- [ ] Admin Dashboard Web UI (Next.js + Tailwind)
 - [ ] Configure products, agent persona, bot token
 - [ ] Webhook registration automation
 
@@ -484,7 +484,7 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 
 **Tasks:**
 - [ ] Admin API endpoints (view conversations, orders per tenant)
-- [ ] Admin Dashboard Web UI (React + Vite + Tailwind)
+- [ ] Admin Dashboard Web UI (Next.js + Tailwind)
 - [ ] Configure products, agent persona, bot token
 - [ ] Webhook registration automation
 
@@ -532,10 +532,10 @@ Tab 2: ORDERS
 | Layer | Tech | Why |
 |-------|------|-----|
 | API | FastAPI (existing) | Already have it |
-| Frontend | React + Vite | Fast, modern, well-supported |
+| Frontend | Next.js 14 (App Router) | File-based routing, SSR-ready, easy Vercel deploy |
+| Language | TypeScript | Type safety, better DX |
 | Styling | Tailwind CSS | Rapid UI development |
 | HTTP Client | fetch | Simple, no extra deps |
-| Dev Server | Vite proxy to FastAPI | Seamless local dev |
 
 **File Structure:**
 ```
@@ -544,26 +544,33 @@ api/
 │   ├── webhooks.py        # existing
 │   └── admin.py           # NEW - admin API endpoints
 
-admin-ui/                  # NEW - React app
+admin-ui/                  # NEW - Next.js app
 ├── src/
+│   ├── app/
+│   │   ├── layout.tsx           # Root layout
+│   │   ├── page.tsx             # Redirect to tenant select or default
+│   │   └── [tenant]/
+│   │       ├── layout.tsx       # Tenant layout (header, nav)
+│   │       ├── page.tsx         # Redirect to conversations
+│   │       ├── conversations/
+│   │       │   ├── page.tsx     # Conversations list + detail
+│   │       │   └── [id]/page.tsx
+│   │       └── orders/
+│   │           ├── page.tsx     # Orders table
+│   │           └── [id]/page.tsx
 │   ├── components/
-│   │   ├── ConversationList.jsx
-│   │   ├── ConversationDetail.jsx
-│   │   ├── CustomerProfile.jsx
-│   │   ├── CustomerOrders.jsx
-│   │   ├── OrdersTable.jsx
-│   │   └── OrderFilters.jsx
-│   ├── pages/
-│   │   ├── ConversationsPage.jsx
-│   │   └── OrdersPage.jsx
-│   ├── api/
-│   │   └── client.js      # API calls
-│   ├── App.jsx
-│   └── main.jsx
-├── index.html
+│   │   ├── ConversationList.tsx
+│   │   ├── ConversationDetail.tsx
+│   │   ├── CustomerProfile.tsx
+│   │   ├── CustomerOrders.tsx
+│   │   ├── OrdersTable.tsx
+│   │   └── OrderFilters.tsx
+│   └── lib/
+│       └── api.ts               # API client
 ├── package.json
-├── vite.config.js
-└── tailwind.config.js
+├── next.config.js
+├── tailwind.config.ts
+└── tsconfig.json
 ```
 
 **API Endpoints:**
@@ -596,21 +603,21 @@ GET /admin/{tenant_id}/customers/{customer_id}
 # Terminal 1: Start the API server (existing)
 ./scripts/dev.sh start
 
-# Terminal 2: Start the React dev server
+# Terminal 2: Start the Next.js dev server
 cd admin-ui
 npm install
 npm run dev
-# → Opens at http://localhost:5173
+# → Opens at http://localhost:3000
 
 # Access locally:
-http://localhost:5173/valdman
-http://localhost:5173/joannas-bakery
+http://localhost:3000/valdman
+http://localhost:3000/joannas-bakery
 ```
 
 **Remote Access (Development/Demo):**
 ```bash
-# Use ngrok to expose the React dev server
-ngrok http 5173
+# Use ngrok to expose the Next.js dev server
+ngrok http 3000
 # → Gives you a public URL like https://xyz789.ngrok.io
 
 # Share with business owner:
@@ -618,14 +625,14 @@ https://xyz789.ngrok.io/valdman
 ```
 
 **Production Deployment (later):**
-- Deploy React app to Vercel (free, instant deploys)
-- Or serve static build from FastAPI
+- Deploy to Vercel (free, one-click deploy from GitHub)
+- Automatic preview deploys for PRs
 
 **Authentication:** None for MVP (dev only). Added to Production Layer.
 
 **Implementation Order:**
 1. API endpoints (`api/routes/admin.py`)
-2. React scaffold (Vite + Tailwind setup)
+2. Next.js scaffold (create-next-app + Tailwind setup)
 3. Conversations tab (list + detail + profile + orders sidebar)
 4. Orders tab (table + filters)
 5. Polish (loading states, empty states, error handling)
