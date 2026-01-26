@@ -675,6 +675,14 @@ https://xyz789.ngrok.io/valdman
 - [ ] Real-time inventory sync
 - [ ] CRM integrations
 - [ ] Manager/customer role separation
+- [ ] **Security audit before go-live:**
+  - [ ] Input validation and sanitization (SQL injection, XSS prevention)
+  - [ ] API rate limiting and DDoS protection
+  - [ ] Secrets management (rotate API keys, secure storage)
+  - [ ] HTTPS enforcement and secure headers
+  - [ ] Dependency vulnerability scan (pip-audit, npm audit)
+  - [ ] Penetration testing on Admin Dashboard and API endpoints
+  - [ ] OWASP Top 10 checklist review
 
 **Why sixth:** Revenue-generating features for real deployments
 
