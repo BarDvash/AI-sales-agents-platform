@@ -14,7 +14,7 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 
 ## Current Status
 
-**Phase:** Multi-tenant foundation complete - Ready for tenant management tools.
+**Phase:** Admin Dashboard complete - Ready for multi-channel expansion.
 
 **What works:**
 - ✅ Conversational AI sales agent (Valdman persona)
@@ -33,10 +33,12 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 - ✅ Conversation summarization for extended memory (30 msg context + rolling summary)
 - ✅ Customer profile tracking (auto-extracts name, address, language, notes from conversations)
 - ✅ Agent CLI for E2E testing (scripts/agent_cli.py)
+- ✅ Admin API endpoints (conversations, orders, customers)
+- ✅ Admin Dashboard (Next.js) with conversations view, orders table
 
-**Current Work:** Step 4 - Tenant Management & Admin
+**Current Work:** Step 5 - Multi-Channel Expansion
 
-**Next:** Tenant Management & Admin → Multi-Channel Expansion → Production Layer
+**Next:** Multi-Channel Expansion → Production Layer
 
 ---
 
@@ -88,7 +90,15 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 api/                    # HTTP layer
 ├── main.py            # FastAPI app initialization, health check
 └── routes/
-    └── webhooks.py    # Webhook endpoint: POST /webhooks/telegram/{tenant_id}
+    ├── webhooks.py    # Webhook endpoint: POST /webhooks/telegram/{tenant_id}
+    └── admin.py       # Admin API: GET /admin/{tenant_id}/conversations, orders, customers
+
+admin-ui/               # Admin Dashboard (Next.js 14)
+├── src/app/           # App router pages
+│   ├── [tenant]/conversations/  # Conversation list + detail view
+│   └── [tenant]/orders/         # Orders table + detail view
+├── src/components/    # React components (ConversationList, OrdersTable, etc.)
+└── src/lib/api.ts     # API client with TypeScript types
 
 agent/                  # AI orchestration
 ├── orchestrator.py    # Main agent loop (LLM calls, tool execution)
