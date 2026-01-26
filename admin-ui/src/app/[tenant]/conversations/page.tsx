@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { getConversations, ConversationListItem } from "@/lib/api";
 import ConversationList from "@/components/ConversationList";
+import ConversationView from "@/components/ConversationView";
 
 export default async function ConversationsPage({
   params,
@@ -30,17 +32,18 @@ export default async function ConversationsPage({
           {error ? (
             <div className="p-4 text-red-500 text-sm">{error}</div>
           ) : (
-            <ConversationList conversations={conversations} />
+            <Suspense fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+              <ConversationList conversations={conversations} />
+            </Suspense>
           )}
         </div>
       </div>
 
-      {/* Right panel - Conversation detail (placeholder) */}
-      <div className="flex-1 bg-white rounded-lg shadow flex items-center justify-center">
-        <div className="text-center text-gray-500">
-          <p className="text-lg">Select a conversation</p>
-          <p className="text-sm mt-1">to view details</p>
-        </div>
+      {/* Right panel - Conversation detail */}
+      <div className="flex-1 bg-white rounded-lg shadow overflow-hidden">
+        <Suspense fallback={<div className="flex items-center justify-center h-full text-gray-500">Loading...</div>}>
+          <ConversationView tenant={tenant} />
+        </Suspense>
       </div>
     </div>
   );
