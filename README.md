@@ -36,9 +36,9 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 - ✅ Admin API endpoints (conversations, orders, customers)
 - ✅ Admin Dashboard (Next.js) with conversations view, orders table
 
-**Current Work:** Step 5 - Multi-Channel Expansion
+**Current Work:** Step 4 complete - Ready for Multi-Channel Expansion
 
-**Next:** Multi-Channel Expansion → Production Layer
+**Next:** Multi-Channel Expansion (WhatsApp) → Production Layer
 
 ---
 
@@ -180,7 +180,7 @@ scripts/                # Development and testing tools
 
 ### Planned Features
 - 🔄 WhatsApp integration
-- 🔄 Admin dashboard
+- 🔄 Tenant self-service configuration (products, persona, bot token)
 - 🔄 Payment processing
 - 🔄 E-commerce integrations (Shopify, WooCommerce)
 - 🔄 Manager/customer role separation
@@ -404,13 +404,13 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 - [x] update_order tool ✅ COMPLETE
 - [ ] search_products tool (deferred until real-time inventory/larger catalogs)
 
-**Tenant Management & Admin** ⬅️ **CURRENT PRIORITY**
-- [ ] Admin API endpoints (view conversations, orders per tenant)
-- [ ] Admin Dashboard Web UI (Next.js + Tailwind)
-- [ ] Configure products, agent persona, bot token
-- [ ] Webhook registration automation
+**Tenant Management & Admin** ✅ COMPLETE (core features)
+- [x] Admin API endpoints (view conversations, orders per tenant) ✅ COMPLETE
+- [x] Admin Dashboard Web UI (Next.js + Tailwind) ✅ COMPLETE
+- [ ] Configure products, agent persona, bot token (self-service UI)
+- [x] Webhook registration automation (via dev.sh script) ✅ COMPLETE
 
-**Multi-Channel Expansion**
+**Multi-Channel Expansion** ⬅️ **NEXT PRIORITY**
 - [ ] Channel abstraction layer
 - [ ] WhatsApp integration
 - [ ] Unified Message model
@@ -432,7 +432,7 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 ### Path A: Platform Development
 *Building the complete platform step by step*
 
-**Status:** Steps 1-3 Complete ✅ - Working on Step 4 (Tenant Management & Admin)
+**Status:** Steps 1-4 Complete ✅ - Ready for Step 5 (Multi-Channel Expansion)
 
 #### Step 1: Database Layer ✅ COMPLETE
 **Goal:** Replace in-memory storage with PostgreSQL
@@ -489,16 +489,24 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 
 ---
 
-#### Step 4: Tenant Management & Admin ⬅️ **CURRENT**
+#### Step 4: Tenant Management & Admin ✅ COMPLETE (core features)
 **Goal:** Admin visibility and easy tenant onboarding
 
 **Tasks:**
-- [ ] Admin API endpoints (view conversations, orders per tenant)
-- [ ] Admin Dashboard Web UI (Next.js + Tailwind)
-- [ ] Configure products, agent persona, bot token
-- [ ] Webhook registration automation
+- [x] Admin API endpoints (view conversations, orders per tenant) ✅ COMPLETE
+- [x] Admin Dashboard Web UI (Next.js + Tailwind) ✅ COMPLETE
+- [ ] Configure products, agent persona, bot token (self-service UI - deferred)
+- [x] Webhook registration automation (via dev.sh script) ✅ COMPLETE
 
 **Why fourth:** Business owners need visibility into what the AI is doing. Builds trust and enables faster pilot onboarding.
+
+**Completed:**
+- Admin API with 6 endpoints: conversations list/detail, orders list/detail, customers
+- Next.js 14 Admin Dashboard with Tailwind CSS
+- Conversations tab with message thread view, customer profile sidebar, order history
+- Orders tab with filterable table, status badges, order detail view
+- Premium UX with Slate + Indigo design system (Linear/Notion style)
+- One-command dev environment: `./scripts/dev.sh start` (starts API, Dashboard, ngrok, webhooks)
 
 **📋 Detailed Implementation Plan:** See [docs/admin-dashboard-plan.md](docs/admin-dashboard-plan.md) for incremental milestones with acceptance criteria.
 
@@ -571,12 +579,16 @@ admin-ui/                  # NEW - Next.js app
 │   │           ├── page.tsx     # Orders table
 │   │           └── [id]/page.tsx
 │   ├── components/
-│   │   ├── ConversationList.tsx
-│   │   ├── ConversationDetail.tsx
-│   │   ├── CustomerProfile.tsx
-│   │   ├── CustomerOrders.tsx
-│   │   ├── OrdersTable.tsx
-│   │   └── OrderFilters.tsx
+│   │   ├── ConversationList.tsx   # Conversation sidebar list
+│   │   ├── ConversationDetail.tsx # Message thread display
+│   │   ├── ConversationView.tsx   # Combined list + detail view
+│   │   ├── CustomerProfile.tsx    # Customer info sidebar
+│   │   ├── CustomerOrders.tsx     # Customer's order history
+│   │   ├── OrdersTable.tsx        # Orders table with sorting
+│   │   ├── OrderFilters.tsx       # Status/product filters
+│   │   ├── LoadingSpinner.tsx     # Loading state component
+│   │   ├── EmptyState.tsx         # Empty state component
+│   │   └── ErrorState.tsx         # Error state component
 │   └── lib/
 │       └── api.ts               # API client
 ├── package.json
@@ -611,29 +623,18 @@ GET /admin/{tenant_id}/customers/{customer_id}
 
 **Running the Dashboard:**
 ```bash
-# Development - Local
-# Terminal 1: Start the API server (existing)
+# Single command starts everything (API, Dashboard, ngrok, webhooks)
 ./scripts/dev.sh start
 
-# Terminal 2: Start the Next.js dev server
-cd admin-ui
-npm install
-npm run dev
-# → Opens at http://localhost:3000
-
 # Access locally:
-http://localhost:3000/valdman
-http://localhost:3000/joannas-bakery
-```
+# Admin Dashboard: http://localhost:3000/valdman or http://localhost:3000/joannas_bakery
+# API Server: http://localhost:8000
+# ngrok Inspector: http://127.0.0.1:4040
 
-**Remote Access (Development/Demo):**
-```bash
-# Use ngrok to expose the Next.js dev server
-ngrok http 3000
-# → Gives you a public URL like https://xyz789.ngrok.io
-
-# Share with business owner:
-https://xyz789.ngrok.io/valdman
+# Other commands:
+./scripts/dev.sh stop      # Stop all services
+./scripts/dev.sh restart   # Restart everything
+./scripts/dev.sh status    # Show running services
 ```
 
 **Production Deployment (later):**
@@ -641,13 +642,6 @@ https://xyz789.ngrok.io/valdman
 - Automatic preview deploys for PRs
 
 **Authentication:** None for MVP (dev only). Added to Production Layer.
-
-**Implementation Order:**
-1. API endpoints (`api/routes/admin.py`)
-2. Next.js scaffold (create-next-app + Tailwind setup)
-3. Conversations tab (list + detail + profile + orders sidebar)
-4. Orders tab (table + filters)
-5. Polish (loading states, empty states, error handling)
 
 ---
 
@@ -708,7 +702,8 @@ This is currently a solo project. Following atomic milestone approach - each PR 
 - **Backend:** FastAPI (async Python web framework)
 - **LLM:** Claude Sonnet 4 via Anthropic SDK
 - **Messaging:** Telegram Bot API (WhatsApp planned)
-- **Storage:** In-memory (temporary - migration in progress)
+- **Database:** PostgreSQL (SQLAlchemy ORM + Alembic migrations)
+- **Frontend:** Next.js 14 + Tailwind CSS (Admin Dashboard)
 - **Config:** python-dotenv
 - **Tools:** Claude function calling (tool use API)
 
