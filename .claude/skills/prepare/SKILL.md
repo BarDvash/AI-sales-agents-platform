@@ -23,23 +23,9 @@ description: Prepare for significant work session
    - Maintain tenant isolation and data integrity
 
 4. **BEFORE COMMITTING:**
-   - Wait for user approval
    - Present summary of changes
-   - Ask if ready to commit
-
-5. **WHEN COMMITTING:**
-   - **CRITICAL: Update README.md FIRST before committing** - this is mandatory
-   - Use [AISalesAgentsPlatform] prefix
-   - Include comprehensive commit message with format:
-     ```
-     [AISalesAgentsPlatform] <description>
-
-     <detailed explanation of changes>
-
-     Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
-     ```
-   - Stage ALL changes including README.md in ONE commit (not separate)
-   - Ask if user wants to push
+   - **NEVER invoke `/commit-locally` or `/commit-and-push` without explicit user request**
+   - Wait for user to explicitly ask to commit
 
 ---
 
