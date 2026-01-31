@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { Message } from "@/lib/api";
 
 interface ConversationDetailProps {
@@ -29,6 +30,15 @@ function formatDate(dateString: string): string {
 export default function ConversationDetail({
   messages,
 }: ConversationDetailProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when messages load or change
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   if (messages.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-slate-500">
@@ -48,7 +58,7 @@ export default function ConversationDetail({
   });
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto p-4 space-y-4">
+    <div ref={scrollRef} className="flex flex-col h-full overflow-y-auto p-4 space-y-4">
       {Object.entries(messagesByDate).map(([date, msgs]) => (
         <div key={date}>
           {/* Date separator */}
