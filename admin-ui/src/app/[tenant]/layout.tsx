@@ -26,10 +26,16 @@ export default function TenantLayout({
       <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200/60 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Tenant Name */}
-            <h1 className="text-lg font-semibold text-slate-900 tracking-tight">
-              {tenantDisplay}
-            </h1>
+            {/* Brand + Tenant */}
+            <div className="flex items-center gap-3">
+              <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+                AI Sales Platform
+              </h1>
+              <span className="text-slate-300">·</span>
+              <span className="text-lg font-medium text-slate-600">
+                {tenantDisplay}
+              </span>
+            </div>
 
             {/* Navigation Tabs */}
             <nav className="flex space-x-2">
