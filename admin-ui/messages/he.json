@@ -58,6 +58,7 @@
   "customer": {
     "profile": "פרופיל לקוח",
     "name": "שם",
+    "noName": "—",
     "address": "כתובת",
     "language": "שפה",
     "notes": "הערות",

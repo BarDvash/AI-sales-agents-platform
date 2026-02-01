@@ -58,6 +58,7 @@
   "customer": {
     "profile": "Customer Profile",
     "name": "Name",
+    "noName": "—",
     "address": "Address",
     "language": "Language",
     "notes": "Notes",

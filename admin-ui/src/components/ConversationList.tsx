@@ -72,9 +72,16 @@ export default function ConversationList({
           >
             <div className="flex justify-between items-start">
               <div className="min-w-0 flex-1">
-                {/* Customer name or chat_id */}
+                {/* Customer name or placeholder */}
                 <p className="text-sm font-medium text-slate-900 truncate">
-                  {conv.customer_name || conv.chat_id}
+                  {conv.customer_name || (
+                    <span className="text-slate-400 italic">{t("customer.noName")}</span>
+                  )}
+                </p>
+
+                {/* Chat ID (always shown as subtitle) */}
+                <p className="text-xs text-slate-400 font-mono">
+                  #{conv.chat_id}
                 </p>
 
                 {/* Last message preview */}
