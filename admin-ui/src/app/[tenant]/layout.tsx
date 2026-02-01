@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import LanguageToggle from "@/components/LanguageToggle";
 
 export default function TenantLayout({
   children,
@@ -11,6 +13,7 @@ export default function TenantLayout({
   const params = useParams();
   const pathname = usePathname();
   const tenant = params.tenant as string;
+  const t = useTranslations("nav");
 
   // Format tenant name for display
   const tenantDisplay = tenant
@@ -29,7 +32,7 @@ export default function TenantLayout({
             {/* Brand + Tenant */}
             <div className="flex items-center gap-3">
               <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-                AI Sales Platform
+                {t("brand")}
               </h1>
               <span className="text-slate-300">·</span>
               <span className="text-lg font-medium text-slate-600">
@@ -37,29 +40,36 @@ export default function TenantLayout({
               </span>
             </div>
 
-            {/* Navigation Tabs */}
-            <nav className="flex space-x-2">
-              <Link
-                href={`/${tenant}/conversations`}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-                  isConversationsActive
-                    ? "bg-indigo-600 text-white shadow-sm"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                }`}
-              >
-                Conversations
-              </Link>
-              <Link
-                href={`/${tenant}/orders`}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-                  isOrdersActive
-                    ? "bg-indigo-600 text-white shadow-sm"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                }`}
-              >
-                Orders
-              </Link>
-            </nav>
+            {/* Navigation Tabs + Language Toggle */}
+            <div className="flex items-center gap-4">
+              <nav className="flex gap-2">
+                <Link
+                  href={`/${tenant}/conversations`}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                    isConversationsActive
+                      ? "bg-indigo-600 text-white shadow-sm"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                  }`}
+                >
+                  {t("conversations")}
+                </Link>
+                <Link
+                  href={`/${tenant}/orders`}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                    isOrdersActive
+                      ? "bg-indigo-600 text-white shadow-sm"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                  }`}
+                >
+                  {t("orders")}
+                </Link>
+              </nav>
+
+              {/* Language Toggle */}
+              <div className="border-s border-slate-200 ps-4">
+                <LanguageToggle />
+              </div>
+            </div>
           </div>
         </div>
       </header>

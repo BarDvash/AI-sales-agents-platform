@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 interface ErrorStateProps {
   title?: string;
   message: string;
@@ -7,10 +9,13 @@ interface ErrorStateProps {
 }
 
 export default function ErrorState({
-  title = "Something went wrong",
+  title,
   message,
   onRetry,
 }: ErrorStateProps) {
+  const t = useTranslations();
+  const displayTitle = title || t("error.title");
+
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
       <svg
@@ -27,7 +32,7 @@ export default function ErrorState({
         />
       </svg>
 
-      <h3 className="mt-4 text-lg font-medium text-slate-900">{title}</h3>
+      <h3 className="mt-4 text-lg font-medium text-slate-900">{displayTitle}</h3>
       <p className="mt-2 text-sm text-red-500 max-w-sm">{message}</p>
 
       {onRetry && (
@@ -35,7 +40,7 @@ export default function ErrorState({
           onClick={onRetry}
           className="mt-4 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all"
         >
-          Try Again
+          {t("common.retry")}
         </button>
       )}
     </div>

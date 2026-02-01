@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { ConversationDetail as ConversationDetailType, getConversation } from "@/lib/api";
 import ConversationDetail from "./ConversationDetail";
 import CustomerProfile from "./CustomerProfile";
@@ -17,6 +18,7 @@ interface ConversationViewProps {
 export default function ConversationView({ tenant }: ConversationViewProps) {
   const searchParams = useSearchParams();
   const selectedId = searchParams.get("selected");
+  const t = useTranslations();
 
   const [conversation, setConversation] = useState<ConversationDetailType | null>(null);
   const [loading, setLoading] = useState(false);
@@ -31,12 +33,12 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
       const data = await getConversation(tenant, parseInt(selectedId));
       setConversation(data);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load conversation");
+      setError(e instanceof Error ? e.message : t("error.loadConversation"));
       setConversation(null);
     } finally {
       setLoading(false);
     }
-  }, [selectedId, tenant]);
+  }, [selectedId, tenant, t]);
 
   useEffect(() => {
     if (!selectedId) {
@@ -52,8 +54,8 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
       <div className="flex items-center justify-center h-full">
         <EmptyState
           icon="messages"
-          title="Select a conversation"
-          description="Choose a conversation from the list to view the message history and customer details."
+          title={t("conversations.selectPrompt.title")}
+          description={t("conversations.selectPrompt.description")}
         />
       </div>
     );
@@ -63,7 +65,7 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <LoadingSpinner size="lg" text="Loading conversation..." />
+        <LoadingSpinner size="lg" text={t("common.loading")} />
       </div>
     );
   }
@@ -73,7 +75,7 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
     return (
       <div className="flex items-center justify-center h-full">
         <ErrorState
-          title="Failed to load conversation"
+          title={t("error.loadConversation")}
           message={error}
           onRetry={loadConversation}
         />
@@ -87,8 +89,8 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
       <div className="flex items-center justify-center h-full">
         <EmptyState
           icon="conversations"
-          title="Conversation not found"
-          description="This conversation may have been deleted or doesn't exist."
+          title={t("conversations.notFound.title")}
+          description={t("conversations.notFound.description")}
         />
       </div>
     );
@@ -104,7 +106,7 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
             {conversation.customer?.name || conversation.chat_id}
           </h3>
           <p className="text-sm text-slate-500">
-            {conversation.messages.length} messages
+            {t("conversations.messages", { count: conversation.messages.length })}
           </p>
         </div>
 
@@ -115,7 +117,7 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
       </div>
 
       {/* Sidebar - Profile & Orders */}
-      <div className="w-64 border-l border-slate-200/60 bg-slate-50/30 overflow-y-auto">
+      <div className="w-64 border-s border-slate-200/60 bg-slate-50/30 overflow-y-auto">
         <CustomerProfile customer={conversation.customer} />
         <div className="border-t border-slate-100">
           <CustomerOrders orders={conversation.orders} />

@@ -1,36 +1,43 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Message } from "@/lib/api";
+import { useLocale } from "@/i18n/client";
 
 interface ConversationDetailProps {
   messages: Message[];
-}
-
-function formatTime(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-
-  if (date.toDateString() === today.toDateString()) {
-    return "Today";
-  }
-  if (date.toDateString() === yesterday.toDateString()) {
-    return "Yesterday";
-  }
-  return date.toLocaleDateString();
 }
 
 export default function ConversationDetail({
   messages,
 }: ConversationDetailProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations();
+  const { locale } = useLocale();
+
+  const formatTime = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString(locale === "he" ? "he-IL" : "en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return t("time.today");
+    }
+    if (date.toDateString() === yesterday.toDateString()) {
+      return t("time.yesterday");
+    }
+    return date.toLocaleDateString(locale === "he" ? "he-IL" : "en-GB");
+  };
 
   // Auto-scroll to bottom when messages load or change
   useEffect(() => {
@@ -42,7 +49,7 @@ export default function ConversationDetail({
   if (messages.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-slate-500">
-        No messages
+        {t("conversations.noMessages")}
       </div>
     );
   }

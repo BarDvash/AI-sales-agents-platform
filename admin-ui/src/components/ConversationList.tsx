@@ -2,29 +2,13 @@
 
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { ConversationListItem } from "@/lib/api";
+import { useLocale } from "@/i18n/client";
 import EmptyState from "./EmptyState";
 
 interface ConversationListProps {
   conversations: ConversationListItem[];
-}
-
-function formatRelativeTime(dateString: string | null): string {
-  if (!dateString) return "";
-
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / (1000 * 60));
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffMins < 1) return "just now";
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
-
-  return date.toLocaleDateString();
 }
 
 function truncateText(text: string | null, maxLength: number): string {
@@ -40,13 +24,33 @@ export default function ConversationList({
   const searchParams = useSearchParams();
   const tenant = params.tenant as string;
   const selectedId = searchParams.get("selected");
+  const t = useTranslations();
+  const { locale } = useLocale();
+
+  const formatRelativeTime = (dateString: string | null): string => {
+    if (!dateString) return "";
+
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMins < 1) return t("time.justNow");
+    if (diffMins < 60) return t("time.minutesAgo", { count: diffMins });
+    if (diffHours < 24) return t("time.hoursAgo", { count: diffHours });
+    if (diffDays < 7) return t("time.daysAgo", { count: diffDays });
+
+    return date.toLocaleDateString(locale === "he" ? "he-IL" : "en-GB");
+  };
 
   if (conversations.length === 0) {
     return (
       <EmptyState
         icon="conversations"
-        title="No conversations yet"
-        description="Conversations will appear here when customers start chatting with the AI agent."
+        title={t("conversations.empty.title")}
+        description={t("conversations.empty.description")}
       />
     );
   }
@@ -62,7 +66,7 @@ export default function ConversationList({
             href={`/${tenant}/conversations?selected=${conv.id}`}
             className={`block p-4 transition-all duration-150 ${
               isSelected
-                ? "bg-indigo-50/50 border-l-2 border-indigo-500"
+                ? "bg-indigo-50/50 border-s-2 border-indigo-500"
                 : "hover:bg-slate-50"
             }`}
           >
@@ -80,12 +84,12 @@ export default function ConversationList({
               </div>
 
               {/* Timestamp and message count */}
-              <div className="ml-4 flex-shrink-0 text-right">
+              <div className="ms-4 flex-shrink-0 text-end">
                 <p className="text-xs text-slate-400">
                   {formatRelativeTime(conv.last_message_at)}
                 </p>
                 <p className="mt-1 text-xs text-slate-400">
-                  {conv.message_count} msgs
+                  {t("conversations.msgCount", { count: conv.message_count })}
                 </p>
               </div>
             </div>

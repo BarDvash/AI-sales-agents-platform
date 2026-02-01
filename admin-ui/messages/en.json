@@ -1,0 +1,92 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try Again",
+    "noData": "No data available"
+  },
+  "nav": {
+    "brand": "AI Sales Platform",
+    "conversations": "Conversations",
+    "orders": "Orders"
+  },
+  "conversations": {
+    "title": "Conversations",
+    "empty": {
+      "title": "No conversations yet",
+      "description": "Conversations will appear here when customers start chatting with the AI agent."
+    },
+    "selectPrompt": {
+      "title": "Select a conversation",
+      "description": "Choose a conversation from the list to view the message history and customer details."
+    },
+    "notFound": {
+      "title": "Conversation not found",
+      "description": "This conversation may have been deleted or doesn't exist."
+    },
+    "messages": "{count} messages",
+    "msgCount": "{count} msgs",
+    "noMessages": "No messages"
+  },
+  "orders": {
+    "title": "Orders",
+    "empty": {
+      "title": "No orders found",
+      "description": "Orders will appear here when customers place orders through the AI agent."
+    },
+    "backToOrders": "Back to Orders",
+    "orderTitle": "Order {id}",
+    "customer": "Customer",
+    "created": "Created",
+    "table": {
+      "orderId": "Order ID",
+      "customer": "Customer",
+      "items": "Items",
+      "status": "Status",
+      "total": "Total",
+      "date": "Date",
+      "product": "Product",
+      "quantity": "Quantity",
+      "unitPrice": "Unit Price",
+      "subtotal": "Subtotal"
+    },
+    "deliveryNotes": "Delivery Notes",
+    "itemsSection": "Items",
+    "moreItems": "+{count} more",
+    "notFound": "Order not found"
+  },
+  "customer": {
+    "profile": "Customer Profile",
+    "name": "Name",
+    "address": "Address",
+    "language": "Language",
+    "notes": "Notes",
+    "noInfo": "No customer information",
+    "noProfile": "No profile information yet",
+    "orders": "Orders",
+    "noOrders": "No orders yet"
+  },
+  "filters": {
+    "filterBy": "Filter by:",
+    "allStatuses": "All Statuses"
+  },
+  "status": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "time": {
+    "justNow": "just now",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago",
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "loadConversation": "Failed to load conversation",
+    "loadOrders": "Failed to load order"
+  }
+}

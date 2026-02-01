@@ -2,24 +2,13 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { OrderListItem } from "@/lib/api";
+import { useLocale } from "@/i18n/client";
 import EmptyState from "./EmptyState";
 
 interface OrdersTableProps {
   orders: OrderListItem[];
-}
-
-function formatCurrency(amount: number): string {
-  return `₪${amount.toFixed(2)}`;
-}
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
 }
 
 function getStatusColor(status: string): string {
@@ -37,28 +26,46 @@ function getStatusColor(status: string): string {
   }
 }
 
-function formatItems(items: OrderListItem["items"]): string {
-  const summary = items
-    .slice(0, 2)
-    .map((item) => `${item.quantity} ${item.product_name}`)
-    .join(", ");
-
-  if (items.length > 2) {
-    return `${summary} +${items.length - 2} more`;
-  }
-  return summary;
-}
-
 export default function OrdersTable({ orders }: OrdersTableProps) {
   const params = useParams();
   const tenant = params.tenant as string;
+  const t = useTranslations();
+  const { locale } = useLocale();
+
+  const formatCurrency = (amount: number): string => {
+    return new Intl.NumberFormat(locale === "he" ? "he-IL" : "en-IL", {
+      style: "currency",
+      currency: "ILS",
+    }).format(amount);
+  };
+
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(locale === "he" ? "he-IL" : "en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const formatItems = (items: OrderListItem["items"]): string => {
+    const summary = items
+      .slice(0, 2)
+      .map((item) => `${item.quantity} ${item.product_name}`)
+      .join(", ");
+
+    if (items.length > 2) {
+      return `${summary} ${t("orders.moreItems", { count: items.length - 2 })}`;
+    }
+    return summary;
+  };
 
   if (orders.length === 0) {
     return (
       <EmptyState
         icon="orders"
-        title="No orders found"
-        description="Orders will appear here when customers place orders through the AI agent."
+        title={t("orders.empty.title")}
+        description={t("orders.empty.description")}
       />
     );
   }
@@ -68,23 +75,23 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
       <table className="min-w-full divide-y divide-slate-200">
         <thead className="bg-slate-50/70">
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-              Order ID
+            <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">
+              {t("orders.table.orderId")}
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-              Customer
+            <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">
+              {t("orders.table.customer")}
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-              Items
+            <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">
+              {t("orders.table.items")}
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-              Status
+            <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">
+              {t("orders.table.status")}
             </th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
-              Total
+            <th className="px-6 py-3 text-end text-xs font-medium text-slate-500 uppercase tracking-wider">
+              {t("orders.table.total")}
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-              Date
+            <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">
+              {t("orders.table.date")}
             </th>
           </tr>
         </thead>
@@ -118,10 +125,10 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                     order.status
                   )}`}
                 >
-                  {order.status}
+                  {t(`status.${order.status}`)}
                 </span>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-right">
+              <td className="px-6 py-4 whitespace-nowrap text-end">
                 <span className="text-sm font-medium text-slate-900">
                   {formatCurrency(order.total)}
                 </span>

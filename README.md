@@ -35,6 +35,7 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 - ✅ Agent CLI for E2E testing (scripts/agent_cli.py)
 - ✅ Admin API endpoints (conversations, orders, customers)
 - ✅ Admin Dashboard (Next.js) with conversations view, orders table
+- ✅ i18n support (English + Hebrew) with RTL layout
 
 **Current Work:** Step 4 complete - Ready for Multi-Channel Expansion
 

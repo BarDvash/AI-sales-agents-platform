@@ -1,0 +1,92 @@
+{
+  "common": {
+    "loading": "טוען...",
+    "error": "משהו השתבש",
+    "retry": "נסה שוב",
+    "noData": "אין נתונים"
+  },
+  "nav": {
+    "brand": "AI Sales Platform",
+    "conversations": "שיחות",
+    "orders": "הזמנות"
+  },
+  "conversations": {
+    "title": "שיחות",
+    "empty": {
+      "title": "אין שיחות עדיין",
+      "description": "שיחות יופיעו כאן כאשר לקוחות יתחילו לשוחח עם הסוכן."
+    },
+    "selectPrompt": {
+      "title": "בחר שיחה",
+      "description": "בחר שיחה מהרשימה כדי לראות את היסטוריית ההודעות ופרטי הלקוח."
+    },
+    "notFound": {
+      "title": "השיחה לא נמצאה",
+      "description": "ייתכן שהשיחה נמחקה או שהיא לא קיימת."
+    },
+    "messages": "{count} הודעות",
+    "msgCount": "{count} הודעות",
+    "noMessages": "אין הודעות"
+  },
+  "orders": {
+    "title": "הזמנות",
+    "empty": {
+      "title": "לא נמצאו הזמנות",
+      "description": "הזמנות יופיעו כאן כאשר לקוחות יבצעו הזמנות דרך הסוכן."
+    },
+    "backToOrders": "חזרה להזמנות",
+    "orderTitle": "הזמנה {id}",
+    "customer": "לקוח",
+    "created": "נוצר",
+    "table": {
+      "orderId": "מספר הזמנה",
+      "customer": "לקוח",
+      "items": "פריטים",
+      "status": "סטטוס",
+      "total": "סה״כ",
+      "date": "תאריך",
+      "product": "מוצר",
+      "quantity": "כמות",
+      "unitPrice": "מחיר יחידה",
+      "subtotal": "סיכום ביניים"
+    },
+    "deliveryNotes": "הערות משלוח",
+    "itemsSection": "פריטים",
+    "moreItems": "+{count} נוספים",
+    "notFound": "ההזמנה לא נמצאה"
+  },
+  "customer": {
+    "profile": "פרופיל לקוח",
+    "name": "שם",
+    "address": "כתובת",
+    "language": "שפה",
+    "notes": "הערות",
+    "noInfo": "אין מידע על הלקוח",
+    "noProfile": "אין מידע פרופיל עדיין",
+    "orders": "הזמנות",
+    "noOrders": "אין הזמנות עדיין"
+  },
+  "filters": {
+    "filterBy": "סינון לפי:",
+    "allStatuses": "כל הסטטוסים"
+  },
+  "status": {
+    "pending": "ממתין",
+    "confirmed": "אושר",
+    "completed": "הושלם",
+    "cancelled": "בוטל"
+  },
+  "time": {
+    "justNow": "עכשיו",
+    "minutesAgo": "לפני {count} דקות",
+    "hoursAgo": "לפני {count} שעות",
+    "daysAgo": "לפני {count} ימים",
+    "today": "היום",
+    "yesterday": "אתמול"
+  },
+  "error": {
+    "title": "משהו השתבש",
+    "loadConversation": "טעינת השיחה נכשלה",
+    "loadOrders": "טעינת ההזמנה נכשלה"
+  }
+}

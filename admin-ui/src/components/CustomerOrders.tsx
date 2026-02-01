@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { OrderSummary } from "@/lib/api";
+import { useLocale } from "@/i18n/client";
 
 interface CustomerOrdersProps {
   orders: OrderSummary[];
-}
-
-function formatCurrency(amount: number): string {
-  return `₪${amount.toFixed(2)}`;
 }
 
 function getStatusColor(status: string): string {
@@ -30,16 +28,27 @@ function getStatusColor(status: string): string {
 export default function CustomerOrders({ orders }: CustomerOrdersProps) {
   const params = useParams();
   const tenant = params.tenant as string;
+  const t = useTranslations();
+  const { locale } = useLocale();
+
+  const formatCurrency = (amount: number): string => {
+    return new Intl.NumberFormat(locale === "he" ? "he-IL" : "en-IL", {
+      style: "currency",
+      currency: "ILS",
+    }).format(amount);
+  };
 
   if (orders.length === 0) {
     return (
-      <div className="p-4 text-slate-500 text-sm">No orders yet</div>
+      <div className="p-4 text-slate-500 text-sm">{t("customer.noOrders")}</div>
     );
   }
 
   return (
     <div className="p-4 space-y-3">
-      <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">Orders</h3>
+      <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">
+        {t("customer.orders")}
+      </h3>
 
       <div className="space-y-2">
         {orders.map((order) => (
@@ -57,7 +66,7 @@ export default function CustomerOrders({ orders }: CustomerOrdersProps) {
                   order.status
                 )}`}
               >
-                {order.status}
+                {t(`status.${order.status}`)}
               </span>
             </div>
             <div className="mt-1 text-sm text-slate-900">
