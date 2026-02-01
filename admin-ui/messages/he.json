@@ -69,7 +69,12 @@
   },
   "filters": {
     "filterBy": "סינון לפי:",
-    "allStatuses": "כל הסטטוסים"
+    "allStatuses": "כל הסטטוסים",
+    "allDates": "כל הזמנים",
+    "today": "היום",
+    "last7Days": "7 ימים אחרונים",
+    "last30Days": "30 ימים אחרונים",
+    "thisMonth": "החודש"
   },
   "status": {
     "pending": "ממתין",

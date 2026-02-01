@@ -69,7 +69,12 @@
   },
   "filters": {
     "filterBy": "Filter by:",
-    "allStatuses": "All Statuses"
+    "allStatuses": "All Statuses",
+    "allDates": "All Time",
+    "today": "Today",
+    "last7Days": "Last 7 Days",
+    "last30Days": "Last 30 Days",
+    "thisMonth": "This Month"
   },
   "status": {
     "pending": "Pending",
