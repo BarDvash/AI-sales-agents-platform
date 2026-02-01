@@ -646,16 +646,67 @@ GET /admin/{tenant_id}/customers/{customer_id}
 
 ---
 
-#### Step 5: Multi-Channel Expansion
-**Goal:** Support multiple messaging platforms
+#### Step 5: Multi-Channel Expansion ⬅️ **NEXT**
+**Goal:** Support multiple messaging platforms (WhatsApp via Twilio)
 
 **Tasks:**
-- [ ] Create channel abstraction layer
-- [ ] Implement WhatsApp integration
-- [ ] Unified Message model
-- [ ] Test same agent on both channels
+- [ ] Channel abstraction layer (`channels/` module with adapters)
+- [ ] WhatsApp integration via Twilio (frictionless tenant onboarding)
+- [ ] Unified Message model with channel metadata
+- [ ] Admin UI for channel configuration
+- [ ] Message channel tracking in conversations
 
 **Why fifth:** Reach customers on their preferred platforms after admin tools are in place
+
+**Provider Choice:** Twilio for WhatsApp
+- Frictionless tenant onboarding (no Meta business verification per tenant)
+- Production-grade reliability
+- Path to BSP status later when scale justifies it
+
+**📋 Detailed Implementation Plan:** See [docs/multi-channel-plan.md](docs/multi-channel-plan.md) for incremental milestones with acceptance criteria.
+
+##### Multi-Channel - Overview
+
+**Architecture:**
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     Incoming Webhooks                            │
+│  /webhooks/telegram/{tenant_id}    /webhooks/whatsapp/{tenant_id}│
+└──────────────────┬────────────────────────────┬─────────────────┘
+                   │                            │
+                   ▼                            ▼
+         ┌─────────────────┐          ┌─────────────────┐
+         │ TelegramAdapter │          │ WhatsAppAdapter │
+         └────────┬────────┘          └────────┬────────┘
+                  │                            │
+                  └──────────┬─────────────────┘
+                             ▼
+                   ┌───────────────────┐
+                   │ ChannelMessage    │
+                   │ (unified model)   │
+                   └─────────┬─────────┘
+                             ▼
+                   ┌───────────────────┐
+                   │ process_message() │
+                   │ (unchanged core)  │
+                   └───────────────────┘
+```
+
+**Milestones:**
+| # | Milestone | Description |
+|---|-----------|-------------|
+| 1 | Channel Abstraction | Base classes + Telegram adapter |
+| 2 | Database Migration | Add channel columns to messages/tenants |
+| 3 | WhatsApp Adapter | Twilio integration |
+| 4 | Unified Router | Single webhook handler |
+| 5 | Number Provisioning | Script to provision WhatsApp numbers |
+| 6 | Admin UI Channels | Settings page for channel config |
+| 7 | Message Tracking | Channel indicator in Admin UI |
+
+**Deferred (future work):**
+- Media support (images, documents)
+- Rich messages (buttons, quick replies)
+- BSP migration (direct Meta API)
 
 ---
 
