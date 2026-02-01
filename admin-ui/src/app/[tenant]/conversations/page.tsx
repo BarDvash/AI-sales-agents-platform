@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { getConversations, ConversationListItem } from "@/lib/api";
 import ConversationList from "@/components/ConversationList";
 import ConversationView from "@/components/ConversationView";
+import PanelHeader from "@/components/PanelHeader";
 
 export default async function ConversationsPage({
   params,
@@ -24,9 +25,7 @@ export default async function ConversationsPage({
     <div className="flex gap-6 h-[calc(100vh-12rem)]">
       {/* Left sidebar - Conversation list */}
       <div className="w-80 flex-shrink-0 bg-white rounded-xl border border-slate-200/60 shadow-[0_0_0_1px_rgb(0_0_0/0.03),0_2px_4px_rgb(0_0_0/0.05)] overflow-hidden">
-        <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
-          <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">Conversations</h2>
-        </div>
+        <PanelHeader titleKey="conversations.title" />
 
         <div className="overflow-y-auto h-[calc(100%-3rem)]">
           {error ? (
