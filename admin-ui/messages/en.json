@@ -74,7 +74,10 @@
     "today": "Today",
     "last7Days": "Last 7 Days",
     "last30Days": "Last 30 Days",
-    "thisMonth": "This Month"
+    "thisMonth": "This Month",
+    "priceMin": "Min ₪",
+    "priceMax": "Max ₪",
+    "searchCustomer": "Search customer..."
   },
   "status": {
     "pending": "Pending",

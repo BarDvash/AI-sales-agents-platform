@@ -32,15 +32,39 @@ function filterOrdersByDate(orders: OrderListItem[], dateRange: DateRangeKey | u
   return orders.filter((order) => new Date(order.created_at) >= minDate);
 }
 
+function filterOrdersByPrice(orders: OrderListItem[], priceMin: string | undefined, priceMax: string | undefined): OrderListItem[] {
+  const min = priceMin ? parseFloat(priceMin) : null;
+  const max = priceMax ? parseFloat(priceMax) : null;
+
+  if (min === null && max === null) return orders;
+
+  return orders.filter((order) => {
+    if (min !== null && order.total < min) return false;
+    if (max !== null && order.total > max) return false;
+    return true;
+  });
+}
+
+function filterOrdersByCustomer(orders: OrderListItem[], customer: string | undefined): OrderListItem[] {
+  if (!customer) return orders;
+
+  const searchTerm = customer.toLowerCase().trim();
+  if (!searchTerm) return orders;
+
+  return orders.filter((order) =>
+    order.customer_name?.toLowerCase().includes(searchTerm)
+  );
+}
+
 export default async function OrdersPage({
   params,
   searchParams,
 }: {
   params: Promise<{ tenant: string }>;
-  searchParams: Promise<{ status?: string; dateRange?: DateRangeKey }>;
+  searchParams: Promise<{ status?: string; dateRange?: DateRangeKey; priceMin?: string; priceMax?: string; customer?: string }>;
 }) {
   const { tenant } = await params;
-  const { status, dateRange } = await searchParams;
+  const { status, dateRange, priceMin, priceMax, customer } = await searchParams;
 
   let orders: OrderListItem[] = [];
   let error: string | null = null;
@@ -48,6 +72,8 @@ export default async function OrdersPage({
   try {
     orders = await getOrders(tenant, status ? { status } : undefined);
     orders = filterOrdersByDate(orders, dateRange);
+    orders = filterOrdersByPrice(orders, priceMin, priceMax);
+    orders = filterOrdersByCustomer(orders, customer);
   } catch (e) {
     error = e instanceof Error ? e.message : "Failed to load orders";
     orders = [];
@@ -60,7 +86,13 @@ export default async function OrdersPage({
 
       {/* Filters */}
       <Suspense fallback={null}>
-        <OrderFilters currentStatus={status || null} currentDateRange={dateRange || null} />
+        <OrderFilters
+          currentStatus={status || null}
+          currentDateRange={dateRange || null}
+          currentPriceMin={priceMin || null}
+          currentPriceMax={priceMax || null}
+          currentCustomer={customer || null}
+        />
       </Suspense>
 
       {/* Table */}

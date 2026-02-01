@@ -74,7 +74,10 @@
     "today": "היום",
     "last7Days": "7 ימים אחרונים",
     "last30Days": "30 ימים אחרונים",
-    "thisMonth": "החודש"
+    "thisMonth": "החודש",
+    "priceMin": "מינימום ₪",
+    "priceMax": "מקסימום ₪",
+    "searchCustomer": "חיפוש לקוח..."
   },
   "status": {
     "pending": "ממתין",
