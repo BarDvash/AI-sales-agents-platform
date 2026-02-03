@@ -88,7 +88,7 @@ export default function ConversationList({
             key={conv.id}
             href={`/${tenant}/conversations?selected=${conv.id}`}
             className={`block p-4 transition-all duration-150 ${
-              isSelected ? "border-s-2" : "hover:bg-slate-50"
+              isSelected ? "border-s-2" : ""
             }`}
             style={{
               ...(isSelected
@@ -98,26 +98,36 @@ export default function ConversationList({
                   }
                 : {}),
               ...(!isLast && !isSelected
-                ? { borderBottom: "1px solid rgb(241 245 249)" }
+                ? { borderBottom: "1px solid var(--border-secondary)" }
                 : {}),
             }}
           >
             <div className="flex justify-between items-start">
               <div className="min-w-0 flex-1">
                 {/* Customer name */}
-                <p className="text-sm font-medium text-slate-900 truncate">
+                <p
+                  className="text-sm font-medium truncate"
+                  style={{ color: "var(--text-primary)" }}
+                >
                   {conv.customer_name || (
-                    <span className="text-slate-400 italic">{t("customer.noName")}</span>
+                    <span style={{ color: "var(--text-faint)", fontStyle: "italic" }}>{t("customer.noName")}</span>
                   )}
                 </p>
 
                 {/* Chat ID (always shown as subtitle) */}
-                <p className="text-xs text-slate-400 font-mono">
+                <p
+                  className="text-xs font-mono"
+                  style={{ color: "var(--text-faint)" }}
+                >
                   #{conv.chat_id}
                 </p>
 
                 {/* Last message preview */}
-                <p className="mt-1 text-sm text-slate-500 truncate" dir="auto">
+                <p
+                  className="mt-1 text-sm truncate"
+                  style={{ color: "var(--text-muted)" }}
+                  dir="auto"
+                >
                   {truncateText(conv.last_message, 50)}
                 </p>
               </div>
@@ -125,10 +135,16 @@ export default function ConversationList({
               {/* Channel badge, timestamp and message count */}
               <div className="ms-4 flex-shrink-0 text-end">
                 <ChannelBadge channel={conv.channel} />
-                <p className="text-xs text-slate-400 mt-1">
+                <p
+                  className="text-xs mt-1"
+                  style={{ color: "var(--text-faint)" }}
+                >
                   {formatRelativeTime(conv.last_message_at)}
                 </p>
-                <p className="mt-1 text-xs text-slate-400">
+                <p
+                  className="mt-1 text-xs"
+                  style={{ color: "var(--text-faint)" }}
+                >
                   {t("conversations.msgCount", { count: conv.message_count })}
                 </p>
               </div>

@@ -1,11 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* Background & Foreground */
-  --background: #F8FAFC;
-  --foreground: #0F172A;
-
-  /* Slate Palette (replaces generic grays) */
+  /* Slate Palette */
   --slate-25: #FCFCFD;
   --slate-50: #F8FAFC;
   --slate-100: #F1F5F9;
@@ -18,27 +14,113 @@
   --slate-800: #1E293B;
   --slate-900: #0F172A;
 
-  /* Indigo Accent (replaces blue) */
-  --indigo-50: #EEF2FF;
-  --indigo-100: #E0E7FF;
-  --indigo-400: #818CF8;
-  --indigo-500: #6366F1;
-  --indigo-600: #4F46E5;
-  --indigo-700: #4338CA;
-
-  /* Status Colors - Desaturated/Modern */
+  /* Status Colors */
   --status-pending: #F59E0B;
-  --status-pending-bg: #FFFBEB;
   --status-confirmed: #10B981;
-  --status-confirmed-bg: #ECFDF5;
   --status-completed: #6366F1;
-  --status-completed-bg: #EEF2FF;
   --status-cancelled: #EF4444;
-  --status-cancelled-bg: #FEF2F2;
+}
 
-  /* Shadows - Subtle, layered for depth */
-  --shadow-card: 0 0 0 1px rgb(0 0 0 / 0.03), 0 2px 4px rgb(0 0 0 / 0.05);
-  --shadow-elevated: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+/* Dark Theme (default) */
+:root {
+  --background: #0f0f0f;
+  --foreground: #e2e8f0;
+
+  /* Theme-specific colors */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #212121;
+  --bg-tertiary: #2a2a2a;
+  --bg-hover: #252525;
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-faint: #64748b;
+
+  --border-primary: rgba(51, 65, 85, 0.5);
+  --border-secondary: rgba(255, 255, 255, 0.06);
+
+  --hover-bg: rgba(255, 255, 255, 0.05);
+  --focus-ring: #64748b;
+
+  /* Header */
+  --header-bg: rgba(26, 26, 26, 0.95);
+  --header-border: rgba(51, 65, 85, 0.5);
+
+  /* Active tab */
+  --tab-active-bg: #f1f5f9;
+  --tab-active-text: #0f172a;
+  --tab-inactive-text: #94a3b8;
+  --tab-hover-text: #f1f5f9;
+  --tab-hover-bg: #334155;
+
+  /* Cards/Panels */
+  --card-shadow: 0 0 0 1px rgb(0 0 0 / 0.2), 0 2px 4px rgb(0 0 0 / 0.3);
+
+  /* Status badges (dark) */
+  --status-pending-bg: rgba(245, 158, 11, 0.2);
+  --status-pending-text: #fbbf24;
+  --status-confirmed-bg: rgba(16, 185, 129, 0.2);
+  --status-confirmed-text: #34d399;
+  --status-completed-bg: rgba(99, 102, 241, 0.2);
+  --status-completed-text: #818cf8;
+  --status-cancelled-bg: rgba(239, 68, 68, 0.2);
+  --status-cancelled-text: #f87171;
+
+  /* Empty/Error states */
+  --empty-icon: #475569;
+  --error-text: #f87171;
+}
+
+/* Light Theme */
+html[data-theme="light"] {
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+
+  /* Theme-specific colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: rgba(248, 250, 252, 0.5);
+  --bg-tertiary: #ffffff;
+  --bg-hover: #f1f5f9;
+
+  --text-primary: #0f172a;
+  --text-secondary: #1e293b;
+  --text-muted: #64748b;
+  --text-faint: #94a3b8;
+
+  --border-primary: rgba(226, 232, 240, 0.6);
+  --border-secondary: #f1f5f9;
+
+  --hover-bg: #f1f5f9;
+  --focus-ring: #64748b;
+
+  /* Header */
+  --header-bg: rgba(255, 255, 255, 0.8);
+  --header-border: rgba(226, 232, 240, 0.6);
+
+  /* Active tab */
+  --tab-active-bg: #1e293b;
+  --tab-active-text: #ffffff;
+  --tab-inactive-text: #475569;
+  --tab-hover-text: #0f172a;
+  --tab-hover-bg: #f1f5f9;
+
+  /* Cards/Panels */
+  --card-shadow: 0 0 0 1px rgb(0 0 0 / 0.03), 0 2px 4px rgb(0 0 0 / 0.05);
+
+  /* Status badges (light) */
+  --status-pending-bg: #fffbeb;
+  --status-pending-text: #b45309;
+  --status-confirmed-bg: #ecfdf5;
+  --status-confirmed-text: #047857;
+  --status-completed-bg: #eef2ff;
+  --status-completed-text: #4338ca;
+  --status-cancelled-bg: #fef2f2;
+  --status-cancelled-text: #b91c1c;
+
+  /* Empty/Error states */
+  --empty-icon: #cbd5e1;
+  --error-text: #ef4444;
 }
 
 @theme inline {
@@ -47,7 +129,6 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
-
 
 body {
   background: var(--background);

@@ -31,9 +31,18 @@ export default function ConversationsPanel({
   return (
     <>
       {/* Header with title and filter */}
-      <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
+      <div
+        className="px-4 py-3 border-b"
+        style={{
+          backgroundColor: "var(--bg-secondary)",
+          borderColor: "var(--border-primary)",
+        }}
+      >
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">
+          <h2
+            className="text-sm font-semibold uppercase tracking-wider"
+            style={{ color: "var(--text-muted)" }}
+          >
             {t("conversations.title")}
           </h2>
 
@@ -42,7 +51,12 @@ export default function ConversationsPanel({
             <select
               value={channelFilter}
               onChange={(e) => setChannelFilter(e.target.value as ChannelFilter)}
-              className="text-xs bg-white border border-slate-200 rounded-md px-2 py-1 text-slate-600 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+              className="text-xs border rounded-md px-2 py-1 focus:outline-none focus:ring-1"
+              style={{
+                backgroundColor: "var(--bg-tertiary)",
+                borderColor: "var(--border-primary)",
+                color: "var(--text-muted)",
+              }}
             >
               <option value="all">{t("filters.allChannels")}</option>
               {availableChannels.includes("telegram") && (

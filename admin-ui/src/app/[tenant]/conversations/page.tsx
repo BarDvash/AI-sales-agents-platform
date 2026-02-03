@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { getConversations, ConversationListItem } from "@/lib/api";
 import ConversationsPanel from "@/components/ConversationsPanel";
 import ConversationView from "@/components/ConversationView";
+import ThemedPanel from "@/components/ThemedPanel";
 
 export default async function ConversationsPage({
   params,
@@ -23,22 +24,22 @@ export default async function ConversationsPage({
   return (
     <div className="flex gap-6 h-[calc(100vh-12rem)]">
       {/* Left sidebar - Conversation list with filter */}
-      <div className="w-80 flex-shrink-0 bg-white rounded-xl border border-slate-200/60 shadow-[0_0_0_1px_rgb(0_0_0/0.03),0_2px_4px_rgb(0_0_0/0.05)] overflow-hidden">
+      <ThemedPanel className="w-80 flex-shrink-0">
         {error ? (
-          <div className="p-4 text-red-500 text-sm">{error}</div>
+          <div className="p-4 text-sm" style={{ color: "var(--error-text)" }}>{error}</div>
         ) : (
-          <Suspense fallback={<div className="p-4 text-slate-500">Loading...</div>}>
+          <Suspense fallback={<div className="p-4" style={{ color: "var(--text-muted)" }}>Loading...</div>}>
             <ConversationsPanel conversations={conversations} />
           </Suspense>
         )}
-      </div>
+      </ThemedPanel>
 
       {/* Right panel - Conversation detail */}
-      <div className="flex-1 bg-white rounded-xl border border-slate-200/60 shadow-[0_0_0_1px_rgb(0_0_0/0.03),0_2px_4px_rgb(0_0_0/0.05)] overflow-hidden">
-        <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-500">Loading...</div>}>
+      <ThemedPanel className="flex-1">
+        <Suspense fallback={<div className="flex items-center justify-center h-full" style={{ color: "var(--text-muted)" }}>Loading...</div>}>
           <ConversationView tenant={tenant} />
         </Suspense>
-      </div>
+      </ThemedPanel>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { getOrders, OrderListItem } from "@/lib/api";
 import OrdersTable from "@/components/OrdersTable";
 import OrderFilters from "@/components/OrderFilters";
 import OrdersHeader from "@/components/OrdersHeader";
+import ThemedPanel from "@/components/ThemedPanel";
 
 type DateRangeKey = "today" | "last7Days" | "last30Days" | "thisMonth";
 
@@ -80,7 +81,7 @@ export default async function OrdersPage({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200/60 shadow-[0_0_0_1px_rgb(0_0_0/0.03),0_2px_4px_rgb(0_0_0/0.05)] overflow-hidden">
+    <ThemedPanel>
       {/* Header */}
       <OrdersHeader count={orders.length} status={status} />
 
@@ -97,10 +98,10 @@ export default async function OrdersPage({
 
       {/* Table */}
       {error ? (
-        <div className="p-4 text-red-500 text-sm">{error}</div>
+        <div className="p-4 text-sm" style={{ color: "var(--error-text)" }}>{error}</div>
       ) : (
         <OrdersTable orders={orders} />
       )}
-    </div>
+    </ThemedPanel>
   );
 }

@@ -18,15 +18,15 @@ type SortDirection = "asc" | "desc";
 function getStatusColor(status: string): string {
   switch (status) {
     case "pending":
-      return "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20";
+      return "bg-amber-500/20 text-amber-400 ring-1 ring-inset ring-amber-500/30";
     case "confirmed":
-      return "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20";
+      return "bg-emerald-500/20 text-emerald-400 ring-1 ring-inset ring-emerald-500/30";
     case "completed":
-      return "bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-600/20";
+      return "bg-indigo-500/20 text-indigo-400 ring-1 ring-inset ring-indigo-500/30";
     case "cancelled":
-      return "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20";
+      return "bg-red-500/20 text-red-400 ring-1 ring-inset ring-red-500/30";
     default:
-      return "bg-slate-50 text-slate-700 ring-1 ring-inset ring-slate-600/20";
+      return "bg-slate-500/20 text-slate-400 ring-1 ring-inset ring-slate-500/30";
   }
 }
 
@@ -36,14 +36,16 @@ function SortIcon({ field, currentField, direction }: { field: SortField; curren
   return (
     <span className="ms-1 inline-flex flex-col">
       <svg
-        className={`w-2 h-2 -mb-0.5 ${isActive && direction === "asc" ? "text-indigo-600" : "text-slate-300"}`}
+        className="w-2 h-2 -mb-0.5"
+        style={{ color: isActive && direction === "asc" ? "var(--text-secondary)" : "var(--text-faint)" }}
         viewBox="0 0 8 5"
         fill="currentColor"
       >
         <path d="M4 0L8 5H0L4 0Z" />
       </svg>
       <svg
-        className={`w-2 h-2 ${isActive && direction === "desc" ? "text-indigo-600" : "text-slate-300"}`}
+        className="w-2 h-2"
+        style={{ color: isActive && direction === "desc" ? "var(--text-secondary)" : "var(--text-faint)" }}
         viewBox="0 0 8 5"
         fill="currentColor"
       >
@@ -139,16 +141,21 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
     );
   }
 
-  const sortableHeaderClass = "px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider cursor-pointer hover:text-slate-700 hover:bg-slate-100/50 transition-colors select-none";
-  const sortableHeaderClassEnd = "px-6 py-3 text-end text-xs font-medium text-slate-500 uppercase tracking-wider cursor-pointer hover:text-slate-700 hover:bg-slate-100/50 transition-colors select-none";
+  const headerStyle = {
+    color: "var(--text-muted)",
+  };
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-slate-200">
-        <thead className="bg-slate-50/70">
-          <tr>
+      <table
+        className="min-w-full"
+        style={{ borderColor: "var(--border-secondary)" }}
+      >
+        <thead style={{ backgroundColor: "var(--bg-secondary)" }}>
+          <tr style={{ borderBottom: "1px solid var(--border-secondary)" }}>
             <th
-              className={sortableHeaderClass}
+              className="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider cursor-pointer transition-colors select-none"
+              style={headerStyle}
               onClick={() => handleSort("id")}
             >
               <span className="inline-flex items-center">
@@ -157,7 +164,8 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
               </span>
             </th>
             <th
-              className={sortableHeaderClass}
+              className="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider cursor-pointer transition-colors select-none"
+              style={headerStyle}
               onClick={() => handleSort("customer")}
             >
               <span className="inline-flex items-center">
@@ -165,11 +173,15 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                 <SortIcon field="customer" currentField={sortField} direction={sortDirection} />
               </span>
             </th>
-            <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">
+            <th
+              className="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider"
+              style={headerStyle}
+            >
               {t("orders.table.items")}
             </th>
             <th
-              className={sortableHeaderClass}
+              className="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider cursor-pointer transition-colors select-none"
+              style={headerStyle}
               onClick={() => handleSort("status")}
             >
               <span className="inline-flex items-center">
@@ -178,7 +190,8 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
               </span>
             </th>
             <th
-              className={sortableHeaderClassEnd}
+              className="px-6 py-3 text-end text-xs font-medium uppercase tracking-wider cursor-pointer transition-colors select-none"
+              style={headerStyle}
               onClick={() => handleSort("total")}
             >
               <span className="inline-flex items-center justify-end">
@@ -187,7 +200,8 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
               </span>
             </th>
             <th
-              className={sortableHeaderClass}
+              className="px-6 py-3 text-start text-xs font-medium uppercase tracking-wider cursor-pointer transition-colors select-none"
+              style={headerStyle}
               onClick={() => handleSort("date")}
             >
               <span className="inline-flex items-center">
@@ -197,27 +211,35 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
             </th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-slate-100">
-          {sortedOrders.map((order) => (
+        <tbody style={{ backgroundColor: "var(--bg-primary)" }}>
+          {sortedOrders.map((order, index) => (
             <tr
               key={order.id}
-              className="hover:bg-slate-50/70 cursor-pointer transition-colors"
+              className="cursor-pointer transition-colors"
+              style={{
+                borderBottom: index < sortedOrders.length - 1 ? "1px solid var(--border-secondary)" : undefined,
+              }}
             >
               <td className="px-6 py-4 whitespace-nowrap">
                 <Link
                   href={`/${tenant}/orders/${order.id}`}
-                  className="text-sm font-mono text-indigo-600 hover:text-indigo-700"
+                  className="text-sm font-mono"
+                  style={{ color: "var(--text-secondary)" }}
                 >
                   {order.id}
                 </Link>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <span className="text-sm text-slate-900">
+                <span className="text-sm" style={{ color: "var(--text-secondary)" }}>
                   {order.customer_name || `Customer #${order.customer_id}`}
                 </span>
               </td>
               <td className="px-6 py-4">
-                <span className="text-sm text-slate-600 truncate max-w-xs block" dir="auto">
+                <span
+                  className="text-sm truncate max-w-xs block"
+                  style={{ color: "var(--text-muted)" }}
+                  dir="auto"
+                >
                   {formatItems(order.items)}
                 </span>
               </td>
@@ -231,12 +253,12 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-end">
-                <span className="text-sm font-medium text-slate-900">
+                <span className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
                   {formatCurrency(order.total)}
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <span className="text-sm text-slate-500">
+                <span className="text-sm" style={{ color: "var(--text-faint)" }}>
                   {formatDate(order.created_at)}
                 </span>
               </td>

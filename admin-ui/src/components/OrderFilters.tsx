@@ -98,16 +98,35 @@ export default function OrderFilters({ currentStatus, currentDateRange, currentP
     return t(`filters.${value}`);
   };
 
+  const selectStyle = {
+    backgroundColor: "var(--bg-tertiary)",
+    borderColor: "var(--border-primary)",
+    color: "var(--text-secondary)",
+  };
+
+  const inputStyle = {
+    backgroundColor: "var(--bg-tertiary)",
+    borderColor: "var(--border-primary)",
+    color: "var(--text-secondary)",
+  };
+
   return (
-    <div className="flex items-center gap-4 px-4 py-3 bg-slate-50/50 border-b border-slate-100 flex-wrap">
-      <label className="text-sm font-medium text-slate-600">
+    <div
+      className="flex items-center gap-4 px-4 py-3 border-b flex-wrap"
+      style={{
+        backgroundColor: "var(--bg-secondary)",
+        borderColor: "var(--border-secondary)",
+      }}
+    >
+      <label className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>
         {t("filters.filterBy")}
       </label>
 
       <select
         value={currentStatus || ""}
         onChange={(e) => handleStatusChange(e.target.value)}
-        className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+        className="px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 transition-colors"
+        style={selectStyle}
       >
         {STATUS_KEYS.map((value) => (
           <option key={value} value={value}>
@@ -119,7 +138,8 @@ export default function OrderFilters({ currentStatus, currentDateRange, currentP
       <select
         value={currentDateRange || ""}
         onChange={(e) => handleDateRangeChange(e.target.value)}
-        className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+        className="px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 transition-colors"
+        style={selectStyle}
       >
         {DATE_RANGE_KEYS.map((value) => (
           <option key={value} value={value}>
@@ -136,16 +156,18 @@ export default function OrderFilters({ currentStatus, currentDateRange, currentP
           onChange={(e) => setPriceMin(e.target.value)}
           placeholder={t("filters.priceMin")}
           min="0"
-          className="w-24 px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+          className="w-24 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 transition-colors"
+          style={inputStyle}
         />
-        <span className="text-slate-400">—</span>
+        <span style={{ color: "var(--text-faint)" }}>—</span>
         <input
           type="number"
           value={priceMax}
           onChange={(e) => setPriceMax(e.target.value)}
           placeholder={t("filters.priceMax")}
           min="0"
-          className="w-24 px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+          className="w-24 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 transition-colors"
+          style={inputStyle}
         />
         {(priceMin || priceMax) && (
           <button
@@ -155,7 +177,7 @@ export default function OrderFilters({ currentStatus, currentDateRange, currentP
               setPriceMax("");
               updateMultipleParams({ priceMin: "", priceMax: "" });
             }}
-            className="text-slate-400 hover:text-slate-600"
+            style={{ color: "var(--text-faint)" }}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -167,7 +189,8 @@ export default function OrderFilters({ currentStatus, currentDateRange, currentP
       {/* Customer name search */}
       <form onSubmit={handleCustomerSubmit} className="relative">
         <svg
-          className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+          className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4"
+          style={{ color: "var(--text-faint)" }}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -185,7 +208,8 @@ export default function OrderFilters({ currentStatus, currentDateRange, currentP
           onChange={(e) => setCustomerSearch(e.target.value)}
           onKeyDown={handleCustomerKeyDown}
           placeholder={t("filters.searchCustomer")}
-          className="w-56 ps-9 pe-8 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+          className="w-56 ps-9 pe-8 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 transition-colors"
+          style={inputStyle}
         />
         {customerSearch && (
           <button
@@ -194,7 +218,8 @@ export default function OrderFilters({ currentStatus, currentDateRange, currentP
               setCustomerSearch("");
               updateParams("customer", "");
             }}
-            className="absolute end-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            className="absolute end-2 top-1/2 -translate-y-1/2"
+            style={{ color: "var(--text-faint)" }}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
