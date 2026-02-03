@@ -45,9 +45,75 @@ export interface ConversationDetail {
   id: number;
   chat_id: string;
   status: string;
+  channel: "telegram" | "whatsapp" | string;
   messages: Message[];
   customer: CustomerInfo | null;
   orders: OrderSummary[];
+}
+
+// Channel color configuration
+export type ChannelType = "telegram" | "whatsapp" | string;
+
+export interface ChannelColors {
+  // Assistant message bubble (inline styles for dynamic rendering)
+  bubbleBgColor: string;
+  bubbleTextColor: string;
+  bubbleTimestampColor: string;
+  // Header/accent (inline styles)
+  headerBgColor: string;
+  headerBorderColor: string;
+  // Selection/active state (inline styles)
+  activeBgColor: string;
+  activeBorderColor: string;
+  // Badge (inline styles)
+  badgeBgColor: string;
+  badgeTextColor: string;
+  // Icon color
+  iconColor: string;
+}
+
+export const channelColorConfig: Record<string, ChannelColors> = {
+  telegram: {
+    bubbleBgColor: "#0ea5e9", // sky-500
+    bubbleTextColor: "#ffffff",
+    bubbleTimestampColor: "#bae6fd", // sky-200
+    headerBgColor: "rgba(240, 249, 255, 0.5)", // sky-50/50
+    headerBorderColor: "#bae6fd", // sky-200
+    activeBgColor: "rgba(240, 249, 255, 0.5)", // sky-50/50
+    activeBorderColor: "#0ea5e9", // sky-500
+    badgeBgColor: "#e0f2fe", // sky-100
+    badgeTextColor: "#0369a1", // sky-700
+    iconColor: "#0ea5e9", // sky-500
+  },
+  whatsapp: {
+    bubbleBgColor: "#10b981", // emerald-500
+    bubbleTextColor: "#ffffff",
+    bubbleTimestampColor: "#a7f3d0", // emerald-200
+    headerBgColor: "rgba(236, 253, 245, 0.5)", // emerald-50/50
+    headerBorderColor: "#a7f3d0", // emerald-200
+    activeBgColor: "rgba(236, 253, 245, 0.5)", // emerald-50/50
+    activeBorderColor: "#10b981", // emerald-500
+    badgeBgColor: "#d1fae5", // emerald-100
+    badgeTextColor: "#047857", // emerald-700
+    iconColor: "#10b981", // emerald-500
+  },
+  // Default fallback
+  default: {
+    bubbleBgColor: "#4f46e5", // indigo-600
+    bubbleTextColor: "#ffffff",
+    bubbleTimestampColor: "#c7d2fe", // indigo-200
+    headerBgColor: "rgba(248, 250, 252, 0.5)", // slate-50/50
+    headerBorderColor: "#e2e8f0", // slate-200
+    activeBgColor: "rgba(238, 242, 255, 0.5)", // indigo-50/50
+    activeBorderColor: "#6366f1", // indigo-500
+    badgeBgColor: "#f1f5f9", // slate-100
+    badgeTextColor: "#64748b", // slate-500
+    iconColor: "#6366f1", // indigo-500
+  },
+};
+
+export function getChannelColors(channel: ChannelType): ChannelColors {
+  return channelColorConfig[channel] || channelColorConfig.default;
 }
 
 export interface OrderItem {

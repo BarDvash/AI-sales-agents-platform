@@ -3,26 +3,27 @@
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { ConversationListItem } from "@/lib/api";
+import { ConversationListItem, getChannelColors } from "@/lib/api";
 import { useLocale } from "@/i18n/client";
 import EmptyState from "./EmptyState";
 
-// Channel badge component
+// Channel badge component using shared color config
 function ChannelBadge({ channel }: { channel: string }) {
-  const config: Record<string, { bg: string; text: string; label: string }> = {
-    telegram: { bg: "bg-sky-100", text: "text-sky-700", label: "Telegram" },
-    whatsapp: { bg: "bg-emerald-100", text: "text-emerald-700", label: "WhatsApp" },
-  };
-
-  const { bg, text, label } = config[channel] || {
-    bg: "bg-slate-100",
-    text: "text-slate-500",
-    label: channel,
+  const colors = getChannelColors(channel);
+  const labels: Record<string, string> = {
+    telegram: "Telegram",
+    whatsapp: "WhatsApp",
   };
 
   return (
-    <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${bg} ${text}`}>
-      {label}
+    <span
+      className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium"
+      style={{
+        backgroundColor: colors.badgeBgColor,
+        color: colors.badgeTextColor,
+      }}
+    >
+      {labels[channel] || channel}
     </span>
   );
 }
@@ -79,16 +80,23 @@ export default function ConversationList({
     <div className="divide-y divide-slate-100">
       {conversations.map((conv) => {
         const isSelected = selectedId === conv.id.toString();
+        const colors = getChannelColors(conv.channel);
 
         return (
           <Link
             key={conv.id}
             href={`/${tenant}/conversations?selected=${conv.id}`}
             className={`block p-4 transition-all duration-150 ${
-              isSelected
-                ? "bg-indigo-50/50 border-s-2 border-indigo-500"
-                : "hover:bg-slate-50"
+              isSelected ? "border-s-2" : "hover:bg-slate-50"
             }`}
+            style={
+              isSelected
+                ? {
+                    backgroundColor: colors.activeBgColor,
+                    borderColor: colors.activeBorderColor,
+                  }
+                : undefined
+            }
           >
             <div className="flex justify-between items-start">
               <div className="min-w-0 flex-1">

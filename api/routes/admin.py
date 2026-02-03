@@ -121,6 +121,7 @@ class ConversationDetail(BaseModel):
     id: int
     chat_id: str
     status: str
+    channel: Optional[str] = "unknown"  # Primary channel (from most recent message)
     messages: list[MessageItem]
     customer: Optional[CustomerInfo]
     orders: list[OrderSummary]
@@ -226,10 +227,20 @@ def get_conversation(tenant_id: str, conversation_id: int, db: Session = Depends
             for o in customer_orders
         ]
 
+    # Determine primary channel from most recent message
+    primary_channel = "unknown"
+    if messages:
+        # Get channel from most recent message that has one
+        for msg in reversed(messages):
+            if msg.channel:
+                primary_channel = msg.channel
+                break
+
     return ConversationDetail(
         id=conversation.id,
         chat_id=customer.chat_id if customer else "unknown",
         status=conversation.status,
+        channel=primary_channel,
         messages=[
             MessageItem(
                 id=m.id,
