@@ -20,20 +20,20 @@ export default function PageTransition({ children }: PageTransitionProps) {
     const timer = setTimeout(() => {
       setDisplayChildren(children);
       setIsVisible(true);
-    }, 150);
+    }, 200);
 
     return () => clearTimeout(timer);
   }, [pathname, children]);
 
   // Initial mount - fade in after brief delay
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 100);
+    const timer = setTimeout(() => setIsVisible(true), 50);
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <div
-      className="transition-all duration-300 ease-out"
+      className="transition-all duration-200 ease-out"
       style={{
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? "translateY(0)" : "translateY(12px)",
