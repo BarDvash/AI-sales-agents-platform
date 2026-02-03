@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import VelocitySalesLogo from "@/components/VelocitySalesLogo";
+import PageTransition from "@/components/PageTransition";
 
 export default function TenantLayout({
   children,
@@ -104,7 +105,7 @@ export default function TenantLayout({
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {children}
+        <PageTransition>{children}</PageTransition>
       </main>
     </div>
   );

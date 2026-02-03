@@ -7,7 +7,6 @@ import { ConversationDetail as ConversationDetailType, getConversation, getChann
 import ConversationDetail from "./ConversationDetail";
 import CustomerProfile from "./CustomerProfile";
 import CustomerOrders from "./CustomerOrders";
-import LoadingSpinner from "./LoadingSpinner";
 import EmptyState from "./EmptyState";
 import ErrorState from "./ErrorState";
 
@@ -49,28 +48,44 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
   const t = useTranslations();
 
   const [conversation, setConversation] = useState<ConversationDetailType | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [displayConversation, setDisplayConversation] = useState<ConversationDetailType | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
 
   const loadConversation = useCallback(async () => {
     if (!selectedId) return;
 
-    setLoading(true);
+    // Start fade out
+    setIsVisible(false);
     setError(null);
+
+    // Fetch data while fading out (in parallel)
+    const fetchPromise = getConversation(tenant, parseInt(selectedId));
+
+    // Wait for fade out to complete
+    await new Promise(resolve => setTimeout(resolve, 200));
+
     try {
-      const data = await getConversation(tenant, parseInt(selectedId));
+      const data = await fetchPromise;
       setConversation(data);
+      setDisplayConversation(data);
+      // Fade in after content swap
+      setTimeout(() => {
+        setIsVisible(true);
+      }, 50);
     } catch (e) {
       setError(e instanceof Error ? e.message : t("error.loadConversation"));
       setConversation(null);
-    } finally {
-      setLoading(false);
+      setDisplayConversation(null);
+      setIsVisible(true);
     }
   }, [selectedId, tenant, t]);
 
   useEffect(() => {
     if (!selectedId) {
       setConversation(null);
+      setDisplayConversation(null);
+      setIsVisible(false);
       return;
     }
     loadConversation();
@@ -89,14 +104,6 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
     );
   }
 
-  // Loading state
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <LoadingSpinner size="lg" text={t("common.loading")} />
-      </div>
-    );
-  }
 
   // Error state
   if (error) {
@@ -111,8 +118,8 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
     );
   }
 
-  // No data
-  if (!conversation) {
+  // No data - only show if no display content either
+  if (!conversation && !displayConversation) {
     return (
       <div className="flex items-center justify-center h-full">
         <EmptyState
@@ -124,12 +131,22 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
     );
   }
 
+  // Use displayConversation for rendering (keeps old content during fade)
+  const renderConversation = displayConversation || conversation;
+  if (!renderConversation) return null;
+
   // Get channel from first message or default to telegram
-  const channel = conversation.channel || conversation.messages[0]?.channel || "telegram";
+  const channel = renderConversation.channel || renderConversation.messages[0]?.channel || "telegram";
   const colors = getChannelColors(channel);
 
   return (
-    <div className="flex h-full">
+    <div
+      className="flex h-full transition-all duration-200 ease-out"
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "translateY(0)" : "translateY(10px)",
+      }}
+    >
       {/* Message thread */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header with channel-specific styling */}
@@ -147,17 +164,17 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
               style={{ color: colors.iconColor }}
             />
             <h3 className="font-medium" style={{ color: "#ffffff" }}>
-              {conversation.customer?.name || conversation.chat_id}
+              {renderConversation.customer?.name || renderConversation.chat_id}
             </h3>
           </div>
           <p className="text-sm ms-7" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
-            {t("conversations.messages", { count: conversation.messages.length })}
+            {t("conversations.messages", { count: renderConversation.messages.length })}
           </p>
         </div>
 
         {/* Messages */}
         <div className="flex-1 overflow-hidden">
-          <ConversationDetail messages={conversation.messages} channel={channel} />
+          <ConversationDetail messages={renderConversation.messages} channel={channel} />
         </div>
       </div>
 
@@ -169,9 +186,9 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
           borderColor: colors.headerBorderColor,
         }}
       >
-        <CustomerProfile customer={conversation.customer} colors={colors} />
+        <CustomerProfile customer={renderConversation.customer} colors={colors} />
         <div style={{ borderTop: `1px solid ${colors.headerBorderColor}` }}>
-          <CustomerOrders orders={conversation.orders} colors={colors} />
+          <CustomerOrders orders={renderConversation.orders} colors={colors} />
         </div>
       </div>
     </div>
