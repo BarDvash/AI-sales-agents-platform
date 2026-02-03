@@ -45,9 +45,9 @@ export default function TenantLayout({
               <nav className="flex gap-2">
                 <Link
                   href={`/${tenant}/conversations`}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 ${
                     isConversationsActive
-                      ? "bg-indigo-600 text-white shadow-sm"
+                      ? "bg-slate-800 text-white shadow-sm"
                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                   }`}
                 >
@@ -55,9 +55,9 @@ export default function TenantLayout({
                 </Link>
                 <Link
                   href={`/${tenant}/orders`}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 ${
                     isOrdersActive
-                      ? "bg-indigo-600 text-white shadow-sm"
+                      ? "bg-slate-800 text-white shadow-sm"
                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                   }`}
                 >

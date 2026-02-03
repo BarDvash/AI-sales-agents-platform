@@ -198,21 +198,21 @@ export const channelColorConfig: Record<string, ChannelColors> = {
     badgeTextColor: "#ffffff",
     iconColor: "#00a884", // WhatsApp green
   },
-  // Default fallback
+  // Default fallback - neutral slate theme
   default: {
     chatBgColor: "#f1f5f9", // slate-100
     userBubbleBgColor: "#e2e8f0", // slate-200
     userBubbleTextColor: "#1e293b", // slate-800
-    bubbleBgColor: "#4f46e5", // indigo-600
+    bubbleBgColor: "#334155", // slate-700
     bubbleTextColor: "#ffffff",
-    bubbleTimestampColor: "#c7d2fe", // indigo-200
-    headerBgColor: "rgba(248, 250, 252, 0.5)", // slate-50/50
-    headerBorderColor: "#e2e8f0", // slate-200
-    activeBgColor: "rgba(238, 242, 255, 0.5)", // indigo-50/50
-    activeBorderColor: "#6366f1", // indigo-500
+    bubbleTimestampColor: "#94a3b8", // slate-400
+    headerBgColor: "#1e293b", // slate-800
+    headerBorderColor: "#334155", // slate-700
+    activeBgColor: "rgba(51, 65, 85, 0.15)", // slate-700/15
+    activeBorderColor: "#475569", // slate-600
     badgeBgColor: "#f1f5f9", // slate-100
     badgeTextColor: "#64748b", // slate-500
-    iconColor: "#6366f1", // indigo-500
+    iconColor: "#475569", // slate-600
   },
 };
 
