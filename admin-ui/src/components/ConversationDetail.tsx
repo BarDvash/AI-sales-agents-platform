@@ -82,10 +82,18 @@ export default function ConversationDetail({
     backgroundColor: colors.chatBgColor,
   };
   if (colors.chatBgImage) {
-    chatBgStyle.backgroundImage = `url(${colors.chatBgImage})`;
+    // Check if it's a data URI (SVG) or external URL
+    const isSvgDataUri = colors.chatBgImage.startsWith("data:image/svg");
+    chatBgStyle.backgroundImage = `url("${colors.chatBgImage}")`;
     chatBgStyle.backgroundRepeat = "repeat";
-    chatBgStyle.backgroundSize = "412.5px auto"; // WhatsApp pattern size
-    chatBgStyle.backgroundBlendMode = "soft-light";
+    if (isSvgDataUri) {
+      // SVG patterns - use smaller size for denser pattern
+      chatBgStyle.backgroundSize = "200px 200px";
+    } else {
+      // External images (like WhatsApp) - use larger size with blend mode
+      chatBgStyle.backgroundSize = "412.5px auto";
+      chatBgStyle.backgroundBlendMode = "soft-light";
+    }
   }
 
   if (messages.length === 0) {

@@ -162,10 +162,16 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
       </div>
 
       {/* Sidebar - Profile & Orders */}
-      <div className="w-64 border-s border-slate-200/60 bg-slate-50/30 overflow-y-auto">
-        <CustomerProfile customer={conversation.customer} />
-        <div className="border-t border-slate-100">
-          <CustomerOrders orders={conversation.orders} />
+      <div
+        className="w-64 border-s overflow-y-auto"
+        style={{
+          backgroundColor: colors.headerBgColor,
+          borderColor: colors.headerBorderColor,
+        }}
+      >
+        <CustomerProfile customer={conversation.customer} colors={colors} />
+        <div style={{ borderTop: `1px solid ${colors.headerBorderColor}` }}>
+          <CustomerOrders orders={conversation.orders} colors={colors} />
         </div>
       </div>
     </div>
