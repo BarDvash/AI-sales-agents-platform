@@ -8,7 +8,8 @@
   "nav": {
     "brand": "VelocitySales",
     "conversations": "שיחות",
-    "orders": "הזמנות"
+    "orders": "הזמנות",
+    "analytics": "אנליטיקה"
   },
   "conversations": {
     "title": "שיחות",
@@ -98,5 +99,35 @@
     "title": "משהו השתבש",
     "loadConversation": "טעינת השיחה נכשלה",
     "loadOrders": "טעינת ההזמנה נכשלה"
+  },
+  "analytics": {
+    "title": "אנליטיקה",
+    "description": "סקירה כללית של ביצועי העסק שלך",
+    "noData": "אין נתונים",
+    "orders": "הזמנות",
+    "revenue": {
+      "total": "הכנסות כוללות",
+      "thisMonth": "החודש",
+      "thisWeek": "השבוע",
+      "avgOrder": "ממוצע הזמנה"
+    },
+    "orders": {
+      "total": "סה״כ הזמנות",
+      "byStatus": "הזמנות לפי סטטוס"
+    },
+    "products": {
+      "title": "מוצרים מובילים"
+    },
+    "channels": {
+      "title": "התפלגות ערוצים"
+    },
+    "customers": {
+      "title": "לקוחות מובילים",
+      "total": "סה״כ",
+      "newThisMonth": "חדשים החודש"
+    },
+    "conversations": {
+      "total": "סה״כ שיחות"
+    }
   }
 }

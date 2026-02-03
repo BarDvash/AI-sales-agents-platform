@@ -5,7 +5,8 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+from collections import Counter
 
 from storage.database import get_db
 from storage.repositories import (
@@ -128,6 +129,52 @@ class ConversationDetail(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# === Analytics Models ===
+
+class RevenueStats(BaseModel):
+    total: float
+    this_month: float
+    this_week: float
+    avg_order_value: float
+
+
+class OrderStats(BaseModel):
+    total: int
+    by_status: dict[str, int]
+
+
+class TopProduct(BaseModel):
+    name: str
+    count: int
+    revenue: float
+
+
+class ConversationStats(BaseModel):
+    total: int
+    by_channel: dict[str, int]
+
+
+class TopCustomer(BaseModel):
+    id: int
+    name: Optional[str]
+    total_orders: int
+    total_spent: float
+
+
+class CustomerStats(BaseModel):
+    total: int
+    new_this_month: int
+    top_customers: list[TopCustomer]
+
+
+class AnalyticsData(BaseModel):
+    revenue: RevenueStats
+    orders: OrderStats
+    top_products: list[TopProduct]
+    conversations: ConversationStats
+    customers: CustomerStats
 
 
 # === Helper Functions ===
@@ -357,4 +404,109 @@ def get_customer(tenant_id: str, customer_id: int, db: Session = Depends(get_db)
         language=customer.language,
         notes=customer.notes,
         created_at=customer.created_at,
+    )
+
+
+@router.get("/{tenant_id}/analytics")
+def get_analytics(tenant_id: str, db: Session = Depends(get_db)):
+    """
+    Get aggregated analytics data for a tenant.
+    """
+    verify_tenant(tenant_id, db)
+
+    order_repo = OrderRepository(db)
+    conv_repo = ConversationRepository(db)
+    customer_repo = CustomerRepository(db)
+
+    now = datetime.now(timezone.utc)
+    start_of_month = datetime(now.year, now.month, 1, tzinfo=timezone.utc)
+    start_of_week = now - timedelta(days=now.weekday())
+    start_of_week = datetime(start_of_week.year, start_of_week.month, start_of_week.day, tzinfo=timezone.utc)
+
+    # === Revenue & Order Stats ===
+    orders = order_repo.get_by_tenant(tenant_id)
+
+    total_revenue = sum(o.total for o in orders)
+    month_revenue = sum(o.total for o in orders if o.created_at >= start_of_month)
+    week_revenue = sum(o.total for o in orders if o.created_at >= start_of_week)
+    avg_order_value = total_revenue / len(orders) if orders else 0
+
+    # Order status breakdown
+    status_counts: dict[str, int] = {}
+    for o in orders:
+        status_counts[o.status] = status_counts.get(o.status, 0) + 1
+
+    # === Top Products ===
+    product_counts: Counter[str] = Counter()
+    product_revenue: dict[str, float] = {}
+
+    for order in orders:
+        for item in order.items:
+            product_name = item.get("product_name", "Unknown")
+            product_counts[product_name] += 1
+            product_revenue[product_name] = product_revenue.get(product_name, 0) + item.get("subtotal", 0)
+
+    top_products = [
+        TopProduct(name=name, count=count, revenue=product_revenue.get(name, 0))
+        for name, count in product_counts.most_common(10)
+    ]
+
+    # === Conversation Stats ===
+    conversations = conv_repo.get_by_tenant(tenant_id)
+    channel_counts: dict[str, int] = {"telegram": 0, "whatsapp": 0}
+
+    for conv in conversations:
+        # Get last message to determine channel
+        messages = conv_repo.get_recent_messages(conv.id, limit=1)
+        if messages and messages[0].channel:
+            channel = messages[0].channel
+            if channel in channel_counts:
+                channel_counts[channel] += 1
+
+    # === Customer Stats ===
+    customers = customer_repo.get_by_tenant(tenant_id)
+    new_customers_this_month = sum(1 for c in customers if c.created_at >= start_of_month)
+
+    # Top customers by total spent
+    customer_totals: dict[int, float] = {}
+    customer_order_counts: dict[int, int] = {}
+
+    for order in orders:
+        customer_totals[order.customer_id] = customer_totals.get(order.customer_id, 0) + order.total
+        customer_order_counts[order.customer_id] = customer_order_counts.get(order.customer_id, 0) + 1
+
+    # Sort by total spent
+    top_customer_ids = sorted(customer_totals.keys(), key=lambda cid: customer_totals[cid], reverse=True)[:5]
+
+    top_customers = []
+    for cid in top_customer_ids:
+        customer = customer_repo.get_by_id(cid)
+        top_customers.append(TopCustomer(
+            id=cid,
+            name=customer.name if customer else None,
+            total_orders=customer_order_counts.get(cid, 0),
+            total_spent=customer_totals.get(cid, 0),
+        ))
+
+    return AnalyticsData(
+        revenue=RevenueStats(
+            total=total_revenue,
+            this_month=month_revenue,
+            this_week=week_revenue,
+            avg_order_value=avg_order_value,
+        ),
+        orders=OrderStats(
+            total=len(orders),
+            by_status=status_counts,
+        ),
+        top_products=top_products,
+        conversations=ConversationStats(
+            total=len(conversations),
+            by_channel=channel_counts,
+        ),
+        customers=CustomerStats(
+            total=len(customers),
+            new_this_month=new_customers_this_month,
+            top_customers=top_customers,
+        ),
     )

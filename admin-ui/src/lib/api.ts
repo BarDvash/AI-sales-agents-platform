@@ -261,6 +261,52 @@ export interface CustomerDetail {
   created_at: string;
 }
 
+// === Analytics Types ===
+
+export interface RevenueStats {
+  total: number;
+  this_month: number;
+  this_week: number;
+  avg_order_value: number;
+}
+
+export interface OrderStats {
+  total: number;
+  by_status: Record<string, number>;
+}
+
+export interface TopProduct {
+  name: string;
+  count: number;
+  revenue: number;
+}
+
+export interface ConversationStats {
+  total: number;
+  by_channel: Record<string, number>;
+}
+
+export interface TopCustomer {
+  id: number;
+  name: string | null;
+  total_orders: number;
+  total_spent: number;
+}
+
+export interface CustomerStats {
+  total: number;
+  new_this_month: number;
+  top_customers: TopCustomer[];
+}
+
+export interface AnalyticsData {
+  revenue: RevenueStats;
+  orders: OrderStats;
+  top_products: TopProduct[];
+  conversations: ConversationStats;
+  customers: CustomerStats;
+}
+
 // === API Functions ===
 
 async function fetchApi<T>(path: string): Promise<T> {
@@ -312,4 +358,9 @@ export async function getCustomer(
   customerId: number
 ): Promise<CustomerDetail> {
   return fetchApi(`/admin/${tenantId}/customers/${customerId}`);
+}
+
+// Analytics
+export async function getAnalytics(tenantId: string): Promise<AnalyticsData> {
+  return fetchApi(`/admin/${tenantId}/analytics`);
 }

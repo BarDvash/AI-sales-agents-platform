@@ -34,7 +34,8 @@ A multi-tenant SaaS platform for AI-powered sales agents using Claude's function
 - ✅ Customer profile tracking (auto-extracts name, address, language, notes from conversations)
 - ✅ Agent CLI for E2E testing (scripts/agent_cli.py)
 - ✅ Admin API endpoints (conversations, orders, customers)
-- ✅ Admin Dashboard (Next.js) with conversations view, orders table
+- ✅ Admin Dashboard (Next.js) with conversations view, orders table, analytics
+- ✅ Analytics dashboard with revenue stats, top products, channel distribution charts
 - ✅ i18n support (English + Hebrew) with RTL layout
 
 **Current Work:** Step 4 complete - Ready for Multi-Channel Expansion
@@ -97,8 +98,10 @@ api/                    # HTTP layer
 admin-ui/               # Admin Dashboard (Next.js 14)
 ├── src/app/           # App router pages
 │   ├── [tenant]/conversations/  # Conversation list + detail view
-│   └── [tenant]/orders/         # Orders table + detail view
+│   ├── [tenant]/orders/         # Orders table + detail view
+│   └── [tenant]/analytics/      # Analytics dashboard with charts
 ├── src/components/    # React components (ConversationList, OrdersTable, etc.)
+│   └── analytics/     # Chart components (recharts)
 └── src/lib/api.ts     # API client with TypeScript types
 
 agent/                  # AI orchestration
@@ -658,6 +661,10 @@ GET /admin/{tenant_id}/orders/{order_id}
 GET /admin/{tenant_id}/customers/{customer_id}
     → Customer profile
     → Returns: {id, name, address, language, notes, created_at}
+
+GET /admin/{tenant_id}/analytics
+    → Aggregated analytics data
+    → Returns: {revenue, orders, top_products, conversations, customers}
 ```
 
 **Running the Dashboard:**

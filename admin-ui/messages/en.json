@@ -8,7 +8,8 @@
   "nav": {
     "brand": "VelocitySales",
     "conversations": "Conversations",
-    "orders": "Orders"
+    "orders": "Orders",
+    "analytics": "Analytics"
   },
   "conversations": {
     "title": "Conversations",
@@ -98,5 +99,35 @@
     "title": "Something went wrong",
     "loadConversation": "Failed to load conversation",
     "loadOrders": "Failed to load order"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "description": "Overview of your business performance",
+    "noData": "No data available",
+    "orders": "orders",
+    "revenue": {
+      "total": "Total Revenue",
+      "thisMonth": "This Month",
+      "thisWeek": "This Week",
+      "avgOrder": "Avg Order Value"
+    },
+    "orders": {
+      "total": "Total Orders",
+      "byStatus": "Orders by Status"
+    },
+    "products": {
+      "title": "Top Products"
+    },
+    "channels": {
+      "title": "Channel Distribution"
+    },
+    "customers": {
+      "title": "Top Customers",
+      "total": "total",
+      "newThisMonth": "New This Month"
+    },
+    "conversations": {
+      "total": "Total Conversations"
+    }
   }
 }

@@ -25,6 +25,7 @@ export default function TenantLayout({
 
   const isConversationsActive = pathname.includes("/conversations");
   const isOrdersActive = pathname.includes("/orders");
+  const isAnalyticsActive = pathname.includes("/analytics");
 
   return (
     <div className="min-h-screen">
@@ -80,6 +81,20 @@ export default function TenantLayout({
                   }}
                 >
                   {t("orders")}
+                </Link>
+                <Link
+                  href={`/${tenant}/analytics`}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    !isAnalyticsActive ? "hover:bg-[var(--tab-hover-bg)] hover:text-[var(--tab-hover-text)]" : ""
+                  }`}
+                  style={{
+                    backgroundColor: isAnalyticsActive ? "var(--tab-active-bg)" : undefined,
+                    color: isAnalyticsActive ? "var(--tab-active-text)" : "var(--tab-inactive-text)",
+                    ["--tw-ring-color" as string]: "var(--focus-ring)",
+                    ["--tw-ring-offset-color" as string]: "var(--bg-primary)",
+                  }}
+                >
+                  {t("analytics")}
                 </Link>
               </nav>
 
