@@ -8,10 +8,12 @@ from typing import Dict
 from .models import ChannelType, ChannelMessage, ChannelResponse
 from .base import ChannelAdapter
 from .telegram import TelegramAdapter
+from .whatsapp import WhatsAppAdapter
 
 # Channel adapter registry
 _ADAPTERS: Dict[ChannelType, ChannelAdapter] = {
     ChannelType.TELEGRAM: TelegramAdapter(),
+    ChannelType.WHATSAPP: WhatsAppAdapter(),
 }
 
 
@@ -51,6 +53,7 @@ __all__ = [
     "ChannelResponse",
     "ChannelAdapter",
     "TelegramAdapter",
+    "WhatsAppAdapter",
     "get_adapter",
     "register_adapter",
 ]

@@ -27,6 +27,24 @@ async def telegram_webhook(request: Request, tenant_id: str):
     )
 
 
+@router.post("/whatsapp/{tenant_id}")
+async def whatsapp_webhook(request: Request, tenant_id: str):
+    """
+    WhatsApp webhook endpoint via Twilio.
+    Receives messages from Twilio and processes them through the agent.
+
+    Twilio sends webhooks as form data (application/x-www-form-urlencoded).
+
+    Args:
+        tenant_id: Unique identifier for the tenant
+    """
+    return await _handle_channel_webhook(
+        request=request,
+        tenant_id=tenant_id,
+        channel=ChannelType.WHATSAPP
+    )
+
+
 async def _handle_channel_webhook(
     request: Request,
     tenant_id: str,
@@ -58,8 +76,16 @@ async def _handle_channel_webhook(
         # Get channel adapter
         adapter = get_adapter(channel)
 
-        # Parse payload based on channel
-        payload = await request.json()
+        # Parse payload based on channel content type
+        content_type = request.headers.get("content-type", "")
+
+        if "application/x-www-form-urlencoded" in content_type:
+            # Twilio sends form data
+            form_data = await request.form()
+            payload = dict(form_data)
+        else:
+            # Default to JSON (Telegram, etc.)
+            payload = await request.json()
 
         # Parse into unified message format
         message = adapter.parse_webhook(payload, tenant_id)
