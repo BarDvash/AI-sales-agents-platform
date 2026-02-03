@@ -77,10 +77,24 @@ export default function ConversationDetail({
     }
   }, [messages]);
 
+  // Build background style with optional doodle pattern
+  const chatBgStyle: React.CSSProperties = {
+    backgroundColor: colors.chatBgColor,
+  };
+  if (colors.chatBgImage) {
+    chatBgStyle.backgroundImage = `url(${colors.chatBgImage})`;
+    chatBgStyle.backgroundRepeat = "repeat";
+    chatBgStyle.backgroundSize = "412.5px auto"; // WhatsApp pattern size
+    chatBgStyle.backgroundBlendMode = "soft-light";
+  }
+
   if (messages.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-slate-500">
-        {t("conversations.noMessages")}
+      <div
+        className="flex items-center justify-center h-full"
+        style={chatBgStyle}
+      >
+        <span className="text-white/60">{t("conversations.noMessages")}</span>
       </div>
     );
   }
@@ -96,12 +110,22 @@ export default function ConversationDetail({
   });
 
   return (
-    <div ref={scrollRef} className="flex flex-col h-full overflow-y-auto p-4 space-y-4">
+    <div
+      ref={scrollRef}
+      className="flex flex-col h-full overflow-y-auto p-4 space-y-4"
+      style={chatBgStyle}
+    >
       {Object.entries(messagesByDate).map(([date, msgs]) => (
         <div key={date}>
           {/* Date separator */}
           <div className="flex items-center justify-center my-4">
-            <span className="px-3 py-1 bg-slate-100 rounded-full text-xs text-slate-500 font-medium">
+            <span
+              className="px-3 py-1 rounded-full text-xs font-medium"
+              style={{
+                backgroundColor: "rgba(0, 0, 0, 0.3)",
+                color: "rgba(255, 255, 255, 0.8)",
+              }}
+            >
               {date}
             </span>
           </div>
@@ -116,15 +140,15 @@ export default function ConversationDetail({
                 }`}
               >
                 <div
-                  className={`max-w-[70%] rounded-2xl px-4 py-2.5 ${
-                    message.role === "user"
-                      ? "bg-slate-100 text-slate-900"
-                      : ""
-                  }`}
-                  style={message.role === "assistant" ? {
-                    backgroundColor: colors.bubbleBgColor,
-                    color: colors.bubbleTextColor,
-                  } : undefined}
+                  className="max-w-[70%] rounded-lg px-3 py-2"
+                  style={{
+                    backgroundColor: message.role === "user"
+                      ? colors.userBubbleBgColor
+                      : colors.bubbleBgColor,
+                    color: message.role === "user"
+                      ? colors.userBubbleTextColor
+                      : colors.bubbleTextColor,
+                  }}
                 >
                   {/* Message content */}
                   <p
@@ -136,14 +160,12 @@ export default function ConversationDetail({
 
                   {/* Timestamp and channel indicator */}
                   <div
-                    className={`flex items-center gap-1.5 mt-1 ${
-                      message.role === "user"
-                        ? "text-slate-400"
-                        : ""
-                    }`}
-                    style={message.role === "assistant" ? {
-                      color: colors.bubbleTimestampColor,
-                    } : undefined}
+                    className="flex items-center gap-1.5 mt-1"
+                    style={{
+                      color: message.role === "user"
+                        ? "rgba(255, 255, 255, 0.5)"
+                        : colors.bubbleTimestampColor,
+                    }}
                   >
                     <ChannelIcon channel={message.channel} className="w-3 h-3" />
                     <span className="text-xs">{formatTime(message.created_at)}</span>

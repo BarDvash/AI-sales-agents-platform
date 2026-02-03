@@ -146,11 +146,11 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
               className="w-5 h-5"
               style={{ color: colors.iconColor }}
             />
-            <h3 className="font-medium text-slate-900">
+            <h3 className="font-medium" style={{ color: "#ffffff" }}>
               {conversation.customer?.name || conversation.chat_id}
             </h3>
           </div>
-          <p className="text-sm text-slate-500 ms-7">
+          <p className="text-sm ms-7" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
             {t("conversations.messages", { count: conversation.messages.length })}
           </p>
         </div>

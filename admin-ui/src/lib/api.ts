@@ -51,11 +51,17 @@ export interface ConversationDetail {
   orders: OrderSummary[];
 }
 
-// Channel color configuration
+// Channel color configuration - using official app colors
 export type ChannelType = "telegram" | "whatsapp" | string;
 
 export interface ChannelColors {
-  // Assistant message bubble (inline styles for dynamic rendering)
+  // Chat background (authentic app backgrounds)
+  chatBgColor: string;
+  chatBgImage?: string; // Optional doodle pattern URL
+  // User message bubble
+  userBubbleBgColor: string;
+  userBubbleTextColor: string;
+  // Assistant/outgoing message bubble
   bubbleBgColor: string;
   bubbleTextColor: string;
   bubbleTimestampColor: string;
@@ -74,31 +80,44 @@ export interface ChannelColors {
 
 export const channelColorConfig: Record<string, ChannelColors> = {
   telegram: {
-    bubbleBgColor: "#0ea5e9", // sky-500
+    // Telegram dark theme with pattern (Cosmogram style)
+    chatBgColor: "#0f0f0f", // Dark background for pattern
+    chatBgImage: "https://web.telegram.org/a/chat-bg-pattern-dark.ee6e5f9f7b46e21a4a49.png", // Telegram doodle pattern
+    userBubbleBgColor: "#212121", // Incoming message (user) - dark gray
+    userBubbleTextColor: "#ffffff",
+    bubbleBgColor: "#8774e1", // Outgoing message (assistant) - Telegram purple
     bubbleTextColor: "#ffffff",
-    bubbleTimestampColor: "#bae6fd", // sky-200
-    headerBgColor: "rgba(240, 249, 255, 0.5)", // sky-50/50
-    headerBorderColor: "#bae6fd", // sky-200
-    activeBgColor: "rgba(240, 249, 255, 0.5)", // sky-50/50
-    activeBorderColor: "#0ea5e9", // sky-500
-    badgeBgColor: "#e0f2fe", // sky-100
-    badgeTextColor: "#0369a1", // sky-700
-    iconColor: "#0ea5e9", // sky-500
+    bubbleTimestampColor: "rgba(255, 255, 255, 0.5)",
+    headerBgColor: "#212121", // Telegram header dark
+    headerBorderColor: "#0f0f0f",
+    activeBgColor: "rgba(135, 116, 225, 0.2)", // Telegram purple tint
+    activeBorderColor: "#8774e1",
+    badgeBgColor: "#8774e1",
+    badgeTextColor: "#ffffff",
+    iconColor: "#8774e1", // Telegram purple
   },
   whatsapp: {
-    bubbleBgColor: "#10b981", // emerald-500
-    bubbleTextColor: "#ffffff",
-    bubbleTimestampColor: "#a7f3d0", // emerald-200
-    headerBgColor: "rgba(236, 253, 245, 0.5)", // emerald-50/50
-    headerBorderColor: "#a7f3d0", // emerald-200
-    activeBgColor: "rgba(236, 253, 245, 0.5)", // emerald-50/50
-    activeBorderColor: "#10b981", // emerald-500
-    badgeBgColor: "#d1fae5", // emerald-100
-    badgeTextColor: "#047857", // emerald-700
-    iconColor: "#10b981", // emerald-500
+    // WhatsApp official colors
+    chatBgColor: "#0b141a", // WhatsApp dark chat background
+    chatBgImage: "https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png",
+    userBubbleBgColor: "#202c33", // Incoming message (user) - dark gray
+    userBubbleTextColor: "#e9edef",
+    bubbleBgColor: "#005c4b", // Outgoing message (assistant) - WhatsApp teal green
+    bubbleTextColor: "#e9edef",
+    bubbleTimestampColor: "rgba(233, 237, 239, 0.6)",
+    headerBgColor: "#202c33", // WhatsApp header dark
+    headerBorderColor: "#2a3942",
+    activeBgColor: "rgba(0, 92, 75, 0.2)", // WhatsApp green tint
+    activeBorderColor: "#00a884",
+    badgeBgColor: "#00a884", // WhatsApp green
+    badgeTextColor: "#ffffff",
+    iconColor: "#00a884", // WhatsApp green
   },
   // Default fallback
   default: {
+    chatBgColor: "#f1f5f9", // slate-100
+    userBubbleBgColor: "#e2e8f0", // slate-200
+    userBubbleTextColor: "#1e293b", // slate-800
     bubbleBgColor: "#4f46e5", // indigo-600
     bubbleTextColor: "#ffffff",
     bubbleTimestampColor: "#c7d2fe", // indigo-200
