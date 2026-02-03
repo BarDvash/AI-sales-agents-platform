@@ -77,17 +77,16 @@ export default function ConversationList({
   }
 
   return (
-    <div>
-      {conversations.map((conv, index) => {
+    <div className="divide-y divide-[var(--border-secondary)]">
+      {conversations.map((conv) => {
         const isSelected = selectedId === conv.id.toString();
         const colors = getChannelColors(conv.channel);
-        const isLast = index === conversations.length - 1;
 
         return (
           <Link
             key={conv.id}
             href={`/${tenant}/conversations?selected=${conv.id}`}
-            className={`block p-4 transition-all duration-150 ${
+            className={`block p-4 transition-colors duration-150 ${
               isSelected ? "border-s-2" : "hover:bg-[var(--hover-bg)]"
             } group`}
             style={{
@@ -96,9 +95,6 @@ export default function ConversationList({
                     backgroundColor: colors.activeBgColor,
                     borderInlineStartColor: colors.activeBorderColor,
                   }
-                : {}),
-              ...(!isLast && !isSelected
-                ? { borderBottom: "1px solid var(--border-secondary)" }
                 : {}),
             }}
           >
