@@ -412,7 +412,7 @@ This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to
 - [x] Webhook registration automation (via dev.sh script) ✅ COMPLETE
 
 **Multi-Channel Expansion** ⬅️ **NEXT PRIORITY**
-- [ ] Channel abstraction layer
+- [x] Channel abstraction layer ✅ COMPLETE
 - [ ] WhatsApp integration
 - [ ] Unified Message model
 
@@ -646,17 +646,24 @@ GET /admin/{tenant_id}/customers/{customer_id}
 
 ---
 
-#### Step 5: Multi-Channel Expansion ⬅️ **NEXT**
+#### Step 5: Multi-Channel Expansion ⬅️ **IN PROGRESS**
 **Goal:** Support multiple messaging platforms (WhatsApp via Twilio)
 
 **Tasks:**
-- [ ] Channel abstraction layer (`channels/` module with adapters)
+- [x] Channel abstraction layer (`channels/` module with adapters) ✅ COMPLETE
+- [ ] Database migration (add channel columns to messages/tenants)
 - [ ] WhatsApp integration via Twilio (frictionless tenant onboarding)
 - [ ] Unified Message model with channel metadata
 - [ ] Admin UI for channel configuration
 - [ ] Message channel tracking in conversations
 
 **Why fifth:** Reach customers on their preferred platforms after admin tools are in place
+
+**Completed:**
+- Channel abstraction layer with `ChannelAdapter` base class, `ChannelMessage`/`ChannelResponse` models
+- `TelegramAdapter` implementation with full parse/send/verify support
+- `webhooks.py` refactored to use unified `_handle_channel_webhook()` handler
+- Channel registry with `get_adapter()` and `register_adapter()` functions
 
 **Provider Choice:** Twilio for WhatsApp
 - Frictionless tenant onboarding (no Meta business verification per tenant)

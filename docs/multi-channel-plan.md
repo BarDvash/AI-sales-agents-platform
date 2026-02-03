@@ -104,121 +104,32 @@ class Message(Base):
 
 ## Implementation Milestones
 
-### Milestone 1: Channel Abstraction Layer (Core)
+### Milestone 1: Channel Abstraction Layer (Core) ✅ COMPLETE
 
 **Goal:** Create the abstraction without changing any existing behavior
 
-**Files to create:**
+**Files created:**
 ```
 channels/
-├── __init__.py              # Channel registry
-├── base.py                  # Abstract base class
-├── models.py                # ChannelMessage dataclass
-└── telegram.py              # Telegram adapter (extract from webhooks.py)
+├── __init__.py              # Channel registry with get_adapter(), register_adapter()
+├── base.py                  # Abstract ChannelAdapter base class
+├── models.py                # ChannelType, ChannelMessage, ChannelResponse
+└── telegram.py              # TelegramAdapter implementation
 ```
 
-**channels/models.py:**
-```python
-from dataclasses import dataclass
-from typing import Optional
-from enum import Enum
+**What was implemented:**
+- `ChannelType` enum (TELEGRAM, WHATSAPP)
+- `ChannelMessage` dataclass - unified incoming message format
+- `ChannelResponse` dataclass - unified outgoing message format
+- `ChannelAdapter` ABC with `parse_webhook()`, `send_message()`, `verify_webhook()`
+- `TelegramAdapter` - full implementation for Telegram Bot API
+- `webhooks.py` refactored to use `_handle_channel_webhook()` with adapter pattern
+- Channel registry with `get_adapter()` and `register_adapter()` functions
 
-class ChannelType(str, Enum):
-    TELEGRAM = "telegram"
-    WHATSAPP = "whatsapp"
-
-@dataclass
-class ChannelMessage:
-    """Unified message format across all channels."""
-    channel: ChannelType
-    sender_id: str           # Unique ID within channel (chat_id, phone number)
-    text: str                # Message content
-    tenant_id: str           # Resolved from webhook URL
-
-    # Optional metadata
-    sender_name: Optional[str] = None
-    media_url: Optional[str] = None      # Future: images, documents
-    media_type: Optional[str] = None     # Future: "image", "document", "audio"
-    raw_payload: Optional[dict] = None   # Original webhook payload for debugging
-
-@dataclass
-class ChannelResponse:
-    """Response to send back through a channel."""
-    text: str
-    # Future: buttons, quick_replies, media
-```
-
-**channels/base.py:**
-```python
-from abc import ABC, abstractmethod
-from .models import ChannelMessage, ChannelResponse
-
-class ChannelAdapter(ABC):
-    """Base class for all channel adapters."""
-
-    @abstractmethod
-    def parse_webhook(self, payload: dict, tenant_id: str) -> ChannelMessage | None:
-        """Parse incoming webhook payload into unified ChannelMessage."""
-        pass
-
-    @abstractmethod
-    async def send_message(self, sender_id: str, response: ChannelResponse, tenant_config: dict) -> bool:
-        """Send response back to user through this channel."""
-        pass
-
-    @abstractmethod
-    def verify_webhook(self, request) -> bool:
-        """Verify webhook signature/token (security)."""
-        pass
-```
-
-**channels/telegram.py:**
-```python
-import requests
-from .base import ChannelAdapter
-from .models import ChannelMessage, ChannelResponse, ChannelType
-
-class TelegramAdapter(ChannelAdapter):
-    """Telegram Bot API adapter."""
-
-    def parse_webhook(self, payload: dict, tenant_id: str) -> ChannelMessage | None:
-        message = payload.get("message", {})
-        chat_id = message.get("chat", {}).get("id")
-        text = message.get("text")
-
-        if not chat_id or not text:
-            return None
-
-        return ChannelMessage(
-            channel=ChannelType.TELEGRAM,
-            sender_id=str(chat_id),
-            text=text,
-            tenant_id=tenant_id,
-            sender_name=message.get("from", {}).get("first_name"),
-            raw_payload=payload
-        )
-
-    async def send_message(self, sender_id: str, response: ChannelResponse, tenant_config: dict) -> bool:
-        bot_token = tenant_config.get("bot_token")
-        if not bot_token:
-            return False
-
-        telegram_api = f"https://api.telegram.org/bot{bot_token}"
-        result = requests.post(
-            f"{telegram_api}/sendMessage",
-            json={"chat_id": sender_id, "text": response.text}
-        )
-        return result.ok
-
-    def verify_webhook(self, request) -> bool:
-        # Telegram uses secret token in URL, already handled by routing
-        return True
-```
-
-**Acceptance Criteria:**
-- Existing Telegram flow works exactly as before
-- `webhooks.py` uses `TelegramAdapter` instead of inline code
-- No changes to orchestrator or database
+**Acceptance Criteria:** ✅ All met
+- ✅ Existing Telegram flow works exactly as before
+- ✅ `webhooks.py` uses `TelegramAdapter` instead of inline code
+- ✅ No changes to orchestrator or database
 
 ---
 
@@ -564,15 +475,15 @@ These are noted for future implementation but NOT part of this plan:
 
 ## Summary
 
-| # | Milestone | Description | Dependencies |
-|---|-----------|-------------|--------------|
-| 1 | Channel Abstraction | Base classes + Telegram adapter | None |
-| 2 | Database Migration | Add channel columns | M1 |
-| 3 | WhatsApp Adapter | Twilio integration | M1 |
-| 4 | Unified Router | Single webhook handler | M1, M2, M3 |
-| 5 | Number Provisioning | Script to provision numbers | M3 |
-| 6 | Admin UI Channels | Settings page for channels | M4, M5 |
-| 7 | Message Tracking | Channel on messages + UI | M4 |
+| # | Milestone | Description | Dependencies | Status |
+|---|-----------|-------------|--------------|--------|
+| 1 | Channel Abstraction | Base classes + Telegram adapter | None | ✅ COMPLETE |
+| 2 | Database Migration | Add channel columns | M1 | Pending |
+| 3 | WhatsApp Adapter | Twilio integration | M1 | Pending |
+| 4 | Unified Router | Single webhook handler | M1, M2, M3 | Pending |
+| 5 | Number Provisioning | Script to provision numbers | M3 | Pending |
+| 6 | Admin UI Channels | Settings page for channels | M4, M5 | Pending |
+| 7 | Message Tracking | Channel on messages + UI | M4 | Pending |
 
 **Parallel work possible:**
 - M2 + M3 can run in parallel after M1
