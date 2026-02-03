@@ -1,8 +1,7 @@
 import { Suspense } from "react";
 import { getConversations, ConversationListItem } from "@/lib/api";
-import ConversationList from "@/components/ConversationList";
+import ConversationsPanel from "@/components/ConversationsPanel";
 import ConversationView from "@/components/ConversationView";
-import PanelHeader from "@/components/PanelHeader";
 
 export default async function ConversationsPage({
   params,
@@ -23,19 +22,15 @@ export default async function ConversationsPage({
 
   return (
     <div className="flex gap-6 h-[calc(100vh-12rem)]">
-      {/* Left sidebar - Conversation list */}
+      {/* Left sidebar - Conversation list with filter */}
       <div className="w-80 flex-shrink-0 bg-white rounded-xl border border-slate-200/60 shadow-[0_0_0_1px_rgb(0_0_0/0.03),0_2px_4px_rgb(0_0_0/0.05)] overflow-hidden">
-        <PanelHeader titleKey="conversations.title" />
-
-        <div className="overflow-y-auto h-[calc(100%-3rem)]">
-          {error ? (
-            <div className="p-4 text-red-500 text-sm">{error}</div>
-          ) : (
-            <Suspense fallback={<div className="p-4 text-slate-500">Loading...</div>}>
-              <ConversationList conversations={conversations} />
-            </Suspense>
-          )}
-        </div>
+        {error ? (
+          <div className="p-4 text-red-500 text-sm">{error}</div>
+        ) : (
+          <Suspense fallback={<div className="p-4 text-slate-500">Loading...</div>}>
+            <ConversationsPanel conversations={conversations} />
+          </Suspense>
+        )}
       </div>
 
       {/* Right panel - Conversation detail */}

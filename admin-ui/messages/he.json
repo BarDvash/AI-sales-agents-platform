@@ -69,6 +69,7 @@
   },
   "filters": {
     "filterBy": "סינון לפי:",
+    "allChannels": "כל הערוצים",
     "allStatuses": "כל הסטטוסים",
     "allDates": "כל הזמנים",
     "today": "היום",

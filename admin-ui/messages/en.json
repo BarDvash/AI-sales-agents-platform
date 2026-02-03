@@ -69,6 +69,7 @@
   },
   "filters": {
     "filterBy": "Filter by:",
+    "allChannels": "All Channels",
     "allStatuses": "All Statuses",
     "allDates": "All Time",
     "today": "Today",

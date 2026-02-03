@@ -655,7 +655,7 @@ GET /admin/{tenant_id}/customers/{customer_id}
 - [x] Channel indicator in Admin UI (badge in list, icon in messages) ✅ COMPLETE
 - [ ] WhatsApp integration via Twilio (frictionless tenant onboarding)
 - [ ] Admin UI for channel configuration
-- [ ] Channel filtering in Admin UI conversations
+- [x] Channel filtering in Admin UI conversations ✅ COMPLETE
 
 **Why fifth:** Reach customers on their preferred platforms after admin tools are in place
 
@@ -668,6 +668,7 @@ GET /admin/{tenant_id}/customers/{customer_id}
 - `process_message()` updated to accept and persist `channel` parameter
 - Admin UI shows channel badge in conversation list (blue for Telegram, green for WhatsApp)
 - Admin UI shows channel icon next to each message timestamp in conversation detail
+- Channel filter dropdown in conversations list (filter by Telegram/WhatsApp/All)
 
 **Provider Choice:** Twilio for WhatsApp
 - Frictionless tenant onboarding (no Meta business verification per tenant)
