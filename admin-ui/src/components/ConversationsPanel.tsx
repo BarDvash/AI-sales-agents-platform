@@ -39,12 +39,17 @@ export default function ConversationsPanel({
         }}
       >
         <div className="flex items-center justify-between">
-          <h2
-            className="text-sm font-semibold uppercase tracking-wider"
-            style={{ color: "var(--text-muted)" }}
-          >
-            {t("conversations.title")}
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2
+              className="text-sm font-semibold uppercase tracking-wider"
+              style={{ color: "var(--text-muted)" }}
+            >
+              {t("conversations.title")}
+            </h2>
+            <span className="text-sm" style={{ color: "var(--text-muted)" }}>
+              {filteredConversations.length}
+            </span>
+          </div>
 
           {/* Channel filter dropdown */}
           {availableChannels.length > 0 && (

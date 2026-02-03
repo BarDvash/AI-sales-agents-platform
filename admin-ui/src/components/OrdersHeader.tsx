@@ -14,19 +14,23 @@ export default function OrdersHeader({ count, status }: OrdersHeaderProps) {
 
   return (
     <div
-      className="px-6 py-4 border-b"
-      style={{ borderColor: "var(--border-secondary)" }}
+      className="px-4 py-3 border-b"
+      style={{
+        backgroundColor: "var(--bg-secondary)",
+        borderColor: "var(--border-primary)",
+      }}
     >
-      <h2
-        className="text-lg font-semibold tracking-tight"
-        style={{ color: "var(--text-primary)" }}
-      >
-        {t("orders.title")}
-      </h2>
-      <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
-        {count} {count === 1 ? t("orders.table.orderId").toLowerCase() : t("orders.title").toLowerCase()}
-        {statusLabel ? ` (${statusLabel})` : ""}
-      </p>
+      <div className="flex items-center gap-2">
+        <h2
+          className="text-sm font-semibold uppercase tracking-wider"
+          style={{ color: "var(--text-muted)" }}
+        >
+          {t("orders.title")}
+        </h2>
+        <span className="text-sm" style={{ color: "var(--text-muted)" }}>
+          {count}{statusLabel ? ` · ${statusLabel}` : ""}
+        </span>
+      </div>
     </div>
   );
 }
