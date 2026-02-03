@@ -63,16 +63,16 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
     const fetchPromise = getConversation(tenant, parseInt(selectedId));
 
     // Wait for fade out to complete
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise(resolve => setTimeout(resolve, 150));
 
     try {
       const data = await fetchPromise;
       setConversation(data);
       setDisplayConversation(data);
-      // Fade in after content swap
-      setTimeout(() => {
+      // Fade in after content swap using rAF for smooth timing
+      requestAnimationFrame(() => {
         setIsVisible(true);
-      }, 50);
+      });
     } catch (e) {
       setError(e instanceof Error ? e.message : t("error.loadConversation"));
       setConversation(null);
@@ -141,10 +141,10 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
 
   return (
     <div
-      className="flex h-full transition-all duration-200 ease-out"
+      className="flex h-full transition-opacity duration-150 ease-out"
       style={{
         opacity: isVisible ? 1 : 0,
-        transform: isVisible ? "translateY(0)" : "translateY(10px)",
+        willChange: "opacity",
       }}
     >
       {/* Message thread */}
