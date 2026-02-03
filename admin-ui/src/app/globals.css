@@ -21,31 +21,31 @@
   --status-cancelled: #EF4444;
 }
 
-/* Dark Theme (default) */
+/* Dark Theme (default) - Softer zinc-based palette */
 :root {
-  --background: #0f0f0f;
-  --foreground: #e2e8f0;
+  --background: #18181b;
+  --foreground: #e4e4e7;
 
   /* Theme-specific colors */
-  --bg-primary: #1a1a1a;
-  --bg-secondary: #212121;
-  --bg-tertiary: #2a2a2a;
-  --bg-hover: #252525;
+  --bg-primary: #27272a;
+  --bg-secondary: #303033;
+  --bg-tertiary: #3f3f46;
+  --bg-hover: #3f3f46;
 
-  --text-primary: #f1f5f9;
-  --text-secondary: #e2e8f0;
-  --text-muted: #94a3b8;
-  --text-faint: #64748b;
+  --text-primary: #fafafa;
+  --text-secondary: #e4e4e7;
+  --text-muted: #a1a1aa;
+  --text-faint: #71717a;
 
-  --border-primary: rgba(51, 65, 85, 0.5);
-  --border-secondary: rgba(255, 255, 255, 0.06);
+  --border-primary: rgba(63, 63, 70, 0.8);
+  --border-secondary: rgba(255, 255, 255, 0.08);
 
-  --hover-bg: rgba(255, 255, 255, 0.05);
-  --focus-ring: #64748b;
+  --hover-bg: rgba(255, 255, 255, 0.06);
+  --focus-ring: #71717a;
 
   /* Header */
-  --header-bg: rgba(26, 26, 26, 0.95);
-  --header-border: rgba(51, 65, 85, 0.5);
+  --header-bg: rgba(39, 39, 42, 0.95);
+  --header-border: rgba(63, 63, 70, 0.8);
 
   /* Active tab */
   --tab-active-bg: #f1f5f9;
