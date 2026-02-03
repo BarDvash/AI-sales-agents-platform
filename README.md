@@ -180,7 +180,7 @@ scripts/                # Development and testing tools
 - ✅ Error handling and logging
 
 ### Planned Features
-- 🔄 WhatsApp integration
+- 🔄 WhatsApp integration (implemented - awaiting Twilio credentials for testing)
 - 🔄 Tenant self-service configuration (products, persona, bot token)
 - 🔄 Payment processing
 - 🔄 E-commerce integrations (Shopify, WooCommerce)
@@ -379,6 +379,44 @@ print(f'✅ Tenant: {load_tenant_config().COMPANY_NAME}')
 ```
 
 This starts PostgreSQL, the server, ngrok, and registers all webhooks. Ctrl+C to stop.
+
+### WhatsApp Integration Setup (Twilio)
+
+The WhatsApp adapter is implemented but requires Twilio credentials to test. Follow these steps:
+
+**1. Get Twilio credentials** from [console.twilio.com](https://console.twilio.com/):
+- Account SID
+- Auth Token
+
+**2. Add to your `.env`:**
+```bash
+TWILIO_ACCOUNT_SID=ACxxxxxxxxxx
+TWILIO_AUTH_TOKEN=your_auth_token
+TWILIO_WHATSAPP_NUMBER=+14155238886  # Sandbox number for testing
+```
+
+**3. Configure tenant's WhatsApp in database:**
+```sql
+UPDATE tenants
+SET whatsapp_config = '{
+  "account_sid": "ACxxx",
+  "auth_token": "xxx",
+  "phone_number": "+14155238886",
+  "skip_signature_verification": true
+}'
+WHERE id = 'valdman';
+```
+
+**4. Join the Twilio Sandbox:**
+- Send a WhatsApp message to the sandbox number (+14155238886)
+- Follow the instructions to join (usually "join <sandbox-code>")
+
+**5. Set Twilio webhook URL:**
+- Start ngrok: `./scripts/dev.sh start`
+- In Twilio Console → Messaging → Settings → WhatsApp Sandbox Settings
+- Set "When a message comes in" to: `https://your-ngrok-url.ngrok-free.dev/webhooks/whatsapp/valdman`
+
+**Note:** For production, you'll need a Twilio WhatsApp Business number instead of the sandbox.
 
 **Test conversation flow:**
 - Basic greeting and product inquiry
