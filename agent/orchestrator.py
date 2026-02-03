@@ -56,7 +56,12 @@ def _detect_action_violation(response_text: str, tool_calls: List[dict]) -> bool
     return False
 
 
-async def process_message(user_message: str, chat_id: str, tenant_id: str = "valdman") -> AgentResult:
+async def process_message(
+    user_message: str,
+    chat_id: str,
+    tenant_id: str = "valdman",
+    channel: str = "telegram"
+) -> AgentResult:
     """
     Main agent loop: receive → load context → LLM call → tool execution → respond.
 
@@ -64,6 +69,7 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         user_message: User's text message
         chat_id: Telegram/WhatsApp chat ID
         tenant_id: Tenant identifier (e.g., "valdman")
+        channel: Message channel source (telegram, whatsapp, etc.)
 
     Returns:
         AgentResult with response_text and tool_calls trace
@@ -84,7 +90,7 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         conversation = conv_repo.get_or_create_active_conversation(tenant_id, customer.id)
 
         # Add user message to database
-        conv_repo.add_message(conversation.id, "user", user_message)
+        conv_repo.add_message(conversation.id, "user", user_message, channel=channel)
 
         # Get conversation state for summarization
         existing_summary, last_summary_at, total_msgs = conv_repo.get_conversation_state(conversation.id)
@@ -214,7 +220,7 @@ async def process_message(user_message: str, chat_id: str, tenant_id: str = "val
         print(f"[Live][Response] chat={chat_id} | response: {assistant_message[:100]}")
 
         # Save assistant message to database
-        conv_repo.add_message(conversation.id, "assistant", assistant_message)
+        conv_repo.add_message(conversation.id, "assistant", assistant_message, channel=channel)
 
         # Fire-and-forget background tasks (non-blocking)
         if should_extract_profile(total_msgs):

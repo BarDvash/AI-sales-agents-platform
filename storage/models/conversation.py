@@ -40,7 +40,7 @@ class Conversation(Base):
 class Message(Base):
     """
     Message = individual message in a conversation.
-    Stores role (user/assistant) and content.
+    Stores role (user/assistant), content, and channel source.
     """
     __tablename__ = "messages"
 
@@ -51,6 +51,9 @@ class Message(Base):
     role = Column(String, nullable=False)  # "user" or "assistant"
     content = Column(Text, nullable=False)
 
+    # Channel source (telegram, whatsapp, web, etc.)
+    channel = Column(String, nullable=True, default="unknown")
+
     # Timestamp
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
@@ -58,4 +61,4 @@ class Message(Base):
     conversation = relationship("Conversation", back_populates="messages")
 
     def __repr__(self):
-        return f"<Message(id={self.id}, role='{self.role}', conversation_id={self.conversation_id})>"
+        return f"<Message(id={self.id}, role='{self.role}', channel='{self.channel}', conversation_id={self.conversation_id})>"

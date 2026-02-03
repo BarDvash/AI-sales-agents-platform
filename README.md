@@ -651,11 +651,11 @@ GET /admin/{tenant_id}/customers/{customer_id}
 
 **Tasks:**
 - [x] Channel abstraction layer (`channels/` module with adapters) ✅ COMPLETE
-- [ ] Database migration (add channel columns to messages/tenants)
+- [x] Database migration (add channel columns to messages/tenants) ✅ COMPLETE
+- [x] Channel indicator in Admin UI conversation view ✅ COMPLETE
 - [ ] WhatsApp integration via Twilio (frictionless tenant onboarding)
-- [ ] Unified Message model with channel metadata
 - [ ] Admin UI for channel configuration
-- [ ] Message channel tracking in conversations
+- [ ] Channel filtering in Admin UI conversations
 
 **Why fifth:** Reach customers on their preferred platforms after admin tools are in place
 
@@ -664,6 +664,9 @@ GET /admin/{tenant_id}/customers/{customer_id}
 - `TelegramAdapter` implementation with full parse/send/verify support
 - `webhooks.py` refactored to use unified `_handle_channel_webhook()` handler
 - Channel registry with `get_adapter()` and `register_adapter()` functions
+- Database migration adding `channel` column to messages, `telegram_config`/`whatsapp_config` JSON columns to tenants
+- `process_message()` updated to accept and persist `channel` parameter
+- Admin UI shows channel icon (Telegram/WhatsApp) next to each message timestamp
 
 **Provider Choice:** Twilio for WhatsApp
 - Frictionless tenant onboarding (no Meta business verification per tenant)

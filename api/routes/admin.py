@@ -38,6 +38,7 @@ class MessageItem(BaseModel):
     id: int
     role: str
     content: str
+    channel: Optional[str] = "unknown"
     created_at: datetime
 
     class Config:
@@ -232,6 +233,7 @@ def get_conversation(tenant_id: str, conversation_id: int, db: Session = Depends
                 id=m.id,
                 role=m.role,
                 content=m.content,
+                channel=m.channel or "unknown",
                 created_at=m.created_at,
             )
             for m in messages

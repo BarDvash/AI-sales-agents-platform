@@ -80,7 +80,8 @@ async def _handle_channel_webhook(
         result = await process_message(
             message.text,
             message.sender_id,
-            tenant_id=tenant_id
+            tenant_id=tenant_id,
+            channel=channel.value
         )
 
         # Send response back through the same channel
@@ -101,6 +102,9 @@ def _get_channel_config(tenant, channel: ChannelType) -> Optional[dict]:
     """
     Extract channel-specific configuration from tenant.
 
+    Prefers JSON config columns (telegram_config, whatsapp_config) but falls back
+    to legacy bot_token column for backward compatibility.
+
     Args:
         tenant: Tenant database model
         channel: The channel type
@@ -109,12 +113,16 @@ def _get_channel_config(tenant, channel: ChannelType) -> Optional[dict]:
         Channel configuration dict, or None if not configured
     """
     if channel == ChannelType.TELEGRAM:
-        if tenant.bot_token:
+        # Prefer new telegram_config JSON, fall back to legacy bot_token
+        if tenant.telegram_config:
+            return tenant.telegram_config
+        elif tenant.bot_token:
             return {"bot_token": tenant.bot_token}
         return None
 
     elif channel == ChannelType.WHATSAPP:
-        # Future: return tenant.whatsapp_config
+        if tenant.whatsapp_config:
+            return tenant.whatsapp_config
         return None
 
     return None

@@ -81,11 +81,16 @@ class ConversationRepository:
     # === Message Operations ===
 
     def add_message(
-        self, conversation_id: int, role: str, content: str
+        self, conversation_id: int, role: str, content: str, channel: Optional[str] = "unknown"
     ) -> Message:
         """
         Add message to conversation and increment total_message_count.
-        Role: 'user' or 'assistant'
+
+        Args:
+            conversation_id: The conversation to add the message to
+            role: 'user' or 'assistant'
+            content: Message text content
+            channel: Channel source (telegram, whatsapp, etc.). Defaults to 'unknown'.
         """
         # Increment total message count
         conversation = self.get_conversation_by_id(conversation_id)
@@ -96,6 +101,7 @@ class ConversationRepository:
             conversation_id=conversation_id,
             role=role,
             content=content,
+            channel=channel,
         )
         self.db.add(message)
         self.db.commit()

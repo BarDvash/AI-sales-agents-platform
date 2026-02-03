@@ -133,25 +133,30 @@ channels/
 
 ---
 
-### Milestone 2: Database Migration
+### Milestone 2: Database Migration ✅ COMPLETE
 
 **Goal:** Add channel support to data model
 
-**Migration:** `alembic revision -m "add_channel_support"`
+**Migration:** `alembic/versions/20260203_0659_a4b0c2a94826_add_channel_support.py`
 
-**Changes:**
-1. Add `channel` column to `messages` table (default: "telegram")
-2. Add `telegram_config` JSON column to `tenants` table
-3. Add `whatsapp_config` JSON column to `tenants` table
-4. Migrate existing `bot_token` to `telegram_config.bot_token`
+**What was implemented:**
+1. Added `channel` column to `messages` table (default: "telegram")
+2. Added `telegram_config` JSON column to `tenants` table
+3. Added `whatsapp_config` JSON column to `tenants` table
+4. Migrated existing `bot_token` values to `telegram_config.bot_token` with `enabled: true`
+5. Updated `Message` model with `channel` field
+6. Updated `Tenant` model with `telegram_config` and `whatsapp_config` JSON fields
+7. Updated `ConversationRepository.add_message()` to accept `channel` parameter
+8. Updated `process_message()` in orchestrator to accept and pass `channel`
+9. Updated `webhooks.py` to pass channel to orchestrator and read from new JSON configs
 
-**Acceptance Criteria:**
-```bash
-alembic upgrade head
-# Existing data preserved
-# New columns exist
-# bot_token migrated to telegram_config
-```
+**Acceptance Criteria:** ✅ All met
+- ✅ `alembic upgrade head` runs successfully
+- ✅ Existing data preserved
+- ✅ New columns exist (`channel`, `telegram_config`, `whatsapp_config`)
+- ✅ `bot_token` migrated to `telegram_config`
+- ✅ New messages saved with correct `channel` value
+- ✅ Agent CLI works with channel tracking
 
 ---
 
@@ -478,12 +483,12 @@ These are noted for future implementation but NOT part of this plan:
 | # | Milestone | Description | Dependencies | Status |
 |---|-----------|-------------|--------------|--------|
 | 1 | Channel Abstraction | Base classes + Telegram adapter | None | ✅ COMPLETE |
-| 2 | Database Migration | Add channel columns | M1 | Pending |
+| 2 | Database Migration | Add channel columns + UI indicator | M1 | ✅ COMPLETE |
 | 3 | WhatsApp Adapter | Twilio integration | M1 | Pending |
 | 4 | Unified Router | Single webhook handler | M1, M2, M3 | Pending |
 | 5 | Number Provisioning | Script to provision numbers | M3 | Pending |
 | 6 | Admin UI Channels | Settings page for channels | M4, M5 | Pending |
-| 7 | Message Tracking | Channel on messages + UI | M4 | Pending |
+| 7 | Message Tracking | Channel filtering in Admin UI | M4 | Pending |
 
 **Parallel work possible:**
 - M2 + M3 can run in parallel after M1

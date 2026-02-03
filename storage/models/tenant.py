@@ -1,7 +1,7 @@
 """
 Tenant model - represents a business using the platform.
 """
-from sqlalchemy import Column, String, Text, DateTime
+from sqlalchemy import Column, String, Text, DateTime, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from storage.database import Base
@@ -31,8 +31,14 @@ class Tenant(Base):
     agent_role = Column(String, nullable=False)  # e.g., "sales representative"
     agent_instructions = Column(Text, nullable=False)
 
-    # Telegram configuration
+    # Legacy Telegram configuration (kept for backward compatibility)
     bot_token = Column(String, nullable=True)  # Telegram bot token
+
+    # Channel configurations (JSON for flexibility)
+    # telegram_config: {"bot_token": "...", "enabled": true, "webhook_secret": "..."}
+    telegram_config = Column(JSON, nullable=True)
+    # whatsapp_config: {"phone_number_id": "...", "enabled": true, "business_account_id": "..."}
+    whatsapp_config = Column(JSON, nullable=True)
 
     # Business settings
     currency = Column(String, default="NIS", nullable=False)  # e.g., "NIS", "USD", "EUR"
