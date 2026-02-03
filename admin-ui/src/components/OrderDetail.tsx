@@ -10,18 +10,33 @@ interface OrderDetailProps {
   tenant: string;
 }
 
-function getStatusColor(status: string): string {
+function getStatusStyles(status: string): React.CSSProperties {
   switch (status) {
     case "pending":
-      return "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20";
+      return {
+        backgroundColor: "var(--status-pending-bg)",
+        color: "var(--status-pending-text)",
+      };
     case "confirmed":
-      return "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20";
+      return {
+        backgroundColor: "var(--status-confirmed-bg)",
+        color: "var(--status-confirmed-text)",
+      };
     case "completed":
-      return "bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-600/20";
+      return {
+        backgroundColor: "var(--status-completed-bg)",
+        color: "var(--status-completed-text)",
+      };
     case "cancelled":
-      return "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20";
+      return {
+        backgroundColor: "var(--status-cancelled-bg)",
+        color: "var(--status-cancelled-text)",
+      };
     default:
-      return "bg-slate-50 text-slate-700 ring-1 ring-inset ring-slate-600/20";
+      return {
+        backgroundColor: "var(--bg-tertiary)",
+        color: "var(--text-muted)",
+      };
   }
 }
 
@@ -72,9 +87,8 @@ export default function OrderDetail({ order, tenant }: OrderDetailProps) {
           </div>
 
           <span
-            className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(
-              order.status
-            )}`}
+            className="inline-flex px-3 py-1 text-sm font-medium rounded-full"
+            style={getStatusStyles(order.status)}
           >
             {t(`status.${order.status}`)}
           </span>

@@ -63,11 +63,11 @@
   /* Cards/Panels */
   --card-shadow: 0 0 0 1px rgb(0 0 0 / 0.2), 0 2px 4px rgb(0 0 0 / 0.3);
 
-  /* Status badges (dark) */
+  /* Status badges (dark) - confirmed uses brand green */
   --status-pending-bg: rgba(245, 158, 11, 0.2);
   --status-pending-text: #fbbf24;
-  --status-confirmed-bg: rgba(16, 185, 129, 0.2);
-  --status-confirmed-text: #34d399;
+  --status-confirmed-bg: rgba(46, 204, 113, 0.2);
+  --status-confirmed-text: #2ecc71;
   --status-completed-bg: rgba(99, 102, 241, 0.2);
   --status-completed-text: #818cf8;
   --status-cancelled-bg: rgba(239, 68, 68, 0.2);
@@ -114,11 +114,11 @@ html[data-theme="light"] {
   /* Cards/Panels */
   --card-shadow: 0 0 0 1px rgb(0 0 0 / 0.03), 0 2px 4px rgb(0 0 0 / 0.05);
 
-  /* Status badges (light) */
+  /* Status badges (light) - confirmed uses brand green */
   --status-pending-bg: #fffbeb;
   --status-pending-text: #b45309;
-  --status-confirmed-bg: #ecfdf5;
-  --status-confirmed-text: #047857;
+  --status-confirmed-bg: rgba(46, 204, 113, 0.15);
+  --status-confirmed-text: #1b9955;
   --status-completed-bg: #eef2ff;
   --status-completed-text: #4338ca;
   --status-cancelled-bg: #fef2f2;

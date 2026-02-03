@@ -15,18 +15,33 @@ interface OrdersTableProps {
 type SortField = "id" | "customer" | "status" | "total" | "date";
 type SortDirection = "asc" | "desc";
 
-function getStatusColor(status: string): string {
+function getStatusStyles(status: string): React.CSSProperties {
   switch (status) {
     case "pending":
-      return "bg-amber-500/20 text-amber-400 ring-1 ring-inset ring-amber-500/30";
+      return {
+        backgroundColor: "var(--status-pending-bg)",
+        color: "var(--status-pending-text)",
+      };
     case "confirmed":
-      return "bg-emerald-500/20 text-emerald-400 ring-1 ring-inset ring-emerald-500/30";
+      return {
+        backgroundColor: "var(--status-confirmed-bg)",
+        color: "var(--status-confirmed-text)",
+      };
     case "completed":
-      return "bg-indigo-500/20 text-indigo-400 ring-1 ring-inset ring-indigo-500/30";
+      return {
+        backgroundColor: "var(--status-completed-bg)",
+        color: "var(--status-completed-text)",
+      };
     case "cancelled":
-      return "bg-red-500/20 text-red-400 ring-1 ring-inset ring-red-500/30";
+      return {
+        backgroundColor: "var(--status-cancelled-bg)",
+        color: "var(--status-cancelled-text)",
+      };
     default:
-      return "bg-slate-500/20 text-slate-400 ring-1 ring-inset ring-slate-500/30";
+      return {
+        backgroundColor: "var(--bg-tertiary)",
+        color: "var(--text-muted)",
+      };
   }
 }
 
@@ -245,9 +260,8 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <span
-                  className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(
-                    order.status
-                  )}`}
+                  className="inline-flex px-2 py-1 text-xs font-medium rounded-full"
+                  style={getStatusStyles(order.status)}
                 >
                   {t(`status.${order.status}`)}
                 </span>

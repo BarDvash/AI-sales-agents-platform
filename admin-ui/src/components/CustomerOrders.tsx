@@ -11,18 +11,33 @@ interface CustomerOrdersProps {
   colors?: ChannelColors;
 }
 
-function getStatusStyle(status: string): React.CSSProperties {
+function getStatusStyles(status: string): React.CSSProperties {
   switch (status) {
     case "pending":
-      return { backgroundColor: "rgba(251, 191, 36, 0.2)", color: "#fbbf24" };
+      return {
+        backgroundColor: "var(--status-pending-bg)",
+        color: "var(--status-pending-text)",
+      };
     case "confirmed":
-      return { backgroundColor: "rgba(52, 211, 153, 0.2)", color: "#34d399" };
+      return {
+        backgroundColor: "var(--status-confirmed-bg)",
+        color: "var(--status-confirmed-text)",
+      };
     case "completed":
-      return { backgroundColor: "rgba(129, 140, 248, 0.2)", color: "#818cf8" };
+      return {
+        backgroundColor: "var(--status-completed-bg)",
+        color: "var(--status-completed-text)",
+      };
     case "cancelled":
-      return { backgroundColor: "rgba(248, 113, 113, 0.2)", color: "#f87171" };
+      return {
+        backgroundColor: "var(--status-cancelled-bg)",
+        color: "var(--status-cancelled-text)",
+      };
     default:
-      return { backgroundColor: "rgba(255, 255, 255, 0.1)", color: "rgba(255, 255, 255, 0.7)" };
+      return {
+        backgroundColor: "var(--bg-tertiary)",
+        color: "var(--text-muted)",
+      };
   }
 }
 
@@ -85,7 +100,7 @@ export default function CustomerOrders({ orders, colors }: CustomerOrdersProps) 
               </span>
               <span
                 className="text-xs px-2 py-0.5 rounded-full"
-                style={getStatusStyle(order.status)}
+                style={getStatusStyles(order.status)}
               >
                 {t(`status.${order.status}`)}
               </span>
