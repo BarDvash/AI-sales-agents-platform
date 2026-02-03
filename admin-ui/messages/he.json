@@ -104,7 +104,7 @@
     "title": "אנליטיקה",
     "description": "סקירה כללית של ביצועי העסק שלך",
     "noData": "אין נתונים",
-    "orders": "הזמנות",
+    "ordersUnit": "הזמנות",
     "revenue": {
       "total": "הכנסות כוללות",
       "thisMonth": "החודש",

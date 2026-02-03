@@ -63,7 +63,7 @@ export default function TopCustomersList({
                 {customer.name || t("customer.noName")}
               </p>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-                {customer.total_orders} {t("analytics.orders")}
+                {customer.total_orders} {t("analytics.ordersUnit")}
               </p>
             </div>
           </div>

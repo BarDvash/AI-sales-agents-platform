@@ -104,7 +104,7 @@
     "title": "Analytics",
     "description": "Overview of your business performance",
     "noData": "No data available",
-    "orders": "orders",
+    "ordersUnit": "orders",
     "revenue": {
       "total": "Total Revenue",
       "thisMonth": "This Month",

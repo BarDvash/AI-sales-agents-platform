@@ -34,7 +34,7 @@ export default function TopProductsChart({ products }: TopProductsChartProps) {
   const topProducts = products.slice(0, 5);
 
   return (
-    <ResponsiveContainer width="100%" height={200}>
+    <ResponsiveContainer width="100%" height={220}>
       <BarChart
         data={topProducts}
         layout="vertical"
@@ -45,10 +45,10 @@ export default function TopProductsChart({ products }: TopProductsChartProps) {
           type="category"
           dataKey="name"
           stroke="var(--text-muted)"
-          fontSize={12}
-          width={100}
+          fontSize={11}
+          width={120}
           tickFormatter={(value) =>
-            value.length > 15 ? `${value.slice(0, 15)}...` : value
+            value.length > 18 ? `${value.slice(0, 18)}...` : value
           }
         />
         <Tooltip
@@ -58,7 +58,7 @@ export default function TopProductsChart({ products }: TopProductsChartProps) {
             borderRadius: "8px",
             color: "var(--text-primary)",
           }}
-          formatter={(value) => [value, t("analytics.orders")]}
+          formatter={(value) => [value, t("analytics.ordersUnit")]}
         />
         <Bar dataKey="count" radius={[0, 4, 4, 0]}>
           {topProducts.map((_, index) => (
