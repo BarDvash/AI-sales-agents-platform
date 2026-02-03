@@ -54,9 +54,11 @@ export default function TenantLayout({
               <nav className="flex gap-2">
                 <Link
                   href={`/${tenant}/conversations`}
-                  className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    !isConversationsActive ? "hover:bg-[var(--tab-hover-bg)] hover:text-[var(--tab-hover-text)]" : ""
+                  }`}
                   style={{
-                    backgroundColor: isConversationsActive ? "var(--tab-active-bg)" : "transparent",
+                    backgroundColor: isConversationsActive ? "var(--tab-active-bg)" : undefined,
                     color: isConversationsActive ? "var(--tab-active-text)" : "var(--tab-inactive-text)",
                     ["--tw-ring-color" as string]: "var(--focus-ring)",
                     ["--tw-ring-offset-color" as string]: "var(--bg-primary)",
@@ -66,9 +68,11 @@ export default function TenantLayout({
                 </Link>
                 <Link
                   href={`/${tenant}/orders`}
-                  className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    !isOrdersActive ? "hover:bg-[var(--tab-hover-bg)] hover:text-[var(--tab-hover-text)]" : ""
+                  }`}
                   style={{
-                    backgroundColor: isOrdersActive ? "var(--tab-active-bg)" : "transparent",
+                    backgroundColor: isOrdersActive ? "var(--tab-active-bg)" : undefined,
                     color: isOrdersActive ? "var(--tab-active-text)" : "var(--tab-inactive-text)",
                     ["--tw-ring-color" as string]: "var(--focus-ring)",
                     ["--tw-ring-offset-color" as string]: "var(--bg-primary)",
