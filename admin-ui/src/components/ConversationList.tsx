@@ -77,10 +77,11 @@ export default function ConversationList({
   }
 
   return (
-    <div className="divide-y divide-slate-100">
-      {conversations.map((conv) => {
+    <div>
+      {conversations.map((conv, index) => {
         const isSelected = selectedId === conv.id.toString();
         const colors = getChannelColors(conv.channel);
+        const isLast = index === conversations.length - 1;
 
         return (
           <Link
@@ -89,14 +90,17 @@ export default function ConversationList({
             className={`block p-4 transition-all duration-150 ${
               isSelected ? "border-s-2" : "hover:bg-slate-50"
             }`}
-            style={
-              isSelected
+            style={{
+              ...(isSelected
                 ? {
                     backgroundColor: colors.activeBgColor,
-                    borderColor: colors.activeBorderColor,
+                    borderInlineStartColor: colors.activeBorderColor,
                   }
-                : undefined
-            }
+                : {}),
+              ...(!isLast && !isSelected
+                ? { borderBottom: "1px solid rgb(241 245 249)" }
+                : {}),
+            }}
           >
             <div className="flex justify-between items-start">
               <div className="min-w-0 flex-1">
