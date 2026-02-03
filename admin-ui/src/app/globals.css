@@ -21,16 +21,16 @@
   --status-cancelled: #EF4444;
 }
 
-/* Dark Theme (default) - Softer zinc-based palette */
+/* Dark Theme (default) - Balanced zinc palette */
 :root {
-  --background: #18181b;
+  --background: #141416;
   --foreground: #e4e4e7;
 
   /* Theme-specific colors */
-  --bg-primary: #27272a;
-  --bg-secondary: #303033;
-  --bg-tertiary: #3f3f46;
-  --bg-hover: #3f3f46;
+  --bg-primary: #1c1c1f;
+  --bg-secondary: #242428;
+  --bg-tertiary: #2e2e33;
+  --bg-hover: #2e2e33;
 
   --text-primary: #fafafa;
   --text-secondary: #e4e4e7;
@@ -44,7 +44,7 @@
   --focus-ring: #71717a;
 
   /* Header */
-  --header-bg: rgba(39, 39, 42, 0.95);
+  --header-bg: rgba(38, 38, 42, 0.95);
   --header-border: rgba(63, 63, 70, 0.8);
 
   /* Active tab */
