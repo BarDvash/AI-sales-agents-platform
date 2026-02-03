@@ -652,7 +652,7 @@ GET /admin/{tenant_id}/customers/{customer_id}
 **Tasks:**
 - [x] Channel abstraction layer (`channels/` module with adapters) ✅ COMPLETE
 - [x] Database migration (add channel columns to messages/tenants) ✅ COMPLETE
-- [x] Channel indicator in Admin UI conversation view ✅ COMPLETE
+- [x] Channel indicator in Admin UI (badge in list, icon in messages) ✅ COMPLETE
 - [ ] WhatsApp integration via Twilio (frictionless tenant onboarding)
 - [ ] Admin UI for channel configuration
 - [ ] Channel filtering in Admin UI conversations
@@ -666,7 +666,8 @@ GET /admin/{tenant_id}/customers/{customer_id}
 - Channel registry with `get_adapter()` and `register_adapter()` functions
 - Database migration adding `channel` column to messages, `telegram_config`/`whatsapp_config` JSON columns to tenants
 - `process_message()` updated to accept and persist `channel` parameter
-- Admin UI shows channel icon (Telegram/WhatsApp) next to each message timestamp
+- Admin UI shows channel badge in conversation list (blue for Telegram, green for WhatsApp)
+- Admin UI shows channel icon next to each message timestamp in conversation detail
 
 **Provider Choice:** Twilio for WhatsApp
 - Frictionless tenant onboarding (no Meta business verification per tenant)

@@ -15,6 +15,7 @@ export interface ConversationListItem {
   last_message_at: string | null;
   message_count: number;
   status: string;
+  channel: "telegram" | "whatsapp" | string;
 }
 
 export interface Message {

@@ -29,6 +29,7 @@ class ConversationListItem(BaseModel):
     last_message_at: Optional[datetime]
     message_count: int
     status: str
+    channel: Optional[str] = "unknown"  # Primary channel (from most recent message)
 
     class Config:
         from_attributes = True
@@ -170,6 +171,7 @@ def list_conversations(tenant_id: str, db: Session = Depends(get_db)):
             last_message_at=last_message.created_at if last_message else conv.created_at,
             message_count=conv.total_message_count or 0,
             status=conv.status,
+            channel=last_message.channel if last_message and last_message.channel else "unknown",
         ))
 
     return result

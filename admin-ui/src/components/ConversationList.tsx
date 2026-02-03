@@ -7,6 +7,26 @@ import { ConversationListItem } from "@/lib/api";
 import { useLocale } from "@/i18n/client";
 import EmptyState from "./EmptyState";
 
+// Channel badge component
+function ChannelBadge({ channel }: { channel: string }) {
+  const config: Record<string, { bg: string; text: string; label: string }> = {
+    telegram: { bg: "bg-sky-100", text: "text-sky-700", label: "Telegram" },
+    whatsapp: { bg: "bg-emerald-100", text: "text-emerald-700", label: "WhatsApp" },
+  };
+
+  const { bg, text, label } = config[channel] || {
+    bg: "bg-slate-100",
+    text: "text-slate-500",
+    label: channel,
+  };
+
+  return (
+    <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${bg} ${text}`}>
+      {label}
+    </span>
+  );
+}
+
 interface ConversationListProps {
   conversations: ConversationListItem[];
 }
@@ -72,7 +92,7 @@ export default function ConversationList({
           >
             <div className="flex justify-between items-start">
               <div className="min-w-0 flex-1">
-                {/* Customer name or placeholder */}
+                {/* Customer name */}
                 <p className="text-sm font-medium text-slate-900 truncate">
                   {conv.customer_name || (
                     <span className="text-slate-400 italic">{t("customer.noName")}</span>
@@ -90,9 +110,10 @@ export default function ConversationList({
                 </p>
               </div>
 
-              {/* Timestamp and message count */}
+              {/* Channel badge, timestamp and message count */}
               <div className="ms-4 flex-shrink-0 text-end">
-                <p className="text-xs text-slate-400">
+                <ChannelBadge channel={conv.channel} />
+                <p className="text-xs text-slate-400 mt-1">
                   {formatRelativeTime(conv.last_message_at)}
                 </p>
                 <p className="mt-1 text-xs text-slate-400">
