@@ -1,6 +1,12 @@
 @import "tailwindcss";
 
 :root {
+  /* VelocitySales Brand Colors */
+  --brand-primary: #2ecc71;
+  --brand-secondary: #1b9955;
+  --brand-accent: #95d5b2;
+  --brand-dark: #0a1f1a;
+
   /* Slate Palette */
   --slate-25: #FCFCFD;
   --slate-50: #F8FAFC;
@@ -47,12 +53,12 @@
   --header-bg: rgba(38, 38, 42, 0.95);
   --header-border: rgba(63, 63, 70, 0.8);
 
-  /* Active tab */
-  --tab-active-bg: #f1f5f9;
-  --tab-active-text: #0f172a;
+  /* Active tab - using brand green */
+  --tab-active-bg: #2ecc71;
+  --tab-active-text: #0a1f1a;
   --tab-inactive-text: #94a3b8;
-  --tab-hover-text: #f1f5f9;
-  --tab-hover-bg: #334155;
+  --tab-hover-text: #2ecc71;
+  --tab-hover-bg: rgba(46, 204, 113, 0.1);
 
   /* Cards/Panels */
   --card-shadow: 0 0 0 1px rgb(0 0 0 / 0.2), 0 2px 4px rgb(0 0 0 / 0.3);
@@ -98,12 +104,12 @@ html[data-theme="light"] {
   --header-bg: rgba(255, 255, 255, 0.8);
   --header-border: rgba(226, 232, 240, 0.6);
 
-  /* Active tab */
-  --tab-active-bg: #1e293b;
+  /* Active tab - using brand green */
+  --tab-active-bg: #1b9955;
   --tab-active-text: #ffffff;
   --tab-inactive-text: #475569;
-  --tab-hover-text: #0f172a;
-  --tab-hover-bg: #f1f5f9;
+  --tab-hover-text: #1b9955;
+  --tab-hover-bg: rgba(27, 153, 85, 0.1);
 
   /* Cards/Panels */
   --card-shadow: 0 0 0 1px rgb(0 0 0 / 0.03), 0 2px 4px rgb(0 0 0 / 0.05);
@@ -126,8 +132,8 @@ html[data-theme="light"] {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-sora: var(--font-sora);
 }
 
 body {
@@ -135,7 +141,69 @@ body {
   color: var(--foreground);
 }
 
+/* VelocitySales Background Pattern - Velocity Lines */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image:
+    /* Diagonal velocity lines */
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 60px,
+      var(--pattern-line) 60px,
+      var(--pattern-line) 61px
+    ),
+    /* Subtle gradient glow in corner */
+    radial-gradient(
+      ellipse at 100% 0%,
+      var(--pattern-glow) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 0% 100%,
+      var(--pattern-glow-secondary) 0%,
+      transparent 40%
+    );
+}
+
+/* Dark theme pattern colors */
+:root {
+  --pattern-line: rgba(46, 204, 113, 0.03);
+  --pattern-glow: rgba(46, 204, 113, 0.05);
+  --pattern-glow-secondary: rgba(46, 204, 113, 0.02);
+}
+
+/* Light theme pattern colors */
+html[data-theme="light"] {
+  --pattern-line: rgba(27, 153, 85, 0.04);
+  --pattern-glow: rgba(27, 153, 85, 0.06);
+  --pattern-glow-secondary: rgba(27, 153, 85, 0.03);
+}
+
 /* RTL Support */
 html[dir="rtl"] .rtl-flip {
   transform: scaleX(-1);
+}
+
+/* VelocitySales Logo Animation */
+@keyframes velocity-arrow {
+  0%, 100% {
+    opacity: 0;
+    transform: translateX(-5px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-velocity-arrow {
+  animation: velocity-arrow 2s ease-in-out infinite;
 }

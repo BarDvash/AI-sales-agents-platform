@@ -1,10 +1,10 @@
-# AI Sales Agents Platform
+# VelocitySales
 
 A multi-tenant SaaS platform for AI-powered sales agents using Claude's function calling capabilities.
 
 ## Vision
 
-**What we're building:** A platform that allows any business to deploy AI-powered sales agents that handle customer conversations, take orders, and manage sales workflows across multiple communication channels.
+**What we're building:** VelocitySales is a platform that allows any business to deploy AI-powered sales agents that handle customer conversations, take orders, and manage sales workflows across multiple communication channels.
 
 **Target customers:** Small to medium businesses (butchers, bakeries, restaurants, service providers) who want 24/7 automated sales capability.
 

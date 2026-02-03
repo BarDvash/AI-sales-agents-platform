@@ -5,6 +5,7 @@ import { useParams, usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
+import VelocitySalesLogo from "@/components/VelocitySalesLogo";
 
 export default function TenantLayout({
   children,
@@ -37,13 +38,8 @@ export default function TenantLayout({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Brand + Tenant */}
-            <div className="flex items-center gap-3">
-              <h1
-                className="text-xl font-bold tracking-tight"
-                style={{ color: "var(--text-primary)" }}
-              >
-                {t("brand")}
-              </h1>
+            <div className="flex items-center gap-4">
+              <VelocitySalesLogo size="small" />
               <span style={{ color: "var(--text-faint)" }}>·</span>
               <span
                 className="text-lg font-medium"

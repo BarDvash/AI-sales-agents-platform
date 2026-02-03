@@ -1,22 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Sora, Inter } from "next/font/google";
 import "./globals.css";
 import { LocaleProvider } from "@/i18n/client";
 import { ThemeProvider } from "@/context/ThemeContext";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const sora = Sora({
+  variable: "--font-sora",
   subsets: ["latin"],
+  weight: ["600", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
-  title: "Admin Dashboard - AI Sales Agents",
-  description: "Admin dashboard for AI Sales Agents Platform",
+  title: "VelocitySales - Admin Dashboard",
+  description: "Admin dashboard for VelocitySales AI Sales Agents Platform",
 };
 
 export default function RootLayout({
@@ -27,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" dir="ltr" data-theme="dark" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
+        className={`${sora.variable} ${inter.variable} font-sans antialiased`}
         style={{ background: "var(--background)" }}
       >
         <ThemeProvider>
