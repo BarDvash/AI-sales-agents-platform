@@ -51,6 +51,7 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
   const [displayConversation, setDisplayConversation] = useState<ConversationDetailType | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   const loadConversation = useCallback(async () => {
     if (!selectedId) return;
@@ -69,6 +70,7 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
       const data = await fetchPromise;
       setConversation(data);
       setDisplayConversation(data);
+      setHasLoadedOnce(true);
       // Fade in after content swap using rAF for smooth timing
       requestAnimationFrame(() => {
         setIsVisible(true);
@@ -91,8 +93,9 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
     loadConversation();
   }, [selectedId, loadConversation]);
 
-  // No conversation selected
-  if (!selectedId) {
+  // No conversation selected OR still loading first conversation
+  // Keep showing the "select a conversation" prompt until data loads
+  if (!selectedId || (!hasLoadedOnce && !displayConversation && !error)) {
     return (
       <div className="flex items-center justify-center h-full">
         <EmptyState
@@ -103,7 +106,6 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
       </div>
     );
   }
-
 
   // Error state
   if (error) {
@@ -118,7 +120,7 @@ export default function ConversationView({ tenant }: ConversationViewProps) {
     );
   }
 
-  // No data - only show if no display content either
+  // No data after loading - conversation not found
   if (!conversation && !displayConversation) {
     return (
       <div className="flex items-center justify-center h-full">
