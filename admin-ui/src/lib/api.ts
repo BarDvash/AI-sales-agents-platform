@@ -198,21 +198,21 @@ export const channelColorConfig: Record<string, ChannelColors> = {
     badgeTextColor: "#ffffff",
     iconColor: "#00a884", // WhatsApp green
   },
-  // Default fallback - neutral slate theme
+  // Default fallback - VelocitySales brand green theme
   default: {
     chatBgColor: "#f1f5f9", // slate-100
     userBubbleBgColor: "#e2e8f0", // slate-200
     userBubbleTextColor: "#1e293b", // slate-800
-    bubbleBgColor: "#334155", // slate-700
+    bubbleBgColor: "#1b9955", // VelocitySales brand secondary
     bubbleTextColor: "#ffffff",
-    bubbleTimestampColor: "#94a3b8", // slate-400
+    bubbleTimestampColor: "#95d5b2", // VelocitySales brand accent
     headerBgColor: "#1e293b", // slate-800
     headerBorderColor: "#334155", // slate-700
-    activeBgColor: "rgba(51, 65, 85, 0.15)", // slate-700/15
-    activeBorderColor: "#475569", // slate-600
-    badgeBgColor: "#f1f5f9", // slate-100
-    badgeTextColor: "#64748b", // slate-500
-    iconColor: "#475569", // slate-600
+    activeBgColor: "rgba(46, 204, 113, 0.15)", // VelocitySales brand primary/15
+    activeBorderColor: "#2ecc71", // VelocitySales brand primary
+    badgeBgColor: "rgba(46, 204, 113, 0.15)", // VelocitySales brand primary/15
+    badgeTextColor: "#2ecc71", // VelocitySales brand primary
+    iconColor: "#2ecc71", // VelocitySales brand primary
   },
 };
 

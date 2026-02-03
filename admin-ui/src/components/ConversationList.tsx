@@ -88,8 +88,8 @@ export default function ConversationList({
             key={conv.id}
             href={`/${tenant}/conversations?selected=${conv.id}`}
             className={`block p-4 transition-all duration-150 ${
-              isSelected ? "border-s-2" : ""
-            }`}
+              isSelected ? "border-s-2" : "hover:bg-[var(--hover-bg)]"
+            } group`}
             style={{
               ...(isSelected
                 ? {
